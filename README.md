@@ -27,10 +27,9 @@ class Person:
     age: int
 
 
-person_validator = v.Obj2(  # expect a json object with two properties
+person_validator = v.Obj2( 
     v.prop("name", v.String(v.MinLength(1))),
     v.prop("age", v.Integer(v.Minimum(0))),
-    # if the properties are valid, pass them into 'Person'
     into=Person
 )
 ```
