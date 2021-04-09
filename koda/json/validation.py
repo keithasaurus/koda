@@ -13,7 +13,7 @@ from koda.either import Either, Either3, First, Second, Third
 from koda.json.serialization import JsonSerializable
 from koda.json.utils import expected
 from koda.maybe import Just, Maybe, Nothing, NothingType
-from koda.result import Failure, Result, Success
+from koda.result import Err, Result, Ok
 from koda.tuple import typed_tuple
 from koda.validation import (PredicateValidator, TransformableValidator, Validator,
                              validate_and_map)
@@ -65,20 +65,20 @@ def accum_errors(val: A,
                  validators: Iterable[PredicateValidator[A, FailT]]
                  ) -> Result[A, List[FailT]]:
     errors: List[FailT] = []
-    result: Result[A, FailT] = Success(val)
+    result: Result[A, FailT] = Ok(val)
     for validator in validators:
         result = validator(val)
-        if isinstance(result, Failure):
+        if isinstance(result, Err):
             errors.append(result.val)
         else:
             val = result.val
 
     if len(errors) > 0:
-        return Failure(errors)
+        return Err(errors)
     else:
         # has to be because there are no errors
-        assert isinstance(result, Success)
-        return Success(result.val)
+        assert isinstance(result, Ok)
+        return Ok(result.val)
 
 
 @dataclass(frozen=True)
@@ -91,7 +91,7 @@ class MaxLength(PredicateValidator[str, Jsonable]):
     def is_valid(self, val: str) -> bool:
         return len(val) <= self.length
 
-    def fail_message(self, val: str) -> Jsonable:
+    def err_message(self, val: str) -> Jsonable:
         return Jsonable(f"maximum allowed length is {self.length}")
 
 
@@ -105,7 +105,7 @@ class MinLength(PredicateValidator[str, Jsonable]):
     def is_valid(self, val: str) -> bool:
         return len(val) >= self.length
 
-    def fail_message(self, val: str) -> Jsonable:
+    def err_message(self, val: str) -> Jsonable:
         return Jsonable(f"minimum allowed length is {self.length}")
 
 
@@ -119,7 +119,7 @@ class MinItems(PredicateValidator[List[Any], Jsonable]):
     def is_valid(self, val: List[Any]) -> bool:
         return len(val) >= self.length
 
-    def fail_message(self, val: List[Any]) -> Jsonable:
+    def err_message(self, val: List[Any]) -> Jsonable:
         return Jsonable(f"minimum allowed length is {self.length}")
 
 
@@ -133,7 +133,7 @@ class MaxItems(PredicateValidator[List[Any], Jsonable]):
     def is_valid(self, val: List[Any]) -> bool:
         return len(val) <= self.length
 
-    def fail_message(self, val: List[Any]) -> Jsonable:
+    def err_message(self, val: List[Any]) -> Jsonable:
         return Jsonable(f"maximum allowed length is {self.length}")
 
 
@@ -147,7 +147,7 @@ class MinProperties(PredicateValidator[Dict[Any, Any], Jsonable]):
     def is_valid(self, val: Dict[Any, Any]) -> bool:
         return len(val) >= self.size
 
-    def fail_message(self, val: Dict[Any, Any]) -> Jsonable:
+    def err_message(self, val: Dict[Any, Any]) -> Jsonable:
         return Jsonable(f"minimum allowed properties is {self.size}")
 
 
@@ -161,7 +161,7 @@ class MaxProperties(PredicateValidator[Dict[Any, Any], Jsonable]):
     def is_valid(self, val: Dict[Any, Any]) -> bool:
         return len(val) <= self.size
 
-    def fail_message(self, val: Dict[Any, Any]) -> Jsonable:
+    def err_message(self, val: Dict[Any, Any]) -> Jsonable:
         return Jsonable(f"maximum allowed properties is {self.size}")
 
 
@@ -187,7 +187,7 @@ class UniqueItems(PredicateValidator[List[Any], Jsonable]):
         else:
             return True
 
-    def fail_message(self, val: List[Any]) -> Jsonable:
+    def err_message(self, val: List[Any]) -> Jsonable:
         return Jsonable("all items must be unique")
 
 
@@ -200,9 +200,9 @@ class Boolean(TransformableValidator[Any, bool, Jsonable]):
 
     def __call__(self, val: Any) -> Result[bool, Jsonable]:
         if isinstance(val, bool):
-            return accum_errors(val, self.validators).map_failure(Jsonable)
+            return accum_errors(val, self.validators).map_err(Jsonable)
         else:
-            return fail_list(expected("a boolean"))
+            return err_list(expected("a boolean"))
 
 
 class String(TransformableValidator[Any, str, Jsonable]):
@@ -211,9 +211,9 @@ class String(TransformableValidator[Any, str, Jsonable]):
 
     def __call__(self, val: Any) -> Result[str, Jsonable]:
         if isinstance(val, str):
-            return accum_errors(val, self.validators).map_failure(Jsonable)
+            return accum_errors(val, self.validators).map_err(Jsonable)
         else:
-            return fail_list(expected("a string"))
+            return err_list(expected("a string"))
 
 
 @dataclass(frozen=True)
@@ -223,7 +223,7 @@ class RegexValidator(PredicateValidator[str, Jsonable]):
     def is_valid(self, val: str) -> bool:
         return re.match(self.pattern, val) is not None
 
-    def fail_message(self, val: str) -> Jsonable:
+    def err_message(self, val: str) -> Jsonable:
         return Jsonable(rf"must match pattern {self.pattern.pattern}")
 
 
@@ -234,7 +234,7 @@ class Email(PredicateValidator[str, Jsonable]):
     def is_valid(self, val: str) -> bool:
         return re.match(self.pattern, val) is not None
 
-    def fail_message(self, val: str) -> Jsonable:
+    def err_message(self, val: str) -> Jsonable:
         return Jsonable("expected a valid email address")
 
 
@@ -245,9 +245,9 @@ class Integer(TransformableValidator[Any, int, Jsonable]):
     def __call__(self, val: Any) -> Result[int, Jsonable]:
         # can't use isinstance because it would return true for bools
         if type(val) == int:
-            return accum_errors(val, self.validators).map_failure(Jsonable)
+            return accum_errors(val, self.validators).map_err(Jsonable)
         else:
-            return fail_list(expected("an integer"))
+            return err_list(expected("an integer"))
 
 
 class Float(TransformableValidator[Any, float, Jsonable]):
@@ -256,9 +256,9 @@ class Float(TransformableValidator[Any, float, Jsonable]):
 
     def __call__(self, val: Any) -> Result[float, Jsonable]:
         if isinstance(val, float):
-            return accum_errors(val, self.validators).map_failure(Jsonable)
+            return accum_errors(val, self.validators).map_err(Jsonable)
         else:
-            return fail_list(expected("a float"))
+            return err_list(expected("a float"))
 
 
 class Date(TransformableValidator[Any, date, Jsonable]):
@@ -270,7 +270,7 @@ class Date(TransformableValidator[Any, date, Jsonable]):
         self.validators = validators
 
     def __call__(self, val: Any) -> Result[date, Jsonable]:
-        fail_msg = fail(["expected date formatted as yyyy-mm-dd"])
+        fail_msg = err(["expected date formatted as yyyy-mm-dd"])
         if isinstance(val, str):
             try:
                 year, month, day = val.split("-")
@@ -286,11 +286,11 @@ class Date(TransformableValidator[Any, date, Jsonable]):
                     safe_int_try(day),
                     date
                 )
-                if isinstance(result, Failure):
+                if isinstance(result, Err):
                     return fail_msg
                 else:
                     return accum_errors(result.val,
-                                        self.validators).map_failure(Jsonable)
+                                        self.validators).map_err(Jsonable)
         else:
             return fail_msg
 
@@ -318,13 +318,13 @@ class MapOf(TransformableValidator[Any, Dict[A, B], Jsonable]):
                 key_result = self.key_validator(key)
                 val_result = self.value_validator(val)
 
-                if isinstance(key_result, Success) and isinstance(val_result, Success):
+                if isinstance(key_result, Ok) and isinstance(val_result, Ok):
                     return_dict[key_result.val] = val_result.val
                 else:
-                    if isinstance(key_result, Failure):
+                    if isinstance(key_result, Err):
                         errors[f"{key} (key)"] = key_result.val
 
-                    if isinstance(val_result, Failure):
+                    if isinstance(val_result, Err):
                         errors[key] = val_result.val
 
             dict_validator_errors: List[Jsonable] = []
@@ -335,7 +335,7 @@ class MapOf(TransformableValidator[Any, Dict[A, B], Jsonable]):
                 # an incorrect assumption; if so, some minor refactoring is probably
                 # necessary.
                 result = validator(data)
-                if isinstance(result, Failure):
+                if isinstance(result, Err):
                     dict_validator_errors.append(result.val)
 
             if len(dict_validator_errors) > 0:
@@ -346,11 +346,11 @@ class MapOf(TransformableValidator[Any, Dict[A, B], Jsonable]):
                 errors[OBJECT_ERRORS_FIELD] = Jsonable(dict_validator_errors)
 
             if errors:
-                return fail(errors)
+                return err(errors)
             else:
-                return Success(return_dict)
+                return Ok(return_dict)
         else:
-            return fail({"invalid type": [expected("a map")]})
+            return err({"invalid type": [expected("a map")]})
 
 
 class ArrayOf(TransformableValidator[Any, List[A], Jsonable]):
@@ -370,7 +370,7 @@ class ArrayOf(TransformableValidator[Any, List[A], Jsonable]):
             for validator in self.list_validators:
                 result = validator(val)
 
-                if isinstance(result, Failure):
+                if isinstance(result, Err):
                     list_errors.append(result.val)
 
             if len(list_errors) > 0:
@@ -378,17 +378,17 @@ class ArrayOf(TransformableValidator[Any, List[A], Jsonable]):
 
             for i, item in enumerate(val):
                 item_result = self.item_validator(item)
-                if isinstance(item_result, Success):
+                if isinstance(item_result, Ok):
                     return_list.append(item_result.val)
                 else:
                     errors[f'index {i}'] = item_result.val
 
             if len(errors) > 0:
-                return fail(errors)
+                return err(errors)
             else:
-                return Success(return_list)
+                return Ok(return_list)
         else:
-            return fail({"invalid type": [expected("an array")]})
+            return err({"invalid type": [expected("an array")]})
 
 
 EnumT = TypeVar('EnumT', str, int)
@@ -424,23 +424,23 @@ class Enum(PredicateValidator[EnumT, Jsonable]):
     def is_valid(self, val: EnumT) -> bool:
         return val in self.choices
 
-    def fail_message(self, val: EnumT) -> Jsonable:
+    def err_message(self, val: EnumT) -> Jsonable:
         return Jsonable(f'expected one of {sorted(self.choices)}')
 
 
-def fail_list(
+def err_list(
         *val: str
-) -> Failure[Jsonable]:
+) -> Err[Jsonable]:
     """
     convenience function so we can write things like
-    `fail_list("some invalid message", "some other message")`
+    `err_list("some invalid message", "some other message")`
     instead of
     `Failure([Jsonable("some invalid message")])`
     """
-    return Failure(Jsonable([Jsonable(x) for x in val]))
+    return Err(Jsonable([Jsonable(x) for x in val]))
 
 
-def fail(val: Union[
+def err(val: Union[
     str,
     int,
     float,
@@ -455,7 +455,7 @@ def fail(val: Union[
     Dict[str, str],
     Dict[str, List[str]],
     List[str]
-]) -> Failure[Jsonable]:
+]) -> Err[Jsonable]:
     if isinstance(val, dict):
         ret: Dict[str, Jsonable] = {}
         for k, v in val.items():
@@ -471,14 +471,14 @@ def fail(val: Union[
                 ret[k] = Jsonable(list_v)
             else:
                 ret[k] = Jsonable(v)
-        return Failure(Jsonable(ret))
+        return Err(Jsonable(ret))
     elif isinstance(val, list):
-        return Failure(Jsonable(
+        return Err(Jsonable(
             [item if isinstance(item, Jsonable) else Jsonable(item)
              for item in val]
         ))
     else:
-        return Failure(Jsonable(val))
+        return Err(Jsonable(val))
 
 
 KeyValidator = Tuple[str, Callable[[Maybe[Any]], Result[A, Jsonable]]]
@@ -495,16 +495,16 @@ def _validate_with_key(
 
     return fn(
         get_mapping_val(key)(data)
-    ).map_failure(add_key)
+    ).map_err(add_key)
 
 
 class IsObject(TransformableValidator[Any, Dict[Any, Any], Jsonable]):
     def __call__(self, val: Any
                  ) -> Result[Dict[Any, Any], Jsonable]:
         if isinstance(val, dict):
-            return Success(val)
+            return Ok(val)
         else:
-            return fail({OBJECT_ERRORS_FIELD: [expected("an object")]})
+            return err({OBJECT_ERRORS_FIELD: [expected("an object")]})
 
 
 def _dict_without_extra_keys(
@@ -539,15 +539,15 @@ class OneOf2(TransformableValidator[Any, Either[A, B], Jsonable]):
     def __call__(self, val: Any) -> Result[Either[A, B], Jsonable]:
         v1_result = self.variant_one(val)
 
-        if isinstance(v1_result, Success):
-            return Success(First(v1_result.val))
+        if isinstance(v1_result, Ok):
+            return Ok(First(v1_result.val))
         else:
             v2_result = self.variant_two(val)
 
-            if isinstance(v2_result, Success):
-                return Success(Second(v2_result.val))
+            if isinstance(v2_result, Ok):
+                return Ok(Second(v2_result.val))
             else:
-                return fail({
+                return err({
                     self.variant_one_label: v1_result.val,
                     self.variant_two_label: v2_result.val
                 })
@@ -588,22 +588,22 @@ class OneOf3(TransformableValidator[Any, Either3[A, B, C], Jsonable]):
     def __call__(self, val: Any) -> Result[Either3[A, B, C], Jsonable]:
         v1_result = self.variant_one(val)
 
-        if isinstance(v1_result, Success):
-            return Success(First(v1_result.val))
+        if isinstance(v1_result, Ok):
+            return Ok(First(v1_result.val))
         else:
             v2_result = self.variant_two(val)
 
-            if isinstance(v2_result, Success):
-                return Success(Second(v2_result.val))
+            if isinstance(v2_result, Ok):
+                return Ok(Second(v2_result.val))
             else:
                 v3_result = self.variant_three(val)
 
-                if isinstance(v3_result, Success):
-                    return Success(
+                if isinstance(v3_result, Ok):
+                    return Ok(
                         Third(v3_result.val)
                     )
                 else:
-                    return fail({
+                    return err({
                         self.variant_one_label: v1_result.val,
                         self.variant_two_label: v2_result.val,
                         self.variant_three_label: v3_result.val
@@ -638,8 +638,8 @@ class Tuple2(TransformableValidator[Any, Tuple[A, B], Jsonable]):
                 typed_tuple
             )
 
-            if isinstance(result, Failure):
-                return result.map_failure(
+            if isinstance(result, Err):
+                return result.map_err(
                     compose(_tuple_to_dict_errors, Jsonable)
                 )
             else:
@@ -648,7 +648,7 @@ class Tuple2(TransformableValidator[Any, Tuple[A, B], Jsonable]):
                 else:
                     return result.flat_map(self.tuple_validator)
         else:
-            return fail(
+            return err(
                 {"invalid type": [f"expected array of length {self.required_length}"]}
             )
 
@@ -679,8 +679,8 @@ class Tuple3(TransformableValidator[Any, Tuple[A, B, C], Jsonable]):
                 typed_tuple
             )
 
-            if isinstance(result, Failure):
-                return result.map_failure(
+            if isinstance(result, Err):
+                return result.map_err(
                     compose(_tuple_to_dict_errors, Jsonable)
                 )
             else:
@@ -689,7 +689,7 @@ class Tuple3(TransformableValidator[Any, Tuple[A, B, C], Jsonable]):
                 else:
                     return result.flat_map(self.tuple_validator)
         else:
-            return fail(
+            return err(
                 {"invalid type": [f"expected array of length {self.required_length}"]}
             )
 
@@ -699,12 +699,12 @@ def _has_no_extra_keys(
 ) -> Validator[Dict[A, B], Dict[A, B], Jsonable]:
     def inner(mapping: Dict[A, B]) -> Result[Dict[A, B], Jsonable]:
         if len(mapping.keys() - keys) > 0:
-            return fail(
+            return err(
                 {OBJECT_ERRORS_FIELD:
-                 [f"Received unknown keys. Only expected {sorted(keys)}"]}
+                     [f"Received unknown keys. Only expected {sorted(keys)}"]}
             )
         else:
-            return Success(mapping)
+            return Ok(mapping)
 
     return inner
 
@@ -716,7 +716,7 @@ class NotBlank(PredicateValidator[str, Jsonable]):
     def is_valid(self, val: str) -> bool:
         return len(val.strip()) != 0
 
-    def fail_message(self, val: str) -> Jsonable:
+    def err_message(self, val: str) -> Jsonable:
         return BLANK_STRING_MSG
 
 
@@ -734,7 +734,7 @@ class RequiredField(Generic[A]):
 
     def __call__(self, maybe_val: Maybe[Any]) -> Result[A, Jsonable]:
         if isinstance(maybe_val, NothingType):
-            return fail([_KEY_MISSING])
+            return err([_KEY_MISSING])
         else:
             return self.validator(maybe_val.val)
 
@@ -751,7 +751,7 @@ class MaybeField(Generic[A]):
             result: Result[Maybe[A], Jsonable] = \
                 self.validator(maybe_val.val).map(Just)
         else:
-            result = Success(maybe_val)
+            result = Ok(maybe_val)
         return result
 
 
@@ -794,11 +794,11 @@ def deserialize_and_validate(
     try:
         deserialized = loads(data)
     except Exception:
-        return Failure(
+        return Err(
             {"bad data": "invalid json"}
         )
     else:
-        return validator(deserialized).map_failure(unwrap_jsonable)
+        return validator(deserialized).map_err(unwrap_jsonable)
 
 
 class Nullable(TransformableValidator[Any, Maybe[A], Jsonable]):
@@ -812,7 +812,7 @@ class Nullable(TransformableValidator[Any, Maybe[A], Jsonable]):
 
     def __call__(self, val: Optional[Any]) -> Result[Maybe[A], Jsonable]:
         if val is None:
-            return Success(Nothing)
+            return Ok(Nothing)
         else:
             return self.validator(val).map(Just)
 
@@ -831,8 +831,8 @@ class Minimum(PredicateValidator[Num, Jsonable]):
         else:
             return val >= self.minimum
 
-    def fail_message(self, val: Num) -> Jsonable:
-        return Jsonable(f"Minimum allowed value is {self.minimum}")
+    def err_message(self, val: Num) -> Jsonable:
+        return Jsonable(f"minimum allowed value is {self.minimum}")
 
 
 @dataclass(frozen=True)
@@ -846,8 +846,8 @@ class Maximum(PredicateValidator[Num, Jsonable]):
         else:
             return val <= self.maximum
 
-    def fail_message(self, val: Num) -> Jsonable:
-        return Jsonable(f"Maximum allowed value is {self.maximum}")
+    def err_message(self, val: Num) -> Jsonable:
+        return Jsonable(f"maximum allowed value is {self.maximum}")
 
 
 @dataclass(frozen=True)
@@ -857,31 +857,31 @@ class MultipleOf(PredicateValidator[Num, Jsonable]):
     def is_valid(self, val: Num) -> bool:
         return val % self.factor == 0
 
-    def fail_message(self, val: Num) -> Jsonable:
+    def err_message(self, val: Num) -> Jsonable:
         return Jsonable(f"expected multiple of {self.factor}")
 
 
 class NullType(TransformableValidator[Any, None, Jsonable]):
     def __call__(self, val: Any) -> Result[None, Jsonable]:
         if val is None:
-            return Success(val)
+            return Ok(val)
         else:
-            return fail_list(expected("null"))
+            return err_list(expected("null"))
 
 
 Null = NullType()
 
 
-def key(key_: str,
-        validator: Callable[[Any], Result[A, Jsonable]]
-        ) -> Tuple[str, Callable[[Any], Result[A, Jsonable]]]:
-    return key_, RequiredField(validator)
+def prop(prop_: str,
+         validator: Callable[[Any], Result[A, Jsonable]]
+         ) -> Tuple[str, Callable[[Any], Result[A, Jsonable]]]:
+    return prop_, RequiredField(validator)
 
 
-def maybe_key(key_: str,
-              validator: Callable[[Any], Result[A, Jsonable]]
-              ) -> Tuple[str, Callable[[Any], Result[Maybe[A], Jsonable]]]:
-    return key_, MaybeField(validator)
+def maybe_prop(prop_: str,
+               validator: Callable[[Any], Result[A, Jsonable]]
+               ) -> Tuple[str, Callable[[Any], Result[Maybe[A], Jsonable]]]:
+    return prop_, MaybeField(validator)
 
 
 def _tuples_to_jsonable_dict(data: Tuple[Tuple[str, Jsonable], ...]) -> Jsonable:
@@ -906,7 +906,7 @@ class Obj1(Generic[A, Ret],
                                            for x in range(len(self.fields))},
                                           data)
 
-        if isinstance(result, Failure):
+        if isinstance(result, Err):
             return result
         else:
             result_1 = validate_and_map(
@@ -915,7 +915,7 @@ class Obj1(Generic[A, Ret],
             )
             return _flat_map_same_type_if_not_none(
                 self.validate_object,
-                result_1.map_failure(_tuples_to_jsonable_dict))
+                result_1.map_err(_tuples_to_jsonable_dict))
 
 
 class Obj2(Generic[A, B, Ret],
@@ -938,7 +938,7 @@ class Obj2(Generic[A, B, Ret],
                                            for x in range(len(self.fields))},
                                           data)
 
-        if isinstance(result, Failure):
+        if isinstance(result, Err):
             return result
         else:
             result_1 = validate_and_map(
@@ -948,7 +948,7 @@ class Obj2(Generic[A, B, Ret],
             )
             return _flat_map_same_type_if_not_none(
                 self.validate_object,
-                result_1.map_failure(_tuples_to_jsonable_dict))
+                result_1.map_err(_tuples_to_jsonable_dict))
 
 
 class Obj3(Generic[A, B, C, Ret],
@@ -973,7 +973,7 @@ class Obj3(Generic[A, B, C, Ret],
                                            for x in range(len(self.fields))},
                                           data)
 
-        if isinstance(result, Failure):
+        if isinstance(result, Err):
             return result
         else:
             result_1 = validate_and_map(
@@ -984,7 +984,7 @@ class Obj3(Generic[A, B, C, Ret],
             )
             return _flat_map_same_type_if_not_none(
                 self.validate_object,
-                result_1.map_failure(_tuples_to_jsonable_dict))
+                result_1.map_err(_tuples_to_jsonable_dict))
 
 
 class Obj4(Generic[A, B, C, D, Ret],
@@ -1011,7 +1011,7 @@ class Obj4(Generic[A, B, C, D, Ret],
                                            for x in range(len(self.fields))},
                                           data)
 
-        if isinstance(result, Failure):
+        if isinstance(result, Err):
             return result
         else:
             result_1 = validate_and_map(
@@ -1023,7 +1023,7 @@ class Obj4(Generic[A, B, C, D, Ret],
             )
             return _flat_map_same_type_if_not_none(
                 self.validate_object,
-                result_1.map_failure(_tuples_to_jsonable_dict))
+                result_1.map_err(_tuples_to_jsonable_dict))
 
 
 class Obj5(Generic[A, B, C, D, E, Ret],
@@ -1052,7 +1052,7 @@ class Obj5(Generic[A, B, C, D, E, Ret],
                                            for x in range(len(self.fields))},
                                           data)
 
-        if isinstance(result, Failure):
+        if isinstance(result, Err):
             return result
         else:
             result_1 = validate_and_map(
@@ -1065,7 +1065,7 @@ class Obj5(Generic[A, B, C, D, E, Ret],
             )
             return _flat_map_same_type_if_not_none(
                 self.validate_object,
-                result_1.map_failure(_tuples_to_jsonable_dict))
+                result_1.map_err(_tuples_to_jsonable_dict))
 
 
 class Obj6(Generic[A, B, C, D, E, F, Ret],
@@ -1096,7 +1096,7 @@ class Obj6(Generic[A, B, C, D, E, F, Ret],
                                            for x in range(len(self.fields))},
                                           data)
 
-        if isinstance(result, Failure):
+        if isinstance(result, Err):
             return result
         else:
             result_1 = validate_and_map(
@@ -1110,7 +1110,7 @@ class Obj6(Generic[A, B, C, D, E, F, Ret],
             )
             return _flat_map_same_type_if_not_none(
                 self.validate_object,
-                result_1.map_failure(_tuples_to_jsonable_dict))
+                result_1.map_err(_tuples_to_jsonable_dict))
 
 
 class Obj7(Generic[A, B, C, D, E, F, G, Ret],
@@ -1143,7 +1143,7 @@ class Obj7(Generic[A, B, C, D, E, F, G, Ret],
                                            for x in range(len(self.fields))},
                                           data)
 
-        if isinstance(result, Failure):
+        if isinstance(result, Err):
             return result
         else:
             result_1 = validate_and_map(
@@ -1158,7 +1158,7 @@ class Obj7(Generic[A, B, C, D, E, F, G, Ret],
             )
             return _flat_map_same_type_if_not_none(
                 self.validate_object,
-                result_1.map_failure(_tuples_to_jsonable_dict))
+                result_1.map_err(_tuples_to_jsonable_dict))
 
 
 class Obj8(Generic[A, B, C, D, E, F, G, H, Ret],
@@ -1193,7 +1193,7 @@ class Obj8(Generic[A, B, C, D, E, F, G, H, Ret],
                                            for x in range(len(self.fields))},
                                           data)
 
-        if isinstance(result, Failure):
+        if isinstance(result, Err):
             return result
         else:
             result_1 = validate_and_map(
@@ -1209,7 +1209,7 @@ class Obj8(Generic[A, B, C, D, E, F, G, H, Ret],
             )
             return _flat_map_same_type_if_not_none(
                 self.validate_object,
-                result_1.map_failure(_tuples_to_jsonable_dict))
+                result_1.map_err(_tuples_to_jsonable_dict))
 
 
 class Obj9(Generic[A, B, C, D, E, F, G, H, I, Ret],
@@ -1246,7 +1246,7 @@ class Obj9(Generic[A, B, C, D, E, F, G, H, I, Ret],
                                            for x in range(len(self.fields))},
                                           data)
 
-        if isinstance(result, Failure):
+        if isinstance(result, Err):
             return result
         else:
             result_1 = validate_and_map(
@@ -1263,7 +1263,7 @@ class Obj9(Generic[A, B, C, D, E, F, G, H, I, Ret],
             )
             return _flat_map_same_type_if_not_none(
                 self.validate_object,
-                result_1.map_failure(_tuples_to_jsonable_dict))
+                result_1.map_err(_tuples_to_jsonable_dict))
 
 
 class Obj10(Generic[A, B, C, D, E, F, G, H, I, J, Ret],
@@ -1302,7 +1302,7 @@ class Obj10(Generic[A, B, C, D, E, F, G, H, I, J, Ret],
                                            for x in range(len(self.fields))},
                                           data)
 
-        if isinstance(result, Failure):
+        if isinstance(result, Err):
             return result
         else:
             result_1 = validate_and_map(
@@ -1320,4 +1320,4 @@ class Obj10(Generic[A, B, C, D, E, F, G, H, I, J, Ret],
             )
             return _flat_map_same_type_if_not_none(
                 self.validate_object,
-                result_1.map_failure(_tuples_to_jsonable_dict))
+                result_1.map_err(_tuples_to_jsonable_dict))

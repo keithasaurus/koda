@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import Callable, Generic, TypeVar, final
 
 from koda._cruft.validation import _chain, _validate_and_map, _Validator
-from koda.result import Failure, Result, Success
+from koda.result import Err, Result, Ok
 
 A = TypeVar('A')
 B = TypeVar('B')
@@ -48,15 +48,15 @@ class PredicateValidator(Generic[A, FailT]):
         raise NotImplementedError
 
     @abstractmethod
-    def fail_message(self, val: A) -> FailT:
+    def err_message(self, val: A) -> FailT:
         raise NotImplementedError
 
     @final
     def __call__(self, val: A) -> Result[A, FailT]:
         if self.is_valid(val) is True:
-            return Success(val)
+            return Ok(val)
         else:
-            return Failure(self.fail_message(val))
+            return Err(self.err_message(val))
 
 
 chain = _chain

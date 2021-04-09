@@ -7,20 +7,20 @@ B = TypeVar("B")
 FailT = TypeVar("FailT")
 
 __all__ = (
-    'Failure',
+    'Err',
     'Result',
-    'Success',
+    'Ok',
 )
 
 
 @dataclass(frozen=True)
-class Success(Generic[A]):
+class Ok(Generic[A]):
     val: A
 
     def apply(self,
               container: "Result[Callable[[A], B], FailT]") -> "Result[B, FailT]":
-        if isinstance(container, Success):
-            return Success(container.val(self.val))
+        if isinstance(container, Ok):
+            return Ok(container.val(self.val))
         else:
             return container
 
@@ -28,69 +28,69 @@ class Success(Generic[A]):
                  fn: Callable[[A], "Result[B, FailT]"]) -> "Result[B, FailT]":
         return fn(self.val)
 
-    def flat_map_failure(self,
-                         fn: Callable[[Any], "Result[A, Any]"]) -> "Success[A]":
+    def flat_map_err(self,
+                     fn: Callable[[Any], "Result[A, Any]"]) -> "Ok[A]":
         """
-        >>> def add_one(val: int) -> Result[int, Any]: return Failure(val + 1)
-        >>> Success(5).flat_map_failure(add_one)
-        Success(val=5)
+        >>> def add_one(val: int) -> Result[int, Any]: return Err(val + 1)
+        >>> Ok(5).flat_map_err(add_one)
+        Ok(val=5)
         """
         return self
 
-    def map(self, fn: Callable[[A], B]) -> "Success[B]":
-        return Success(fn(self.val))
+    def map(self, fn: Callable[[A], B]) -> "Ok[B]":
+        return Ok(fn(self.val))
 
-    def map_failure(self, fn: Callable[[Any], Any]) -> "Success[A]":
+    def map_err(self, fn: Callable[[Any], Any]) -> "Ok[A]":
         return self
 
-    def swap(self) -> "Failure[A]":
+    def swap(self) -> "Err[A]":
         """
-        >>> Success(5).swap()
-        Failure(val=5)
+        >>> Ok(5).swap()
+        Err(val=5)
         """
-        return Failure(self.val)
+        return Err(self.val)
 
 
 @dataclass(frozen=True)
-class Failure(Generic[FailT]):
+class Err(Generic[FailT]):
     val: FailT
 
-    def apply(self, _: "Result[Callable[[Any], Any], FailT]") -> "Failure[FailT]":
+    def apply(self, _: "Result[Callable[[Any], Any], FailT]") -> "Err[FailT]":
         return self
 
-    def map(self, _: Callable[[Any], Any]) -> "Failure[FailT]":
+    def map(self, _: Callable[[Any], Any]) -> "Err[FailT]":
         """
-        >>> Failure(3).map(lambda _: 25)
-        Failure(val=3)
+        >>> Err(3).map(lambda _: 25)
+        Err(val=3)
         """
         return self
 
-    def flat_map(self, _: Any) -> "Failure[FailT]":
+    def flat_map(self, _: Any) -> "Err[FailT]":
         return self
 
-    def flat_map_failure(self,
-                         fn: Callable[[FailT], "Result[A, FailT]"]) -> "Result[A, FailT]":
+    def flat_map_err(self,
+                     fn: Callable[[FailT], "Result[A, FailT]"]) -> "Result[A, FailT]":
         """
-        >>> def add_one(val: int) -> Result[int, Any]: return Failure(val + 1)
-        >>> Failure(5).flat_map_failure(add_one)
-        Failure(val=6)
+        >>> def add_one(val: int) -> Result[int, Any]: return Err(val + 1)
+        >>> Err(5).flat_map_err(add_one)
+        Err(val=6)
         """
         return fn(self.val)
 
-    def map_failure(self, fn: Callable[[FailT], B]) -> "Failure[B]":
+    def map_err(self, fn: Callable[[FailT], B]) -> "Err[B]":
         """
         >>> def _int_to_str(n: int) -> str: return str(n)
-        >>> Failure(5).map_failure(_int_to_str)
-        Failure(val='5')
+        >>> Err(5).map_err(_int_to_str)
+        Err(val='5')
         """
-        return Failure(fn(self.val))
+        return Err(fn(self.val))
 
-    def swap(self) -> "Success[FailT]":
+    def swap(self) -> "Ok[FailT]":
         """
-        >>> Failure(3).swap()
-        Success(val=3)
+        >>> Err(3).swap()
+        Ok(val=3)
         """
-        return Success(self.val)
+        return Ok(self.val)
 
 
-Result = Union[Success[A], Failure[FailT]]
+Result = Union[Ok[A], Err[FailT]]

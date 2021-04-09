@@ -7,7 +7,7 @@ import koda.json.validation as v
 from koda.either import First, Second, Third
 from koda.json.openapi import generate_schema
 from koda.maybe import Just, Maybe, Nothing
-from koda.result import Success
+from koda.result import Ok
 
 A = TypeVar('A')
 Ret = TypeVar('Ret')
@@ -23,8 +23,8 @@ def test_recursive_validator() -> None:
         return comment_validator
 
     comment_validator: v.Obj2[str, List[Comment], Comment] = v.Obj2(
-        v.key('name', v.String(v.not_blank)),
-        v.key('replies', v.ArrayOf(
+        v.prop('name', v.String(v.not_blank)),
+        v.prop('replies', v.ArrayOf(
             v.Lazy(get_comment_recur)
         )),
         into=Comment
@@ -54,24 +54,24 @@ def test_person() -> None:
         honorifics: List[str]
 
     person_validator = v.Obj5(
-        v.key("name", v.String(v.not_blank)),
-        v.key("email", v.String(v.Email(),
-                                v.MaxLength(50))),
-        v.key("occupation", v.String(v.Enum({"teacher",
+        v.prop("name", v.String(v.not_blank)),
+        v.prop("email", v.String(v.Email(),
+                                 v.MaxLength(50))),
+        v.prop("occupation", v.String(v.Enum({"teacher",
                                              "engineer",
                                              "musician",
                                              "cook"}))),
-        v.key("country_code", v.String(v.MinLength(2),
-                                       v.MaxLength(3))),
-        v.key("honorifics",
-              v.ArrayOf(
+        v.prop("country_code", v.String(v.MinLength(2),
+                                        v.MaxLength(3))),
+        v.prop("honorifics",
+               v.ArrayOf(
                   v.String(
                       v.RegexValidator(
                           re.compile(r"[A-Z][a-z]+\.]"))),
                   v.unique_items,
                   v.MaxItems(3),
               )
-              ),
+               ),
         into=Person
     )
 
@@ -122,8 +122,8 @@ def test_cities() -> None:
     validate_cities = v.MapOf(
         v.String(),
         v.Obj2(
-            v.key("population", v.Nullable(v.Integer(v.Minimum(0)))),
-            v.key("state", v.String(v.Enum(state_choices))),
+            v.prop("population", v.Nullable(v.Integer(v.Minimum(0)))),
+            v.prop("state", v.String(v.Enum(state_choices))),
             into=CityInfo
         ),
         v.MaxProperties(3),
@@ -136,7 +136,7 @@ def test_cities() -> None:
                      "state": "CA"},
          "San Francisco": {"population": None,
                            "state": "CA"}}
-    ) == Success({
+    ) == Ok({
         "Oakland": CityInfo(Just(450000), "CA"),
         "San Francisco": CityInfo(Nothing, "CA")
     })
@@ -175,14 +175,14 @@ def test_auth_creds() -> None:
         password: str
 
     username_creds_validator = v.Obj2(
-        v.key("username", v.String(v.not_blank)),
-        v.key("password", v.String(v.not_blank)),
+        v.prop("username", v.String(v.not_blank)),
+        v.prop("password", v.String(v.not_blank)),
         into=UsernameCreds
     )
 
     email_creds_validator = v.Obj2(
-        v.key("email", v.String(v.Email())),
-        v.key("password", v.String(v.not_blank)),
+        v.prop("email", v.String(v.Email())),
+        v.prop("password", v.String(v.not_blank)),
         into=EmailCreds
     )
 
@@ -193,10 +193,10 @@ def test_auth_creds() -> None:
 
     # sanity check
     assert validator_one_of_2({"username": "a", "password": "b"}) == \
-           Success(First(UsernameCreds("a", "b")))
+           Ok(First(UsernameCreds("a", "b")))
 
     assert validator_one_of_2({"email": "a@example.com", "password": "b"}) == \
-           Success(Second(EmailCreds("a@example.com", "b")))
+           Ok(Second(EmailCreds("a@example.com", "b")))
 
     assert generate_schema("AuthCreds", validator_one_of_2) == {
         "AuthCreds": {
@@ -238,14 +238,14 @@ def test_auth_creds() -> None:
     validator_one_of_3 = v.OneOf3(
         username_creds_validator,
         email_creds_validator,
-        v.Obj1(v.key("token", v.String(v.MinLength(32),
-                                       v.MaxLength(32))),
+        v.Obj1(v.prop("token", v.String(v.MinLength(32),
+                                        v.MaxLength(32))),
                into=Token)
     )
 
     # sanity
     assert validator_one_of_3({"token": "abcdefghijklmnopqrstuvwxyz123456"}) == \
-           Success(Third(Token("abcdefghijklmnopqrstuvwxyz123456")))
+           Ok(Third(Token("abcdefghijklmnopqrstuvwxyz123456")))
 
     assert generate_schema("AuthCreds", validator_one_of_3) == {
         "AuthCreds": {
@@ -301,8 +301,8 @@ def test_forecast() -> None:
     assert validator({
         "2021-04-06": 55.5,
         "2021-04-07": 57.9
-    }) == Success({date(2021, 4, 6): 55.5,
-                   date(2021, 4, 7): 57.9})
+    }) == Ok({date(2021, 4, 6): 55.5,
+              date(2021, 4, 7): 57.9})
 
     assert generate_schema("Forecast", validator) == {
         "Forecast": {
@@ -325,7 +325,7 @@ def test_tuples() -> None:
     )
 
     # sanity check
-    assert validator(["ok", ["", 0, False]]) == Success(
+    assert validator(["ok", ["", 0, False]]) == Ok(
         ("ok", ("", 0, False))
     )
 

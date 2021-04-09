@@ -3,9 +3,9 @@ from typing import List
 
 from koda.either import Either
 from koda.json.validation import (ArrayOf, Integer, NotBlank, Nullable, Obj2, Obj4,
-                                  OneOf2, String, key, not_blank, unwrap_jsonable)
+                                  OneOf2, String, not_blank, prop, unwrap_jsonable)
 from koda.maybe import Maybe
-from koda.result import Failure
+from koda.result import Err
 
 
 @dataclass
@@ -23,20 +23,20 @@ class School:
 
 
 person_validator = Obj2(
-    key("name", String(not_blank)),
-    key("age", Nullable(Integer())),
+    prop("name", String(not_blank)),
+    prop("age", Nullable(Integer())),
     into=Person
 )
 
 school_validator = Obj4(
-    key("name",
-        String(not_blank)),
-    key("country",
-        String(not_blank)),
-    key("principal",
-        Nullable(person_validator)),
-    key("grades",
-        ArrayOf(OneOf2(Integer(),
+    prop("name",
+         String(not_blank)),
+    prop("country",
+         String(not_blank)),
+    prop("principal",
+         Nullable(person_validator)),
+    prop("grades",
+         ArrayOf(OneOf2(Integer(),
                        String(NotBlank())))),
     into=School
 )
@@ -49,8 +49,8 @@ class House:
 
 
 house_validator = Obj2(
-    key("stories", Integer()),
-    key("lot_square_feet", Integer()),
+    prop("stories", Integer()),
+    prop("lot_square_feet", Integer()),
     into=House
 )
 
@@ -70,7 +70,7 @@ result = buildings_validator(
     ]
 )
 
-if isinstance(result, Failure):
+if isinstance(result, Err):
     print(unwrap_jsonable(result.val))
 else:
     print(result)

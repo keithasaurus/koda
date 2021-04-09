@@ -2,7 +2,7 @@ from typing import Any, Callable, List, Mapping, TypeVar
 
 from koda._cruft.general import _compose, _match
 from koda.maybe import Just, Maybe, Nothing
-from koda.result import Failure, Result, Success
+from koda.result import Err, Result, Ok
 
 A = TypeVar("A")
 B = TypeVar("B")
@@ -51,15 +51,15 @@ def maybe_to_result(
 ) -> Callable[[Maybe[A]], Result[A, FailT]]:
     def inner(orig: Maybe[A]) -> Result[A, FailT]:
         if isinstance(orig, Just):
-            return Success(orig.val)
+            return Ok(orig.val)
         else:
-            return Failure(fail_message)
+            return Err(fail_message)
 
     return inner
 
 
 def result_to_maybe(orig: Result[A, Any]) -> Maybe[A]:
-    if isinstance(orig, Success):
+    if isinstance(orig, Ok):
         return Just(orig.val)
     else:
         return Nothing
@@ -85,7 +85,7 @@ def load_once(fn: Callable[[], A]) -> Callable[[], A]:
 def safe_try(fn: Callable[[A], B]) -> Callable[[A], Result[B, Exception]]:
     def inner(val: A) -> Result[B, Exception]:
         try:
-            return Success(fn(val))
+            return Ok(fn(val))
         except Exception as e:
-            return Failure(e)
+            return Err(e)
     return inner

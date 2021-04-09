@@ -1,6 +1,6 @@
 from typing import Any
 
-from koda.result import Failure, Result
+from koda.result import Err, Result
 
 
 def assert_same_error_type_with_same_message(
@@ -10,7 +10,7 @@ def assert_same_error_type_with_same_message(
     """
     There may be a better/more concise way to compare exceptions
     """
-    assert isinstance(error_1, Failure)
-    assert isinstance(error_2, Failure)
+    assert isinstance(error_1, Err)
+    assert isinstance(error_2, Err)
     assert type(error_1.val) == type(error_2.val)  # noqa: E721
     assert error_1.val.args == error_2.val.args

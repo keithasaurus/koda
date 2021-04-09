@@ -3,7 +3,7 @@ from typing import List, Tuple, TypeVar, Union
 
 from koda import compose, load_once, match, maybe_to_result, result_to_maybe, safe_try
 from koda.maybe import Just, Nothing
-from koda.result import Failure, Result, Success
+from koda.result import Err, Result, Ok
 from tests.utils import assert_same_error_type_with_same_message
 
 A = TypeVar('A')
@@ -136,13 +136,13 @@ def test_match_4() -> None:
         (str, _prepend_a),
         (int, _int_to_str),
         (float, _float_to_int),
-        (Success, _get_result_val)
+        (Ok, _get_result_val)
     )
 
     assert matcher("s") == "as"
     assert matcher(5) == "5"
     assert matcher(5.7) == 6
-    assert matcher(Success(25)) == 25
+    assert matcher(Ok(25)) == 25
 
 
 def test_match_5() -> None:
@@ -150,15 +150,15 @@ def test_match_5() -> None:
         (str, _prepend_a),
         (int, _int_to_str),
         (float, _float_to_int),
-        (Success, _get_result_val),
-        (Failure, _get_result_val),
+        (Ok, _get_result_val),
+        (Err, _get_result_val),
     )
 
     assert matcher("s") == "as"
     assert matcher(5) == "5"
     assert matcher(5.7) == 6
-    assert matcher(Success(25)) == 25
-    assert matcher(Failure("bad")) == "bad"
+    assert matcher(Ok(25)) == 25
+    assert matcher(Err("bad")) == "bad"
 
 
 def test_maybe_to_result() -> None:
@@ -170,14 +170,14 @@ def test_maybe_to_result() -> None:
     fail_message = SomeError("it failed", ["a", "b"])
     fn = maybe_to_result(fail_message)
 
-    assert fn(Just(5)) == Success(5)
+    assert fn(Just(5)) == Ok(5)
 
-    assert fn(Nothing) == Failure(fail_message)
+    assert fn(Nothing) == Err(fail_message)
 
 
 def test_result_to_maybe() -> None:
-    assert result_to_maybe(Success(3)) == Just(3)
-    assert result_to_maybe(Failure("something")) == Nothing
+    assert result_to_maybe(Ok(3)) == Just(3)
+    assert result_to_maybe(Err("something")) == Nothing
 
 
 def test_load_once() -> None:
@@ -196,11 +196,11 @@ def test_load_once() -> None:
 
 
 def test_safe_try() -> None:
-    assert safe_try(int)(5) == Success(5)
-    assert safe_try(int)(5.0) == Success(5)
+    assert safe_try(int)(5) == Ok(5)
+    assert safe_try(int)(5.0) == Ok(5)
     assert_same_error_type_with_same_message(
         safe_try(int)("abc"),
-        Failure(ValueError("invalid literal for int() with base 10: 'abc'"))
+        Err(ValueError("invalid literal for int() with base 10: 'abc'"))
     )
 
     def fail_if_5(val: int) -> int:
@@ -211,5 +211,5 @@ def test_safe_try() -> None:
 
     assert_same_error_type_with_same_message(
         safe_try(fail_if_5)(5),
-        Failure(Exception("failed"))
+        Err(Exception("failed"))
     )

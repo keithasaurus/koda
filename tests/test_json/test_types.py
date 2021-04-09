@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 
-from koda.result import Failure, Success
+from koda.result import Err, Ok
 from koda.validation import validate_and_map
 
 
@@ -10,12 +10,12 @@ def test_map_1() -> None:
         return f"valid {s}"
 
     assert validate_and_map(
-        Failure("just returns failure"),
-        string_thing, ) == Failure(('just returns failure',))
+        Err("just returns failure"),
+        string_thing, ) == Err(('just returns failure',))
 
     assert validate_and_map(
-        Success("hooray"),
-        string_thing) == Success('valid hooray')
+        Ok("hooray"),
+        string_thing) == Ok('valid hooray')
 
 
 def test_map_2() -> None:
@@ -25,19 +25,19 @@ def test_map_2() -> None:
         age: int
 
     assert validate_and_map(
-        Failure('invalid name'),
-        Failure("invalid age"),
-        Person2) == Failure(('invalid name', 'invalid age'))
+        Err('invalid name'),
+        Err("invalid age"),
+        Person2) == Err(('invalid name', 'invalid age'))
 
     assert validate_and_map(
-        Success('Bob'),
-        Failure("invalid age"),
-        Person2) == Failure(('invalid age',))
+        Ok('Bob'),
+        Err("invalid age"),
+        Person2) == Err(('invalid age',))
 
     assert validate_and_map(
-        Success("Bob"),
-        Success(25),
-        Person2) == Success(Person2(name='Bob', age=25))
+        Ok("Bob"),
+        Ok(25),
+        Person2) == Ok(Person2(name='Bob', age=25))
 
 
 def test_map_3() -> None:
@@ -48,31 +48,31 @@ def test_map_3() -> None:
         age: int
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Failure("invalid last name"),
-        Failure("invalid age"),
-        Person) == Failure(
+        Err("invalid first name"),
+        Err("invalid last name"),
+        Err("invalid age"),
+        Person) == Err(
         ('invalid first name', 'invalid last name', 'invalid age'))
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Failure("invalid last name"),
-        Success(25),
-        Person) == Failure(('invalid first name', 'invalid last name'))
+        Err("invalid first name"),
+        Err("invalid last name"),
+        Ok(25),
+        Person) == Err(('invalid first name', 'invalid last name'))
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Success("Smith"),
-        Success(25),
-        Person) == Failure(('invalid first name',))
+        Err("invalid first name"),
+        Ok("Smith"),
+        Ok(25),
+        Person) == Err(('invalid first name',))
 
     assert validate_and_map(
-        Success("John"),
-        Success("Doe"),
-        Success(25),
-        Person) == Success(Person(first_name='John',
-                                  last_name='Doe',
-                                  age=25))
+        Ok("John"),
+        Ok("Doe"),
+        Ok(25),
+        Person) == Ok(Person(first_name='John',
+                             last_name='Doe',
+                             age=25))
 
 
 def test_map_4() -> None:
@@ -84,39 +84,39 @@ def test_map_4() -> None:
         eye_color: str
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Failure("invalid last name"),
-        Failure("invalid age"),
-        Failure("invalid eye color"),
-        Person) == Failure(('invalid first name',
+        Err("invalid first name"),
+        Err("invalid last name"),
+        Err("invalid age"),
+        Err("invalid eye color"),
+        Person) == Err(('invalid first name',
                             'invalid last name',
                             'invalid age',
                             'invalid eye color'))
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Failure("invalid last name"),
-        Success(25),
-        Failure("invalid eye color"),
-        Person) == Failure(
+        Err("invalid first name"),
+        Err("invalid last name"),
+        Ok(25),
+        Err("invalid eye color"),
+        Person) == Err(
         ('invalid first name', 'invalid last name', 'invalid eye color'))
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Success("Smith"),
-        Success(25),
-        Failure("invalid eye color"),
-        Person) == Failure(('invalid first name', 'invalid eye color'))
+        Err("invalid first name"),
+        Ok("Smith"),
+        Ok(25),
+        Err("invalid eye color"),
+        Person) == Err(('invalid first name', 'invalid eye color'))
 
     assert validate_and_map(
-        Success("John"),
-        Success("Doe"),
-        Success(25),
-        Success("brown"),
-        Person) == Success(Person(first_name='John',
-                                  last_name='Doe',
-                                  age=25,
-                                  eye_color='brown'))
+        Ok("John"),
+        Ok("Doe"),
+        Ok(25),
+        Ok("brown"),
+        Person) == Ok(Person(first_name='John',
+                             last_name='Doe',
+                             age=25,
+                             eye_color='brown'))
 
 
 def test_map_5() -> None:
@@ -129,47 +129,47 @@ def test_map_5() -> None:
         can_fly: bool
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Failure("invalid last name"),
-        Failure("invalid age"),
-        Failure("invalid eye color"),
-        Failure("invalid -- people can't fly"),
-        Person) == Failure(('invalid first name',
+        Err("invalid first name"),
+        Err("invalid last name"),
+        Err("invalid age"),
+        Err("invalid eye color"),
+        Err("invalid -- people can't fly"),
+        Person) == Err(('invalid first name',
                             'invalid last name',
                             'invalid age',
                             'invalid eye color',
                             "invalid -- people can't fly"))
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Failure("invalid last name"),
-        Success(25),
-        Failure("invalid eye color"),
-        Success(False),
-        Person) == Failure(
+        Err("invalid first name"),
+        Err("invalid last name"),
+        Ok(25),
+        Err("invalid eye color"),
+        Ok(False),
+        Person) == Err(
         ('invalid first name',
          'invalid last name',
          'invalid eye color'))
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Success("Smith"),
-        Success(25),
-        Failure("invalid eye color"),
-        Success(False),
-        Person) == Failure(('invalid first name', 'invalid eye color'))
+        Err("invalid first name"),
+        Ok("Smith"),
+        Ok(25),
+        Err("invalid eye color"),
+        Ok(False),
+        Person) == Err(('invalid first name', 'invalid eye color'))
 
     assert validate_and_map(
-        Success("John"),
-        Success("Doe"),
-        Success(25),
-        Success("brown"),
-        Success(False),
-        Person) == Success(Person(first_name='John',
-                                  last_name='Doe',
-                                  age=25,
-                                  eye_color='brown',
-                                  can_fly=False))
+        Ok("John"),
+        Ok("Doe"),
+        Ok(25),
+        Ok("brown"),
+        Ok(False),
+        Person) == Ok(Person(first_name='John',
+                             last_name='Doe',
+                             age=25,
+                             eye_color='brown',
+                             can_fly=False))
 
 
 def test_map_6() -> None:
@@ -188,13 +188,13 @@ def test_map_6() -> None:
         swimming_level: SwimmingLevel
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Failure("invalid last name"),
-        Failure("invalid age"),
-        Failure("invalid eye color"),
-        Failure("invalid -- people can't fly"),
-        Failure("invalid -- beginners not allowed"),
-        Person) == Failure(('invalid first name',
+        Err("invalid first name"),
+        Err("invalid last name"),
+        Err("invalid age"),
+        Err("invalid eye color"),
+        Err("invalid -- people can't fly"),
+        Err("invalid -- beginners not allowed"),
+        Person) == Err(('invalid first name',
                             'invalid last name',
                             'invalid age',
                             'invalid eye color',
@@ -202,37 +202,37 @@ def test_map_6() -> None:
                             "invalid -- beginners not allowed"))
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Failure("invalid last name"),
-        Success(25),
-        Failure("invalid eye color"),
-        Success(False),
-        Success(SwimmingLevel.ADVANCED),
-        Person) == Failure(
+        Err("invalid first name"),
+        Err("invalid last name"),
+        Ok(25),
+        Err("invalid eye color"),
+        Ok(False),
+        Ok(SwimmingLevel.ADVANCED),
+        Person) == Err(
         ('invalid first name', 'invalid last name', 'invalid eye color'))
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Success("Smith"),
-        Success(25),
-        Failure("invalid eye color"),
-        Success(False),
-        Success(SwimmingLevel.ADVANCED),
-        Person) == Failure(('invalid first name', 'invalid eye color'))
+        Err("invalid first name"),
+        Ok("Smith"),
+        Ok(25),
+        Err("invalid eye color"),
+        Ok(False),
+        Ok(SwimmingLevel.ADVANCED),
+        Person) == Err(('invalid first name', 'invalid eye color'))
 
     assert validate_and_map(
-        Success("John"),
-        Success("Doe"),
-        Success(25),
-        Success("brown"),
-        Success(False),
-        Success(SwimmingLevel.ADVANCED),
-        Person) == Success(Person(first_name='John',
-                                  last_name='Doe',
-                                  age=25,
-                                  eye_color='brown',
-                                  can_fly=False,
-                                  swimming_level=SwimmingLevel.ADVANCED))
+        Ok("John"),
+        Ok("Doe"),
+        Ok(25),
+        Ok("brown"),
+        Ok(False),
+        Ok(SwimmingLevel.ADVANCED),
+        Person) == Ok(Person(first_name='John',
+                             last_name='Doe',
+                             age=25,
+                             eye_color='brown',
+                             can_fly=False,
+                             swimming_level=SwimmingLevel.ADVANCED))
 
 
 def test_map_7() -> None:
@@ -252,14 +252,14 @@ def test_map_7() -> None:
         number_of_fingers: float
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Failure("invalid last name"),
-        Failure("invalid age"),
-        Failure("invalid eye color"),
-        Failure("invalid -- people can't fly"),
-        Failure("invalid -- beginners not allowed"),
-        Failure("invalid number of fingers"),
-        Person) == Failure(('invalid first name',
+        Err("invalid first name"),
+        Err("invalid last name"),
+        Err("invalid age"),
+        Err("invalid eye color"),
+        Err("invalid -- people can't fly"),
+        Err("invalid -- beginners not allowed"),
+        Err("invalid number of fingers"),
+        Person) == Err(('invalid first name',
                             'invalid last name',
                             'invalid age',
                             'invalid eye color',
@@ -268,41 +268,41 @@ def test_map_7() -> None:
                             "invalid number of fingers"))
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Failure("invalid last name"),
-        Success(25),
-        Failure("invalid eye color"),
-        Success(False),
-        Success(SwimmingLevel.ADVANCED),
-        Success(9.5),
-        Person) == Failure(
+        Err("invalid first name"),
+        Err("invalid last name"),
+        Ok(25),
+        Err("invalid eye color"),
+        Ok(False),
+        Ok(SwimmingLevel.ADVANCED),
+        Ok(9.5),
+        Person) == Err(
         ('invalid first name', 'invalid last name', 'invalid eye color'))
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Success("Smith"),
-        Success(25),
-        Failure("invalid eye color"),
-        Success(False),
-        Success(SwimmingLevel.ADVANCED),
-        Success(9.5),
-        Person) == Failure(('invalid first name', 'invalid eye color'))
+        Err("invalid first name"),
+        Ok("Smith"),
+        Ok(25),
+        Err("invalid eye color"),
+        Ok(False),
+        Ok(SwimmingLevel.ADVANCED),
+        Ok(9.5),
+        Person) == Err(('invalid first name', 'invalid eye color'))
 
     assert validate_and_map(
-        Success("John"),
-        Success("Doe"),
-        Success(25),
-        Success("brown"),
-        Success(False),
-        Success(SwimmingLevel.ADVANCED),
-        Success(9.5),
-        Person) == Success(Person(first_name='John',
-                                  last_name='Doe',
-                                  age=25,
-                                  eye_color='brown',
-                                  can_fly=False,
-                                  swimming_level=SwimmingLevel.ADVANCED,
-                                  number_of_fingers=9.5))
+        Ok("John"),
+        Ok("Doe"),
+        Ok(25),
+        Ok("brown"),
+        Ok(False),
+        Ok(SwimmingLevel.ADVANCED),
+        Ok(9.5),
+        Person) == Ok(Person(first_name='John',
+                             last_name='Doe',
+                             age=25,
+                             eye_color='brown',
+                             can_fly=False,
+                             swimming_level=SwimmingLevel.ADVANCED,
+                             number_of_fingers=9.5))
 
 
 def test_map_8() -> None:
@@ -323,15 +323,15 @@ def test_map_8() -> None:
         number_of_toes: float
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Failure("invalid last name"),
-        Failure("invalid age"),
-        Failure("invalid eye color"),
-        Failure("invalid -- people can't fly"),
-        Failure("invalid -- beginners not allowed"),
-        Failure("invalid number of fingers"),
-        Failure("invalid number of toes"),
-        Person) == Failure(('invalid first name',
+        Err("invalid first name"),
+        Err("invalid last name"),
+        Err("invalid age"),
+        Err("invalid eye color"),
+        Err("invalid -- people can't fly"),
+        Err("invalid -- beginners not allowed"),
+        Err("invalid number of fingers"),
+        Err("invalid number of toes"),
+        Person) == Err(('invalid first name',
                             'invalid last name',
                             'invalid age',
                             'invalid eye color',
@@ -341,47 +341,47 @@ def test_map_8() -> None:
                             "invalid number of toes"))
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Failure("invalid last name"),
-        Success(25),
-        Failure("invalid eye color"),
-        Success(False),
-        Success(SwimmingLevel.ADVANCED),
-        Success(9.5),
-        Success(3.1),
-        Person) == Failure(
+        Err("invalid first name"),
+        Err("invalid last name"),
+        Ok(25),
+        Err("invalid eye color"),
+        Ok(False),
+        Ok(SwimmingLevel.ADVANCED),
+        Ok(9.5),
+        Ok(3.1),
+        Person) == Err(
         ('invalid first name', 'invalid last name', 'invalid eye color'))
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Success("Smith"),
-        Success(25),
-        Failure("invalid eye color"),
-        Success(False),
-        Success(SwimmingLevel.ADVANCED),
-        Success(9.5),
-        Success(3.1),
+        Err("invalid first name"),
+        Ok("Smith"),
+        Ok(25),
+        Err("invalid eye color"),
+        Ok(False),
+        Ok(SwimmingLevel.ADVANCED),
+        Ok(9.5),
+        Ok(3.1),
         Person
-    ) == Failure(('invalid first name', 'invalid eye color'))
+    ) == Err(('invalid first name', 'invalid eye color'))
 
     assert validate_and_map(
-        Success("John"),
-        Success("Doe"),
-        Success(25),
-        Success("brown"),
-        Success(False),
-        Success(SwimmingLevel.ADVANCED),
-        Success(9.5),
-        Success(3.1),
+        Ok("John"),
+        Ok("Doe"),
+        Ok(25),
+        Ok("brown"),
+        Ok(False),
+        Ok(SwimmingLevel.ADVANCED),
+        Ok(9.5),
+        Ok(3.1),
         Person
-    ) == Success(Person(first_name='John',
-                        last_name='Doe',
-                        age=25,
-                        eye_color='brown',
-                        can_fly=False,
-                        swimming_level=SwimmingLevel.ADVANCED,
-                        number_of_fingers=9.5,
-                        number_of_toes=3.1))
+    ) == Ok(Person(first_name='John',
+                   last_name='Doe',
+                   age=25,
+                   eye_color='brown',
+                   can_fly=False,
+                   swimming_level=SwimmingLevel.ADVANCED,
+                   number_of_fingers=9.5,
+                   number_of_toes=3.1))
 
 
 def test_map_9() -> None:
@@ -403,16 +403,16 @@ def test_map_9() -> None:
         country: str
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Failure("invalid last name"),
-        Failure("invalid age"),
-        Failure("invalid eye color"),
-        Failure("invalid -- people can't fly"),
-        Failure("invalid -- beginners not allowed"),
-        Failure("invalid number of fingers"),
-        Failure("invalid number of toes"),
-        Failure("invalid country"),
-        Person) == Failure(('invalid first name',
+        Err("invalid first name"),
+        Err("invalid last name"),
+        Err("invalid age"),
+        Err("invalid eye color"),
+        Err("invalid -- people can't fly"),
+        Err("invalid -- beginners not allowed"),
+        Err("invalid number of fingers"),
+        Err("invalid number of toes"),
+        Err("invalid country"),
+        Person) == Err(('invalid first name',
                             'invalid last name',
                             'invalid age',
                             'invalid eye color',
@@ -423,51 +423,51 @@ def test_map_9() -> None:
                             "invalid country"))
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Failure("invalid last name"),
-        Success(25),
-        Failure("invalid eye color"),
-        Success(False),
-        Success(SwimmingLevel.ADVANCED),
-        Success(9.5),
-        Success(3.1),
-        Success("USA"),
-        Person) == Failure(
+        Err("invalid first name"),
+        Err("invalid last name"),
+        Ok(25),
+        Err("invalid eye color"),
+        Ok(False),
+        Ok(SwimmingLevel.ADVANCED),
+        Ok(9.5),
+        Ok(3.1),
+        Ok("USA"),
+        Person) == Err(
         ('invalid first name', 'invalid last name', 'invalid eye color'))
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Success("smith"),
-        Success(25),
-        Failure("invalid eye color"),
-        Success(False),
-        Success(SwimmingLevel.ADVANCED),
-        Success(9.5),
-        Success(3.1),
-        Success("USA"),
-        Person) == Failure(
+        Err("invalid first name"),
+        Ok("smith"),
+        Ok(25),
+        Err("invalid eye color"),
+        Ok(False),
+        Ok(SwimmingLevel.ADVANCED),
+        Ok(9.5),
+        Ok(3.1),
+        Ok("USA"),
+        Person) == Err(
         ('invalid first name', 'invalid eye color'))
 
     assert validate_and_map(
-        Success("John"),
-        Success("Doe"),
-        Success(25),
-        Success("brown"),
-        Success(False),
-        Success(SwimmingLevel.ADVANCED),
-        Success(9.5),
-        Success(3.1),
-        Success("USA"),
+        Ok("John"),
+        Ok("Doe"),
+        Ok(25),
+        Ok("brown"),
+        Ok(False),
+        Ok(SwimmingLevel.ADVANCED),
+        Ok(9.5),
+        Ok(3.1),
+        Ok("USA"),
         Person
-    ) == Success(Person(first_name='John',
-                        last_name='Doe',
-                        age=25,
-                        eye_color='brown',
-                        can_fly=False,
-                        swimming_level=SwimmingLevel.ADVANCED,
-                        number_of_fingers=9.5,
-                        number_of_toes=3.1,
-                        country="USA"))
+    ) == Ok(Person(first_name='John',
+                   last_name='Doe',
+                   age=25,
+                   eye_color='brown',
+                   can_fly=False,
+                   swimming_level=SwimmingLevel.ADVANCED,
+                   number_of_fingers=9.5,
+                   number_of_toes=3.1,
+                   country="USA"))
 
 
 def test_map_10() -> None:
@@ -490,17 +490,17 @@ def test_map_10() -> None:
         region: str
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Failure("invalid last name"),
-        Failure("invalid age"),
-        Failure("invalid eye color"),
-        Failure("invalid -- people can't fly"),
-        Failure("invalid -- beginners not allowed"),
-        Failure("invalid number of fingers"),
-        Failure("invalid number of toes"),
-        Failure("invalid country"),
-        Failure("invalid region"),
-        Person) == Failure(('invalid first name',
+        Err("invalid first name"),
+        Err("invalid last name"),
+        Err("invalid age"),
+        Err("invalid eye color"),
+        Err("invalid -- people can't fly"),
+        Err("invalid -- beginners not allowed"),
+        Err("invalid number of fingers"),
+        Err("invalid number of toes"),
+        Err("invalid country"),
+        Err("invalid region"),
+        Person) == Err(('invalid first name',
                             'invalid last name',
                             'invalid age',
                             'invalid eye color',
@@ -512,52 +512,52 @@ def test_map_10() -> None:
                             "invalid region"))
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Failure("invalid last name"),
-        Success(25),
-        Failure("invalid eye color"),
-        Success(False),
-        Success(SwimmingLevel.ADVANCED),
-        Success(9.5),
-        Success(3.1),
-        Success("USA"),
-        Success("California"),
-        Person) == Failure(
+        Err("invalid first name"),
+        Err("invalid last name"),
+        Ok(25),
+        Err("invalid eye color"),
+        Ok(False),
+        Ok(SwimmingLevel.ADVANCED),
+        Ok(9.5),
+        Ok(3.1),
+        Ok("USA"),
+        Ok("California"),
+        Person) == Err(
         ('invalid first name', 'invalid last name', 'invalid eye color'))
 
     assert validate_and_map(
-        Failure("invalid first name"),
-        Success("smith"),
-        Success(25),
-        Failure("invalid eye color"),
-        Success(False),
-        Success(SwimmingLevel.ADVANCED),
-        Success(9.5),
-        Success(3.1),
-        Success("USA"),
-        Success("California"),
-        Person) == Failure(
+        Err("invalid first name"),
+        Ok("smith"),
+        Ok(25),
+        Err("invalid eye color"),
+        Ok(False),
+        Ok(SwimmingLevel.ADVANCED),
+        Ok(9.5),
+        Ok(3.1),
+        Ok("USA"),
+        Ok("California"),
+        Person) == Err(
         ('invalid first name', 'invalid eye color'))
 
     assert validate_and_map(
-        Success("John"),
-        Success("Doe"),
-        Success(25),
-        Success("brown"),
-        Success(False),
-        Success(SwimmingLevel.ADVANCED),
-        Success(9.5),
-        Success(3.1),
-        Success("USA"),
-        Success("California"),
+        Ok("John"),
+        Ok("Doe"),
+        Ok(25),
+        Ok("brown"),
+        Ok(False),
+        Ok(SwimmingLevel.ADVANCED),
+        Ok(9.5),
+        Ok(3.1),
+        Ok("USA"),
+        Ok("California"),
         Person
-    ) == Success(Person(first_name='John',
-                        last_name='Doe',
-                        age=25,
-                        eye_color='brown',
-                        can_fly=False,
-                        swimming_level=SwimmingLevel.ADVANCED,
-                        number_of_fingers=9.5,
-                        number_of_toes=3.1,
-                        country="USA",
-                        region="California"))
+    ) == Ok(Person(first_name='John',
+                   last_name='Doe',
+                   age=25,
+                   eye_color='brown',
+                   can_fly=False,
+                   swimming_level=SwimmingLevel.ADVANCED,
+                   number_of_fingers=9.5,
+                   number_of_toes=3.1,
+                   country="USA",
+                   region="California"))

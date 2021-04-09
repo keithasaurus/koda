@@ -1,7 +1,7 @@
 from json import dumps, loads
 from typing import Any, AnyStr, Dict, List, Tuple, TypeVar, Union
 
-from koda.result import Failure, Result, Success
+from koda.result import Err, Result, Ok
 
 A = TypeVar('A')
 
@@ -28,17 +28,17 @@ Json = JsonSerializable
 
 def str_to_json(json_str: AnyStr) -> Result[Json, Exception]:
     try:
-        return Success(loads(json_str))
+        return Ok(loads(json_str))
     except Exception as exc:
-        return Failure(exc)
+        return Err(exc)
 
 
 def str_to_json_deserialized_type(json_str: AnyStr
                                   ) -> Result[JsonDeserialized, Exception]:
     try:
-        return Success(loads(json_str))
+        return Ok(loads(json_str))
     except Exception as exc:
-        return Failure(exc)
+        return Err(exc)
 
 
 def json_to_str(jsonable_obj: Json) -> str:
