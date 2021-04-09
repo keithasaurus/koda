@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "pyfp"
+version = "0.1.0"
+description = ""
+authors = ["Keith Philpott"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+coverage = "~5.5"
+mypy = "~0.812"
+flake8 = "~3.9.0"
+flake8-isort = "~4.0.0"
+pytest = "~6.2.3"
+pytest-cov = "~2.11.1"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
