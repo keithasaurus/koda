@@ -39,18 +39,17 @@ We can now send in data to the validator and get appropriate responses.
 ```python
 from koda.result import Ok
 
-result_1 = person_validator({"name": "bob", "age": 25})
-assert result_1 == Ok(Person("bob", 25))
+assert person_validator({"name": "bob", "age": 25}) == Ok(Person("bob", 25))
 ```
-Great, a valid example gives us a person! Note that it's wrapped in a `Ok` object. 
+Great, a valid example gives us a `Person`! Note that it's wrapped in an `Ok` object. 
 This explicitly tells us the result was successful. Let's see what happens if it fails.
 
 ```python
 bad_age_result = person_validator({"name": "bob", "age": -100})
 assert bad_age_result == v.err({"age": ["minimum allowed value is 0"]})
 ```
-In the case of failures, we return a `Err` object. note that `err` here is a 
-simple helper function that allows for easier reading in most cases. To demonstrate why,
+In the case of invalid data, we return a `Err` object. note that `err` here is a 
+simple helper function that allows for easier reading. To demonstrate why,
 the  actual value looks like this:
 
 ```python
