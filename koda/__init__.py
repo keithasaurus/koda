@@ -65,6 +65,13 @@ def result_to_maybe(orig: Result[A, Any]) -> Maybe[A]:
         return Nothing
 
 
+def thunkify(obj: A) -> Callable[[], A]:
+    def inner() -> A:
+        return obj
+
+    return inner
+
+
 def load_once(fn: Callable[[], A]) -> Callable[[], A]:
     """
     Lazily get some value
