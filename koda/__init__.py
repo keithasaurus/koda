@@ -17,13 +17,13 @@ I = TypeVar("I")
 FailT = TypeVar("FailT")
 
 __all__ = (
-    'compose',
-    'get_mapping_val',
-    'identity',
-    'match',
-    'load_once',
-    'maybe_to_result',
-    'result_to_maybe',
+    "compose",
+    "get_mapping_val",
+    "identity",
+    "match",
+    "load_once",
+    "maybe_to_result",
+    "result_to_maybe",
 )
 
 compose = _compose
@@ -36,7 +36,9 @@ def identity(x: A) -> A:
 
 
 def get_mapping_val(key: A) -> Callable[[Mapping[A, B]], Maybe[B]]:
-    def inner(data: Mapping[A, B], ) -> Maybe[B]:
+    def inner(
+        data: Mapping[A, B],
+    ) -> Maybe[B]:
         # this is better than data.get(...) because None could be a valid vale
         try:
             return Just(data[key])
@@ -46,9 +48,7 @@ def get_mapping_val(key: A) -> Callable[[Mapping[A, B]], Maybe[B]]:
     return inner
 
 
-def maybe_to_result(
-        fail_message: FailT
-) -> Callable[[Maybe[A]], Result[A, FailT]]:
+def maybe_to_result(fail_message: FailT) -> Callable[[Maybe[A]], Result[A, FailT]]:
     def inner(orig: Maybe[A]) -> Result[A, FailT]:
         if isinstance(orig, Just):
             return Ok(orig.val)
@@ -88,4 +88,5 @@ def safe_try(fn: Callable[[A], B]) -> Callable[[A], Result[B, Exception]]:
             return Ok(fn(val))
         except Exception as e:
             return Err(e)
+
     return inner

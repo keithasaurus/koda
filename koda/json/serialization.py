@@ -3,7 +3,7 @@ from typing import Any, AnyStr, Dict, List, Tuple, TypeVar, Union
 
 from koda.result import Err, Result, Ok
 
-A = TypeVar('A')
+A = TypeVar("A")
 
 _Scalar = Union[str, int, float, bool, None]
 
@@ -33,8 +33,9 @@ def str_to_json(json_str: AnyStr) -> Result[Json, Exception]:
         return Err(exc)
 
 
-def str_to_json_deserialized_type(json_str: AnyStr
-                                  ) -> Result[JsonDeserialized, Exception]:
+def str_to_json_deserialized_type(
+    json_str: AnyStr,
+) -> Result[JsonDeserialized, Exception]:
     try:
         return Ok(loads(json_str))
     except Exception as exc:

@@ -4,8 +4,7 @@ from koda.result import Err, Result
 
 
 def assert_same_error_type_with_same_message(
-        error_1: Result[Any, Exception],
-        error_2: Result[Any, Exception]
+    error_1: Result[Any, Exception], error_2: Result[Any, Exception]
 ) -> None:
     """
     There may be a better/more concise way to compare exceptions

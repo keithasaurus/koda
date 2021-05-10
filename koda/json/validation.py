@@ -4,8 +4,23 @@ import re
 from dataclasses import dataclass
 from datetime import date
 from json import loads
-from typing import (Any, AnyStr, Callable, Dict, Final, Generic, Iterable, List, Optional,
-                    Pattern, Set, Tuple, Type, TypeVar, Union)
+from typing import (
+    Any,
+    AnyStr,
+    Callable,
+    Dict,
+    Final,
+    Generic,
+    Iterable,
+    List,
+    Optional,
+    Pattern,
+    Set,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
 
 from koda import compose, get_mapping_val, safe_try
 from koda._cruft.utils import _flat_map_same_type_if_not_none
@@ -15,8 +30,12 @@ from koda.json.utils import expected
 from koda.maybe import Just, Maybe, Nothing, NothingType
 from koda.result import Err, Result, Ok
 from koda.tuple import typed_tuple
-from koda.validation import (PredicateValidator, TransformableValidator, Validator,
-                             validate_and_map)
+from koda.validation import (
+    PredicateValidator,
+    TransformableValidator,
+    Validator,
+    validate_and_map,
+)
 
 A = TypeVar("A")
 B = TypeVar("B")
@@ -46,24 +65,25 @@ class Jsonable:
     a lack of recursive types (currently), as well as some issues working
     with unions, we are currently defining a Jsonable type.
     """
+
     val: Union[
         str,
         int,
         float,
         bool,
         None,
-        Tuple['Jsonable', ...],
-        List['Jsonable'],
-        Dict[str, 'Jsonable']
+        Tuple["Jsonable", ...],
+        List["Jsonable"],
+        Dict[str, "Jsonable"],
     ]
 
 
 TransformableJsonValidator = Validator[A, B, Jsonable]
 
 
-def accum_errors(val: A,
-                 validators: Iterable[PredicateValidator[A, FailT]]
-                 ) -> Result[A, List[FailT]]:
+def accum_errors(
+    val: A, validators: Iterable[PredicateValidator[A, FailT]]
+) -> Result[A, List[FailT]]:
     errors: List[FailT] = []
     result: Result[A, FailT] = Ok(val)
     for validator in validators:
@@ -229,7 +249,9 @@ class RegexValidator(PredicateValidator[str, Jsonable]):
 
 @dataclass(frozen=True)
 class Email(PredicateValidator[str, Jsonable]):
-    pattern: Pattern[str] = re.compile('[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+')
+    pattern: Pattern[str] = re.compile(
+        "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+"
+    )
 
     def is_valid(self, val: str) -> bool:
         return re.match(self.pattern, val) is not None
@@ -281,16 +303,12 @@ class Date(TransformableValidator[Any, date, Jsonable]):
                     return fail_msg
                 safe_int_try = safe_try(int)
                 result = validate_and_map(
-                    safe_int_try(year),
-                    safe_int_try(month),
-                    safe_int_try(day),
-                    date
+                    safe_int_try(year), safe_int_try(month), safe_int_try(day), date
                 )
                 if isinstance(result, Err):
                     return fail_msg
                 else:
-                    return accum_errors(result.val,
-                                        self.validators).map_err(Jsonable)
+                    return accum_errors(result.val, self.validators).map_err(Jsonable)
         else:
             return fail_msg
 
@@ -302,10 +320,12 @@ class MapOf(TransformableValidator[Any, Dict[A, B], Jsonable]):
     type (i.e. a date)
     """
 
-    def __init__(self,
-                 key_validator: TransformableValidator[Any, A, Jsonable],
-                 value_validator: TransformableValidator[Any, B, Jsonable],
-                 *dict_validators: PredicateValidator[Dict[A, B], Jsonable]) -> None:
+    def __init__(
+        self,
+        key_validator: TransformableValidator[Any, A, Jsonable],
+        value_validator: TransformableValidator[Any, B, Jsonable],
+        *dict_validators: PredicateValidator[Dict[A, B], Jsonable],
+    ) -> None:
         self.key_validator = key_validator
         self.value_validator = value_validator
         self.dict_validators = dict_validators
@@ -354,10 +374,11 @@ class MapOf(TransformableValidator[Any, Dict[A, B], Jsonable]):
 
 
 class ArrayOf(TransformableValidator[Any, List[A], Jsonable]):
-    def __init__(self,
-                 item_validator: TransformableValidator[Any, A, Jsonable],
-                 *list_validators: PredicateValidator[List[Any], Jsonable]
-                 ) -> None:
+    def __init__(
+        self,
+        item_validator: TransformableValidator[Any, A, Jsonable],
+        *list_validators: PredicateValidator[List[Any], Jsonable],
+    ) -> None:
         self.item_validator = item_validator
         self.list_validators = list_validators
 
@@ -381,7 +402,7 @@ class ArrayOf(TransformableValidator[Any, List[A], Jsonable]):
                 if isinstance(item_result, Ok):
                     return_list.append(item_result.val)
                 else:
-                    errors[f'index {i}'] = item_result.val
+                    errors[f"index {i}"] = item_result.val
 
             if len(errors) > 0:
                 return err(errors)
@@ -391,13 +412,15 @@ class ArrayOf(TransformableValidator[Any, List[A], Jsonable]):
             return err({"invalid type": [expected("an array")]})
 
 
-EnumT = TypeVar('EnumT', str, int)
+EnumT = TypeVar("EnumT", str, int)
 
 
 class Lazy(TransformableValidator[A, Ret, Jsonable]):
-    def __init__(self,
-                 validator: Callable[[], TransformableValidator[A, Ret, Jsonable]],
-                 recurrent: bool = True) -> None:
+    def __init__(
+        self,
+        validator: Callable[[], TransformableValidator[A, Ret, Jsonable]],
+        recurrent: bool = True,
+    ) -> None:
         """
         Args:
             validator: the validator we actually want to use
@@ -425,12 +448,10 @@ class Enum(PredicateValidator[EnumT, Jsonable]):
         return val in self.choices
 
     def err_message(self, val: EnumT) -> Jsonable:
-        return Jsonable(f'expected one of {sorted(self.choices)}')
+        return Jsonable(f"expected one of {sorted(self.choices)}")
 
 
-def err_list(
-        *val: str
-) -> Err[Jsonable]:
+def err_list(*val: str) -> Err[Jsonable]:
     """
     convenience function so we can write things like
     `err_list("some invalid message", "some other message")`
@@ -440,22 +461,24 @@ def err_list(
     return Err(Jsonable([Jsonable(x) for x in val]))
 
 
-def err(val: Union[
-    str,
-    int,
-    float,
-    bool,
-    None,
-    List['Jsonable'],
-    Tuple['Jsonable', ...],
-    Dict[str, 'Jsonable'],
-    # until we have recursive types, we should at least make
-    # it easy to create common types of error messages without needing to always
-    # use `Jsonable`
-    Dict[str, str],
-    Dict[str, List[str]],
-    List[str]
-]) -> Err[Jsonable]:
+def err(
+    val: Union[
+        str,
+        int,
+        float,
+        bool,
+        None,
+        List["Jsonable"],
+        Tuple["Jsonable", ...],
+        Dict[str, "Jsonable"],
+        # until we have recursive types, we should at least make
+        # it easy to create common types of error messages without needing to always
+        # use `Jsonable`
+        Dict[str, str],
+        Dict[str, List[str]],
+        List[str],
+    ]
+) -> Err[Jsonable]:
     if isinstance(val, dict):
         ret: Dict[str, Jsonable] = {}
         for k, v in val.items():
@@ -473,10 +496,11 @@ def err(val: Union[
                 ret[k] = Jsonable(v)
         return Err(Jsonable(ret))
     elif isinstance(val, list):
-        return Err(Jsonable(
-            [item if isinstance(item, Jsonable) else Jsonable(item)
-             for item in val]
-        ))
+        return Err(
+            Jsonable(
+                [item if isinstance(item, Jsonable) else Jsonable(item) for item in val]
+            )
+        )
     else:
         return Err(Jsonable(val))
 
@@ -485,22 +509,18 @@ KeyValidator = Tuple[str, Callable[[Maybe[Any]], Result[A, Jsonable]]]
 
 
 def _validate_with_key(
-        r: KeyValidator[A],
-        data: Dict[Any, Any]
+    r: KeyValidator[A], data: Dict[Any, Any]
 ) -> Result[A, Tuple[str, Jsonable]]:
     key, fn = r
 
     def add_key(val: Jsonable) -> Tuple[str, Jsonable]:
         return key, val
 
-    return fn(
-        get_mapping_val(key)(data)
-    ).map_err(add_key)
+    return fn(get_mapping_val(key)(data)).map_err(add_key)
 
 
 class IsObject(TransformableValidator[Any, Dict[Any, Any], Jsonable]):
-    def __call__(self, val: Any
-                 ) -> Result[Dict[Any, Any], Jsonable]:
+    def __call__(self, val: Any) -> Result[Dict[Any, Any], Jsonable]:
         if isinstance(val, dict):
             return Ok(val)
         else:
@@ -508,33 +528,34 @@ class IsObject(TransformableValidator[Any, Dict[Any, Any], Jsonable]):
 
 
 def _dict_without_extra_keys(
-        keys: Set[str],
-        data: Any
+    keys: Set[str], data: Any
 ) -> Result[Dict[Any, Any], Jsonable]:
     return IsObject()(data).flat_map(_has_no_extra_keys(keys))
 
 
 class OneOf2(TransformableValidator[Any, Either[A, B], Jsonable]):
-    def __init__(self,
-                 variant_one: Union[
-                     TransformableValidator[Any, A, Jsonable],
-                     Tuple[str, TransformableValidator[Any, A, Jsonable]]
-                 ],
-                 variant_two: Union[
-                     TransformableValidator[Any, B, Jsonable],
-                     Tuple[str, TransformableValidator[Any, B, Jsonable]]
-                 ]) -> None:
+    def __init__(
+        self,
+        variant_one: Union[
+            TransformableValidator[Any, A, Jsonable],
+            Tuple[str, TransformableValidator[Any, A, Jsonable]],
+        ],
+        variant_two: Union[
+            TransformableValidator[Any, B, Jsonable],
+            Tuple[str, TransformableValidator[Any, B, Jsonable]],
+        ],
+    ) -> None:
         if isinstance(variant_one, tuple):
             self.variant_one_label, self.variant_one = variant_one
         else:
             self.variant_one = variant_one
-            self.variant_one_label = 'variant 1'
+            self.variant_one_label = "variant 1"
 
         if isinstance(variant_two, tuple):
             self.variant_two_label, self.variant_two = variant_two
         else:
             self.variant_two = variant_two
-            self.variant_two_label = 'variant 2'
+            self.variant_two_label = "variant 2"
 
     def __call__(self, val: Any) -> Result[Either[A, B], Jsonable]:
         v1_result = self.variant_one(val)
@@ -547,43 +568,47 @@ class OneOf2(TransformableValidator[Any, Either[A, B], Jsonable]):
             if isinstance(v2_result, Ok):
                 return Ok(Second(v2_result.val))
             else:
-                return err({
-                    self.variant_one_label: v1_result.val,
-                    self.variant_two_label: v2_result.val
-                })
+                return err(
+                    {
+                        self.variant_one_label: v1_result.val,
+                        self.variant_two_label: v2_result.val,
+                    }
+                )
 
 
 class OneOf3(TransformableValidator[Any, Either3[A, B, C], Jsonable]):
-    def __init__(self,
-                 variant_one: Union[
-                     TransformableValidator[Any, A, Jsonable],
-                     Tuple[str, TransformableValidator[Any, A, Jsonable]]
-                 ],
-                 variant_two: Union[
-                     TransformableValidator[Any, B, Jsonable],
-                     Tuple[str, TransformableValidator[Any, B, Jsonable]]
-                 ],
-                 variant_three: Union[
-                     TransformableValidator[Any, C, Jsonable],
-                     Tuple[str, TransformableValidator[Any, C, Jsonable]]
-                 ]) -> None:
+    def __init__(
+        self,
+        variant_one: Union[
+            TransformableValidator[Any, A, Jsonable],
+            Tuple[str, TransformableValidator[Any, A, Jsonable]],
+        ],
+        variant_two: Union[
+            TransformableValidator[Any, B, Jsonable],
+            Tuple[str, TransformableValidator[Any, B, Jsonable]],
+        ],
+        variant_three: Union[
+            TransformableValidator[Any, C, Jsonable],
+            Tuple[str, TransformableValidator[Any, C, Jsonable]],
+        ],
+    ) -> None:
         if isinstance(variant_one, tuple):
             self.variant_one_label, self.variant_one = variant_one
         else:
             self.variant_one = variant_one
-            self.variant_one_label = 'variant 1'
+            self.variant_one_label = "variant 1"
 
         if isinstance(variant_two, tuple):
             self.variant_two_label, self.variant_two = variant_two
         else:
             self.variant_two = variant_two
-            self.variant_two_label = 'variant 2'
+            self.variant_two_label = "variant 2"
 
         if isinstance(variant_three, tuple):
             self.variant_three_label, self.variant_three = variant_three
         else:
             self.variant_three = variant_three
-            self.variant_three_label = 'variant 3'
+            self.variant_three_label = "variant 3"
 
     def __call__(self, val: Any) -> Result[Either3[A, B, C], Jsonable]:
         v1_result = self.variant_one(val)
@@ -599,33 +624,32 @@ class OneOf3(TransformableValidator[Any, Either3[A, B, C], Jsonable]):
                 v3_result = self.variant_three(val)
 
                 if isinstance(v3_result, Ok):
-                    return Ok(
-                        Third(v3_result.val)
-                    )
+                    return Ok(Third(v3_result.val))
                 else:
-                    return err({
-                        self.variant_one_label: v1_result.val,
-                        self.variant_two_label: v2_result.val,
-                        self.variant_three_label: v3_result.val
-                    })
+                    return err(
+                        {
+                            self.variant_one_label: v1_result.val,
+                            self.variant_two_label: v2_result.val,
+                            self.variant_three_label: v3_result.val,
+                        }
+                    )
 
 
 def _tuple_to_dict_errors(errs: Tuple[Jsonable, ...]) -> Dict[str, Jsonable]:
-    return {f"index {i}": err
-            for i, err in enumerate(errs)}
+    return {f"index {i}": err for i, err in enumerate(errs)}
 
 
 class Tuple2(TransformableValidator[Any, Tuple[A, B], Jsonable]):
     required_length: int = 2
 
-    def __init__(self,
-                 slot1_validator: Callable[[Any], Result[A, Jsonable]],
-                 slot2_validator: Callable[[Any], Result[B, Jsonable]],
-                 tuple_validator: Optional[
-                     Callable[[Tuple[A, B]],
-                              Result[Tuple[A, B], Jsonable]]
-                 ] = None
-                 ) -> None:
+    def __init__(
+        self,
+        slot1_validator: Callable[[Any], Result[A, Jsonable]],
+        slot2_validator: Callable[[Any], Result[B, Jsonable]],
+        tuple_validator: Optional[
+            Callable[[Tuple[A, B]], Result[Tuple[A, B], Jsonable]]
+        ] = None,
+    ) -> None:
         self.slot1_validator = slot1_validator
         self.slot2_validator = slot2_validator
         self.tuple_validator = tuple_validator
@@ -635,13 +659,11 @@ class Tuple2(TransformableValidator[Any, Tuple[A, B], Jsonable]):
             result: Result[Tuple[A, B], Tuple[Jsonable, ...]] = validate_and_map(
                 self.slot1_validator(data[0]),
                 self.slot2_validator(data[1]),
-                typed_tuple
+                typed_tuple,
             )
 
             if isinstance(result, Err):
-                return result.map_err(
-                    compose(_tuple_to_dict_errors, Jsonable)
-                )
+                return result.map_err(compose(_tuple_to_dict_errors, Jsonable))
             else:
                 if self.tuple_validator is None:
                     return result
@@ -656,15 +678,15 @@ class Tuple2(TransformableValidator[Any, Tuple[A, B], Jsonable]):
 class Tuple3(TransformableValidator[Any, Tuple[A, B, C], Jsonable]):
     required_length: int = 3
 
-    def __init__(self,
-                 slot1_validator: Callable[[Maybe[Any]], Result[A, Jsonable]],
-                 slot2_validator: Callable[[Maybe[Any]], Result[B, Jsonable]],
-                 slot3_validator: Callable[[Maybe[Any]], Result[C, Jsonable]],
-                 tuple_validator: Optional[
-                     Callable[[Tuple[A, B, C]],
-                              Result[Tuple[A, B, C], Jsonable]]
-                 ] = None
-                 ) -> None:
+    def __init__(
+        self,
+        slot1_validator: Callable[[Maybe[Any]], Result[A, Jsonable]],
+        slot2_validator: Callable[[Maybe[Any]], Result[B, Jsonable]],
+        slot3_validator: Callable[[Maybe[Any]], Result[C, Jsonable]],
+        tuple_validator: Optional[
+            Callable[[Tuple[A, B, C]], Result[Tuple[A, B, C], Jsonable]]
+        ] = None,
+    ) -> None:
         self.slot1_validator = slot1_validator
         self.slot2_validator = slot2_validator
         self.slot3_validator = slot3_validator
@@ -676,13 +698,11 @@ class Tuple3(TransformableValidator[Any, Tuple[A, B, C], Jsonable]):
                 self.slot1_validator(data[0]),
                 self.slot2_validator(data[1]),
                 self.slot3_validator(data[2]),
-                typed_tuple
+                typed_tuple,
             )
 
             if isinstance(result, Err):
-                return result.map_err(
-                    compose(_tuple_to_dict_errors, Jsonable)
-                )
+                return result.map_err(compose(_tuple_to_dict_errors, Jsonable))
             else:
                 if self.tuple_validator is None:
                     return result
@@ -694,14 +714,15 @@ class Tuple3(TransformableValidator[Any, Tuple[A, B, C], Jsonable]):
             )
 
 
-def _has_no_extra_keys(
-        keys: Set[str]
-) -> Validator[Dict[A, B], Dict[A, B], Jsonable]:
+def _has_no_extra_keys(keys: Set[str]) -> Validator[Dict[A, B], Dict[A, B], Jsonable]:
     def inner(mapping: Dict[A, B]) -> Result[Dict[A, B], Jsonable]:
         if len(mapping.keys() - keys) > 0:
             return err(
-                {OBJECT_ERRORS_FIELD:
-                     [f"Received unknown keys. Only expected {sorted(keys)}"]}
+                {
+                    OBJECT_ERRORS_FIELD: [
+                        f"Received unknown keys. Only expected {sorted(keys)}"
+                    ]
+                }
             )
         else:
             return Ok(mapping)
@@ -726,10 +747,7 @@ _KEY_MISSING: Final[str] = "key missing"
 
 
 class RequiredField(Generic[A]):
-    def __init__(
-            self,
-            validator: TransformableJsonValidator[Any, A]
-    ) -> None:
+    def __init__(self, validator: TransformableJsonValidator[Any, A]) -> None:
         self.validator = validator
 
     def __call__(self, maybe_val: Maybe[Any]) -> Result[A, Jsonable]:
@@ -740,16 +758,12 @@ class RequiredField(Generic[A]):
 
 
 class MaybeField(Generic[A]):
-    def __init__(
-            self,
-            validator: TransformableJsonValidator[Any, A]
-    ) -> None:
+    def __init__(self, validator: TransformableJsonValidator[Any, A]) -> None:
         self.validator = validator
 
     def __call__(self, maybe_val: Maybe[Any]) -> Result[Maybe[A], Jsonable]:
         if isinstance(maybe_val, Just):
-            result: Result[Maybe[A], Jsonable] = \
-                self.validator(maybe_val.val).map(Just)
+            result: Result[Maybe[A], Jsonable] = self.validator(maybe_val.val).map(Just)
         else:
             result = Ok(maybe_val)
         return result
@@ -770,33 +784,21 @@ def unwrap_jsonable(data: Jsonable) -> JsonSerializable:
     elif data.val is None:
         return None
     elif isinstance(data.val, list):
-        return [
-            unwrap_jsonable(item)
-            for item in data.val
-        ]
+        return [unwrap_jsonable(item) for item in data.val]
     elif isinstance(data.val, tuple):
-        return tuple(
-            unwrap_jsonable(item)
-            for item in data.val
-        )
+        return tuple(unwrap_jsonable(item) for item in data.val)
     else:
         assert isinstance(data.val, dict)
-        return {
-            k: unwrap_jsonable(val)
-            for k, val in data.val.items()
-        }
+        return {k: unwrap_jsonable(val) for k, val in data.val.items()}
 
 
 def deserialize_and_validate(
-        validator: TransformableValidator[Any, A, Jsonable],
-        data: AnyStr
+    validator: TransformableValidator[Any, A, Jsonable], data: AnyStr
 ) -> Result[A, JsonSerializable]:
     try:
         deserialized = loads(data)
     except Exception:
-        return Err(
-            {"bad data": "invalid json"}
-        )
+        return Err({"bad data": "invalid json"})
     else:
         return validator(deserialized).map_err(unwrap_jsonable)
 
@@ -806,8 +808,7 @@ class Nullable(TransformableValidator[Any, Maybe[A], Jsonable]):
     We have a value for a key, but it can be null (None)
     """
 
-    def __init__(self,
-                 validator: TransformableValidator[Any, A, Jsonable]) -> None:
+    def __init__(self, validator: TransformableValidator[Any, A, Jsonable]) -> None:
         self.validator = validator
 
     def __call__(self, val: Optional[Any]) -> Result[Maybe[A], Jsonable]:
@@ -817,7 +818,7 @@ class Nullable(TransformableValidator[Any, Maybe[A], Jsonable]):
             return self.validator(val).map(Just)
 
 
-Num = TypeVar('Num', int, float)
+Num = TypeVar("Num", int, float)
 
 
 @dataclass(frozen=True)
@@ -872,15 +873,15 @@ class NullType(TransformableValidator[Any, None, Jsonable]):
 Null = NullType()
 
 
-def prop(prop_: str,
-         validator: Callable[[Any], Result[A, Jsonable]]
-         ) -> Tuple[str, Callable[[Any], Result[A, Jsonable]]]:
+def prop(
+    prop_: str, validator: Callable[[Any], Result[A, Jsonable]]
+) -> Tuple[str, Callable[[Any], Result[A, Jsonable]]]:
     return prop_, RequiredField(validator)
 
 
-def maybe_prop(prop_: str,
-               validator: Callable[[Any], Result[A, Jsonable]]
-               ) -> Tuple[str, Callable[[Any], Result[Maybe[A], Jsonable]]]:
+def maybe_prop(
+    prop_: str, validator: Callable[[Any], Result[A, Jsonable]]
+) -> Tuple[str, Callable[[Any], Result[Maybe[A], Jsonable]]]:
     return prop_, MaybeField(validator)
 
 
@@ -888,55 +889,56 @@ def _tuples_to_jsonable_dict(data: Tuple[Tuple[str, Jsonable], ...]) -> Jsonable
     return Jsonable(dict(data))
 
 
-class Obj1(Generic[A, Ret],
-           TransformableValidator[Any, Ret, Jsonable]):
-    def __init__(self,
-                 field1: KeyValidator[A],
-                 *,
-                 into: Callable[[A], Ret],
-                 validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None
-                 ) -> None:
+class Obj1(Generic[A, Ret], TransformableValidator[Any, Ret, Jsonable]):
+    def __init__(
+        self,
+        field1: KeyValidator[A],
+        *,
+        into: Callable[[A], Ret],
+        validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None,
+    ) -> None:
         self.fields = (field1,)
         self.into = into
         self.validate_object = validate_object
 
     def __call__(self, data: Any) -> Result[Ret, Jsonable]:
         # ok, not sure why this works, but {f.key for f in self.fields} doesn't
-        result = _dict_without_extra_keys({self.fields[x][0]
-                                           for x in range(len(self.fields))},
-                                          data)
+        result = _dict_without_extra_keys(
+            {self.fields[x][0] for x in range(len(self.fields))}, data
+        )
 
         if isinstance(result, Err):
             return result
         else:
             result_1 = validate_and_map(
-                _validate_with_key(self.fields[0], result.val),
-                self.into
+                _validate_with_key(self.fields[0], result.val), self.into
             )
             return _flat_map_same_type_if_not_none(
-                self.validate_object,
-                result_1.map_err(_tuples_to_jsonable_dict))
+                self.validate_object, result_1.map_err(_tuples_to_jsonable_dict)
+            )
 
 
-class Obj2(Generic[A, B, Ret],
-           TransformableValidator[Any, Ret, Jsonable]):
-    def __init__(self,
-                 field1: KeyValidator[A],
-                 field2: KeyValidator[B],
-                 *,
-                 into: Callable[[A, B], Ret],
-                 validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None
-                 ) -> None:
-        self.fields = (field1,
-                       field2,)
+class Obj2(Generic[A, B, Ret], TransformableValidator[Any, Ret, Jsonable]):
+    def __init__(
+        self,
+        field1: KeyValidator[A],
+        field2: KeyValidator[B],
+        *,
+        into: Callable[[A, B], Ret],
+        validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None,
+    ) -> None:
+        self.fields = (
+            field1,
+            field2,
+        )
         self.into = into
         self.validate_object = validate_object
 
     def __call__(self, data: Any) -> Result[Ret, Jsonable]:
         # ok, not sure why this works, but {f.key for f in self.fields} doesn't
-        result = _dict_without_extra_keys({self.fields[x][0]
-                                           for x in range(len(self.fields))},
-                                          data)
+        result = _dict_without_extra_keys(
+            {self.fields[x][0] for x in range(len(self.fields))}, data
+        )
 
         if isinstance(result, Err):
             return result
@@ -944,34 +946,36 @@ class Obj2(Generic[A, B, Ret],
             result_1 = validate_and_map(
                 _validate_with_key(self.fields[0], result.val),
                 _validate_with_key(self.fields[1], result.val),
-                self.into
+                self.into,
             )
             return _flat_map_same_type_if_not_none(
-                self.validate_object,
-                result_1.map_err(_tuples_to_jsonable_dict))
+                self.validate_object, result_1.map_err(_tuples_to_jsonable_dict)
+            )
 
 
-class Obj3(Generic[A, B, C, Ret],
-           TransformableValidator[Any, Ret, Jsonable]):
-    def __init__(self,
-                 field1: KeyValidator[A],
-                 field2: KeyValidator[B],
-                 field3: KeyValidator[C],
-                 *,
-                 into: Callable[[A, B, C], Ret],
-                 validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None
-                 ) -> None:
-        self.fields = (field1,
-                       field2,
-                       field3,)
+class Obj3(Generic[A, B, C, Ret], TransformableValidator[Any, Ret, Jsonable]):
+    def __init__(
+        self,
+        field1: KeyValidator[A],
+        field2: KeyValidator[B],
+        field3: KeyValidator[C],
+        *,
+        into: Callable[[A, B, C], Ret],
+        validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None,
+    ) -> None:
+        self.fields = (
+            field1,
+            field2,
+            field3,
+        )
         self.into = into
         self.validate_object = validate_object
 
     def __call__(self, data: Any) -> Result[Ret, Jsonable]:
         # ok, not sure why this works, but {f.key for f in self.fields} doesn't
-        result = _dict_without_extra_keys({self.fields[x][0]
-                                           for x in range(len(self.fields))},
-                                          data)
+        result = _dict_without_extra_keys(
+            {self.fields[x][0] for x in range(len(self.fields))}, data
+        )
 
         if isinstance(result, Err):
             return result
@@ -980,36 +984,38 @@ class Obj3(Generic[A, B, C, Ret],
                 _validate_with_key(self.fields[0], result.val),
                 _validate_with_key(self.fields[1], result.val),
                 _validate_with_key(self.fields[2], result.val),
-                self.into
+                self.into,
             )
             return _flat_map_same_type_if_not_none(
-                self.validate_object,
-                result_1.map_err(_tuples_to_jsonable_dict))
+                self.validate_object, result_1.map_err(_tuples_to_jsonable_dict)
+            )
 
 
-class Obj4(Generic[A, B, C, D, Ret],
-           TransformableValidator[Any, Ret, Jsonable]):
-    def __init__(self,
-                 field1: KeyValidator[A],
-                 field2: KeyValidator[B],
-                 field3: KeyValidator[C],
-                 field4: KeyValidator[D],
-                 *,
-                 into: Callable[[A, B, C, D], Ret],
-                 validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None
-                 ) -> None:
-        self.fields = (field1,
-                       field2,
-                       field3,
-                       field4,)
+class Obj4(Generic[A, B, C, D, Ret], TransformableValidator[Any, Ret, Jsonable]):
+    def __init__(
+        self,
+        field1: KeyValidator[A],
+        field2: KeyValidator[B],
+        field3: KeyValidator[C],
+        field4: KeyValidator[D],
+        *,
+        into: Callable[[A, B, C, D], Ret],
+        validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None,
+    ) -> None:
+        self.fields = (
+            field1,
+            field2,
+            field3,
+            field4,
+        )
         self.into = into
         self.validate_object = validate_object
 
     def __call__(self, data: Any) -> Result[Ret, Jsonable]:
         # ok, not sure why this works, but {f.key for f in self.fields} doesn't
-        result = _dict_without_extra_keys({self.fields[x][0]
-                                           for x in range(len(self.fields))},
-                                          data)
+        result = _dict_without_extra_keys(
+            {self.fields[x][0] for x in range(len(self.fields))}, data
+        )
 
         if isinstance(result, Err):
             return result
@@ -1019,38 +1025,40 @@ class Obj4(Generic[A, B, C, D, Ret],
                 _validate_with_key(self.fields[1], result.val),
                 _validate_with_key(self.fields[2], result.val),
                 _validate_with_key(self.fields[3], result.val),
-                self.into
+                self.into,
             )
             return _flat_map_same_type_if_not_none(
-                self.validate_object,
-                result_1.map_err(_tuples_to_jsonable_dict))
+                self.validate_object, result_1.map_err(_tuples_to_jsonable_dict)
+            )
 
 
-class Obj5(Generic[A, B, C, D, E, Ret],
-           TransformableValidator[Any, Ret, Jsonable]):
-    def __init__(self,
-                 field1: KeyValidator[A],
-                 field2: KeyValidator[B],
-                 field3: KeyValidator[C],
-                 field4: KeyValidator[D],
-                 field5: KeyValidator[E],
-                 *,
-                 into: Callable[[A, B, C, D, E], Ret],
-                 validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None
-                 ) -> None:
-        self.fields = (field1,
-                       field2,
-                       field3,
-                       field4,
-                       field5,)
+class Obj5(Generic[A, B, C, D, E, Ret], TransformableValidator[Any, Ret, Jsonable]):
+    def __init__(
+        self,
+        field1: KeyValidator[A],
+        field2: KeyValidator[B],
+        field3: KeyValidator[C],
+        field4: KeyValidator[D],
+        field5: KeyValidator[E],
+        *,
+        into: Callable[[A, B, C, D, E], Ret],
+        validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None,
+    ) -> None:
+        self.fields = (
+            field1,
+            field2,
+            field3,
+            field4,
+            field5,
+        )
         self.into = into
         self.validate_object = validate_object
 
     def __call__(self, data: Any) -> Result[Ret, Jsonable]:
         # ok, not sure why this works, but {f.key for f in self.fields} doesn't
-        result = _dict_without_extra_keys({self.fields[x][0]
-                                           for x in range(len(self.fields))},
-                                          data)
+        result = _dict_without_extra_keys(
+            {self.fields[x][0] for x in range(len(self.fields))}, data
+        )
 
         if isinstance(result, Err):
             return result
@@ -1061,40 +1069,42 @@ class Obj5(Generic[A, B, C, D, E, Ret],
                 _validate_with_key(self.fields[2], result.val),
                 _validate_with_key(self.fields[3], result.val),
                 _validate_with_key(self.fields[4], result.val),
-                self.into
+                self.into,
             )
             return _flat_map_same_type_if_not_none(
-                self.validate_object,
-                result_1.map_err(_tuples_to_jsonable_dict))
+                self.validate_object, result_1.map_err(_tuples_to_jsonable_dict)
+            )
 
 
-class Obj6(Generic[A, B, C, D, E, F, Ret],
-           TransformableValidator[Any, Ret, Jsonable]):
-    def __init__(self,
-                 field1: KeyValidator[A],
-                 field2: KeyValidator[B],
-                 field3: KeyValidator[C],
-                 field4: KeyValidator[D],
-                 field5: KeyValidator[E],
-                 field6: KeyValidator[F],
-                 *,
-                 into: Callable[[A, B, C, D, E, F], Ret],
-                 validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None
-                 ) -> None:
-        self.fields = (field1,
-                       field2,
-                       field3,
-                       field4,
-                       field5,
-                       field6,)
+class Obj6(Generic[A, B, C, D, E, F, Ret], TransformableValidator[Any, Ret, Jsonable]):
+    def __init__(
+        self,
+        field1: KeyValidator[A],
+        field2: KeyValidator[B],
+        field3: KeyValidator[C],
+        field4: KeyValidator[D],
+        field5: KeyValidator[E],
+        field6: KeyValidator[F],
+        *,
+        into: Callable[[A, B, C, D, E, F], Ret],
+        validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None,
+    ) -> None:
+        self.fields = (
+            field1,
+            field2,
+            field3,
+            field4,
+            field5,
+            field6,
+        )
         self.into = into
         self.validate_object = validate_object
 
     def __call__(self, data: Any) -> Result[Ret, Jsonable]:
         # ok, not sure why this works, but {f.key for f in self.fields} doesn't
-        result = _dict_without_extra_keys({self.fields[x][0]
-                                           for x in range(len(self.fields))},
-                                          data)
+        result = _dict_without_extra_keys(
+            {self.fields[x][0] for x in range(len(self.fields))}, data
+        )
 
         if isinstance(result, Err):
             return result
@@ -1106,42 +1116,46 @@ class Obj6(Generic[A, B, C, D, E, F, Ret],
                 _validate_with_key(self.fields[3], result.val),
                 _validate_with_key(self.fields[4], result.val),
                 _validate_with_key(self.fields[5], result.val),
-                self.into
+                self.into,
             )
             return _flat_map_same_type_if_not_none(
-                self.validate_object,
-                result_1.map_err(_tuples_to_jsonable_dict))
+                self.validate_object, result_1.map_err(_tuples_to_jsonable_dict)
+            )
 
 
-class Obj7(Generic[A, B, C, D, E, F, G, Ret],
-           TransformableValidator[Any, Ret, Jsonable]):
-    def __init__(self,
-                 field1: KeyValidator[A],
-                 field2: KeyValidator[B],
-                 field3: KeyValidator[C],
-                 field4: KeyValidator[D],
-                 field5: KeyValidator[E],
-                 field6: KeyValidator[F],
-                 field7: KeyValidator[G],
-                 *,
-                 into: Callable[[A, B, C, D, E, F, G], Ret],
-                 validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None
-                 ) -> None:
-        self.fields = (field1,
-                       field2,
-                       field3,
-                       field4,
-                       field5,
-                       field6,
-                       field7,)
+class Obj7(
+    Generic[A, B, C, D, E, F, G, Ret], TransformableValidator[Any, Ret, Jsonable]
+):
+    def __init__(
+        self,
+        field1: KeyValidator[A],
+        field2: KeyValidator[B],
+        field3: KeyValidator[C],
+        field4: KeyValidator[D],
+        field5: KeyValidator[E],
+        field6: KeyValidator[F],
+        field7: KeyValidator[G],
+        *,
+        into: Callable[[A, B, C, D, E, F, G], Ret],
+        validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None,
+    ) -> None:
+        self.fields = (
+            field1,
+            field2,
+            field3,
+            field4,
+            field5,
+            field6,
+            field7,
+        )
         self.into = into
         self.validate_object = validate_object
 
     def __call__(self, data: Any) -> Result[Ret, Jsonable]:
         # ok, not sure why this works, but {f.key for f in self.fields} doesn't
-        result = _dict_without_extra_keys({self.fields[x][0]
-                                           for x in range(len(self.fields))},
-                                          data)
+        result = _dict_without_extra_keys(
+            {self.fields[x][0] for x in range(len(self.fields))}, data
+        )
 
         if isinstance(result, Err):
             return result
@@ -1154,44 +1168,48 @@ class Obj7(Generic[A, B, C, D, E, F, G, Ret],
                 _validate_with_key(self.fields[4], result.val),
                 _validate_with_key(self.fields[5], result.val),
                 _validate_with_key(self.fields[6], result.val),
-                self.into
+                self.into,
             )
             return _flat_map_same_type_if_not_none(
-                self.validate_object,
-                result_1.map_err(_tuples_to_jsonable_dict))
+                self.validate_object, result_1.map_err(_tuples_to_jsonable_dict)
+            )
 
 
-class Obj8(Generic[A, B, C, D, E, F, G, H, Ret],
-           TransformableValidator[Any, Ret, Jsonable]):
-    def __init__(self,
-                 field1: KeyValidator[A],
-                 field2: KeyValidator[B],
-                 field3: KeyValidator[C],
-                 field4: KeyValidator[D],
-                 field5: KeyValidator[E],
-                 field6: KeyValidator[F],
-                 field7: KeyValidator[G],
-                 field8: KeyValidator[H],
-                 *,
-                 into: Callable[[A, B, C, D, E, F, G, H], Ret],
-                 validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None
-                 ) -> None:
-        self.fields = (field1,
-                       field2,
-                       field3,
-                       field4,
-                       field5,
-                       field6,
-                       field7,
-                       field8,)
+class Obj8(
+    Generic[A, B, C, D, E, F, G, H, Ret], TransformableValidator[Any, Ret, Jsonable]
+):
+    def __init__(
+        self,
+        field1: KeyValidator[A],
+        field2: KeyValidator[B],
+        field3: KeyValidator[C],
+        field4: KeyValidator[D],
+        field5: KeyValidator[E],
+        field6: KeyValidator[F],
+        field7: KeyValidator[G],
+        field8: KeyValidator[H],
+        *,
+        into: Callable[[A, B, C, D, E, F, G, H], Ret],
+        validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None,
+    ) -> None:
+        self.fields = (
+            field1,
+            field2,
+            field3,
+            field4,
+            field5,
+            field6,
+            field7,
+            field8,
+        )
         self.into = into
         self.validate_object = validate_object
 
     def __call__(self, data: Any) -> Result[Ret, Jsonable]:
         # ok, not sure why this works, but {f.key for f in self.fields} doesn't
-        result = _dict_without_extra_keys({self.fields[x][0]
-                                           for x in range(len(self.fields))},
-                                          data)
+        result = _dict_without_extra_keys(
+            {self.fields[x][0] for x in range(len(self.fields))}, data
+        )
 
         if isinstance(result, Err):
             return result
@@ -1205,46 +1223,50 @@ class Obj8(Generic[A, B, C, D, E, F, G, H, Ret],
                 _validate_with_key(self.fields[5], result.val),
                 _validate_with_key(self.fields[6], result.val),
                 _validate_with_key(self.fields[7], result.val),
-                self.into
+                self.into,
             )
             return _flat_map_same_type_if_not_none(
-                self.validate_object,
-                result_1.map_err(_tuples_to_jsonable_dict))
+                self.validate_object, result_1.map_err(_tuples_to_jsonable_dict)
+            )
 
 
-class Obj9(Generic[A, B, C, D, E, F, G, H, I, Ret],
-           TransformableValidator[Any, Ret, Jsonable]):
-    def __init__(self,
-                 field1: KeyValidator[A],
-                 field2: KeyValidator[B],
-                 field3: KeyValidator[C],
-                 field4: KeyValidator[D],
-                 field5: KeyValidator[E],
-                 field6: KeyValidator[F],
-                 field7: KeyValidator[G],
-                 field8: KeyValidator[H],
-                 field9: KeyValidator[I],
-                 *,
-                 into: Callable[[A, B, C, D, E, F, G, H, I], Ret],
-                 validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None
-                 ) -> None:
-        self.fields = (field1,
-                       field2,
-                       field3,
-                       field4,
-                       field5,
-                       field6,
-                       field7,
-                       field8,
-                       field9,)
+class Obj9(
+    Generic[A, B, C, D, E, F, G, H, I, Ret], TransformableValidator[Any, Ret, Jsonable]
+):
+    def __init__(
+        self,
+        field1: KeyValidator[A],
+        field2: KeyValidator[B],
+        field3: KeyValidator[C],
+        field4: KeyValidator[D],
+        field5: KeyValidator[E],
+        field6: KeyValidator[F],
+        field7: KeyValidator[G],
+        field8: KeyValidator[H],
+        field9: KeyValidator[I],
+        *,
+        into: Callable[[A, B, C, D, E, F, G, H, I], Ret],
+        validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None,
+    ) -> None:
+        self.fields = (
+            field1,
+            field2,
+            field3,
+            field4,
+            field5,
+            field6,
+            field7,
+            field8,
+            field9,
+        )
         self.into = into
         self.validate_object = validate_object
 
     def __call__(self, data: Any) -> Result[Ret, Jsonable]:
         # ok, not sure why this works, but {f.key for f in self.fields} doesn't
-        result = _dict_without_extra_keys({self.fields[x][0]
-                                           for x in range(len(self.fields))},
-                                          data)
+        result = _dict_without_extra_keys(
+            {self.fields[x][0] for x in range(len(self.fields))}, data
+        )
 
         if isinstance(result, Err):
             return result
@@ -1259,48 +1281,53 @@ class Obj9(Generic[A, B, C, D, E, F, G, H, I, Ret],
                 _validate_with_key(self.fields[6], result.val),
                 _validate_with_key(self.fields[7], result.val),
                 _validate_with_key(self.fields[8], result.val),
-                self.into
+                self.into,
             )
             return _flat_map_same_type_if_not_none(
-                self.validate_object,
-                result_1.map_err(_tuples_to_jsonable_dict))
+                self.validate_object, result_1.map_err(_tuples_to_jsonable_dict)
+            )
 
 
-class Obj10(Generic[A, B, C, D, E, F, G, H, I, J, Ret],
-            TransformableValidator[Any, Ret, Jsonable]):
-    def __init__(self,
-                 field1: KeyValidator[A],
-                 field2: KeyValidator[B],
-                 field3: KeyValidator[C],
-                 field4: KeyValidator[D],
-                 field5: KeyValidator[E],
-                 field6: KeyValidator[F],
-                 field7: KeyValidator[G],
-                 field8: KeyValidator[H],
-                 field9: KeyValidator[I],
-                 field10: KeyValidator[J],
-                 *,
-                 into: Callable[[A, B, C, D, E, F, G, H, I, J], Ret],
-                 validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None
-                 ) -> None:
-        self.fields = (field1,
-                       field2,
-                       field3,
-                       field4,
-                       field5,
-                       field6,
-                       field7,
-                       field8,
-                       field9,
-                       field10,)
+class Obj10(
+    Generic[A, B, C, D, E, F, G, H, I, J, Ret],
+    TransformableValidator[Any, Ret, Jsonable],
+):
+    def __init__(
+        self,
+        field1: KeyValidator[A],
+        field2: KeyValidator[B],
+        field3: KeyValidator[C],
+        field4: KeyValidator[D],
+        field5: KeyValidator[E],
+        field6: KeyValidator[F],
+        field7: KeyValidator[G],
+        field8: KeyValidator[H],
+        field9: KeyValidator[I],
+        field10: KeyValidator[J],
+        *,
+        into: Callable[[A, B, C, D, E, F, G, H, I, J], Ret],
+        validate_object: Optional[Callable[[Ret], Result[Ret, Jsonable]]] = None,
+    ) -> None:
+        self.fields = (
+            field1,
+            field2,
+            field3,
+            field4,
+            field5,
+            field6,
+            field7,
+            field8,
+            field9,
+            field10,
+        )
         self.into = into
         self.validate_object = validate_object
 
     def __call__(self, data: Any) -> Result[Ret, Jsonable]:
         # ok, not sure why this works, but {f.key for f in self.fields} doesn't
-        result = _dict_without_extra_keys({self.fields[x][0]
-                                           for x in range(len(self.fields))},
-                                          data)
+        result = _dict_without_extra_keys(
+            {self.fields[x][0] for x in range(len(self.fields))}, data
+        )
 
         if isinstance(result, Err):
             return result
@@ -1316,8 +1343,8 @@ class Obj10(Generic[A, B, C, D, E, F, G, H, I, J, Ret],
                 _validate_with_key(self.fields[7], result.val),
                 _validate_with_key(self.fields[8], result.val),
                 _validate_with_key(self.fields[9], result.val),
-                self.into
+                self.into,
             )
             return _flat_map_same_type_if_not_none(
-                self.validate_object,
-                result_1.map_err(_tuples_to_jsonable_dict))
+                self.validate_object, result_1.map_err(_tuples_to_jsonable_dict)
+            )

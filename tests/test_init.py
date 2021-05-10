@@ -6,8 +6,8 @@ from koda.maybe import Just, Nothing
 from koda.result import Err, Result, Ok
 from tests.utils import assert_same_error_type_with_same_message
 
-A = TypeVar('A')
-B = TypeVar('B')
+A = TypeVar("A")
+B = TypeVar("B")
 
 
 def _halve(f: float) -> float:
@@ -27,7 +27,7 @@ def _int_to_str(n: int) -> str:
 
 
 def _prepend_a(s: str) -> str:
-    return f'a{s}'
+    return f"a{s}"
 
 
 def _to_char_list(s: str) -> List[str]:
@@ -47,84 +47,68 @@ def _get_result_val(data: Result[A, B]) -> Union[A, B]:
 
 
 def test_compose2() -> None:
-    composed_func = compose(_halve,
-                            _float_to_int)
+    composed_func = compose(_halve, _float_to_int)
     assert composed_func(7.3) == 4
 
 
 def test_compose3() -> None:
-    composed_func = compose(_halve,
-                            _float_to_int,
-                            _inc)
+    composed_func = compose(_halve, _float_to_int, _inc)
     assert composed_func(7.3) == 5
 
 
 def test_compose4() -> None:
-    composed_func = compose(_halve,
-                            _float_to_int,
-                            _inc,
-                            _int_to_str)
-    assert composed_func(7.3) == '5'
+    composed_func = compose(_halve, _float_to_int, _inc, _int_to_str)
+    assert composed_func(7.3) == "5"
 
 
 def test_compose5() -> None:
-    composed_func = compose(_halve,
-                            _float_to_int,
-                            _inc,
-                            _int_to_str,
-                            _prepend_a)
-    assert composed_func(7.3) == 'a5'
+    composed_func = compose(_halve, _float_to_int, _inc, _int_to_str, _prepend_a)
+    assert composed_func(7.3) == "a5"
 
 
 def test_compose6() -> None:
-    composed_func = compose(_halve,
-                            _float_to_int,
-                            _inc,
-                            _int_to_str,
-                            _prepend_a,
-                            _to_char_list)
-    assert composed_func(7.3) == ['a', '5']
+    composed_func = compose(
+        _halve, _float_to_int, _inc, _int_to_str, _prepend_a, _to_char_list
+    )
+    assert composed_func(7.3) == ["a", "5"]
 
 
 def test_compose7() -> None:
-    composed_func = compose(_halve,
-                            _float_to_int,
-                            _inc,
-                            _int_to_str,
-                            _prepend_a,
-                            _to_char_list,
-                            _to_char_tuple)
-    assert composed_func(7.3) == ('a', '5')
+    composed_func = compose(
+        _halve,
+        _float_to_int,
+        _inc,
+        _int_to_str,
+        _prepend_a,
+        _to_char_list,
+        _to_char_tuple,
+    )
+    assert composed_func(7.3) == ("a", "5")
 
 
 def test_compose8() -> None:
-    composed_func = compose(_halve,
-                            _float_to_int,
-                            _inc,
-                            _int_to_str,
-                            _prepend_a,
-                            _to_char_list,
-                            _to_char_tuple,
-                            _reverse_tuple)
-    assert composed_func(7.3) == ('5', 'a')
+    composed_func = compose(
+        _halve,
+        _float_to_int,
+        _inc,
+        _int_to_str,
+        _prepend_a,
+        _to_char_list,
+        _to_char_tuple,
+        _reverse_tuple,
+    )
+    assert composed_func(7.3) == ("5", "a")
 
 
 def test_match_2() -> None:
-    matcher = match(
-        (str, _prepend_a),
-        (int, _int_to_str)
-    )
+    matcher = match((str, _prepend_a), (int, _int_to_str))
 
     assert matcher("s") == "as"
     assert matcher(5) == "5"
 
 
 def test_match_3() -> None:
-    matcher = match(
-        (str, _prepend_a),
-        (int, _int_to_str),
-        (float, _float_to_int)
-    )
+    matcher = match((str, _prepend_a), (int, _int_to_str), (float, _float_to_int))
 
     assert matcher("s") == "as"
     assert matcher(5) == "5"
@@ -136,7 +120,7 @@ def test_match_4() -> None:
         (str, _prepend_a),
         (int, _int_to_str),
         (float, _float_to_int),
-        (Ok, _get_result_val)
+        (Ok, _get_result_val),
     )
 
     assert matcher("s") == "as"
@@ -200,16 +184,15 @@ def test_safe_try() -> None:
     assert safe_try(int)(5.0) == Ok(5)
     assert_same_error_type_with_same_message(
         safe_try(int)("abc"),
-        Err(ValueError("invalid literal for int() with base 10: 'abc'"))
+        Err(ValueError("invalid literal for int() with base 10: 'abc'")),
     )
 
     def fail_if_5(val: int) -> int:
         if val == 5:
-            raise(Exception("failed"))
+            raise (Exception("failed"))
         else:
             return val
 
     assert_same_error_type_with_same_message(
-        safe_try(fail_if_5)(5),
-        Err(Exception("failed"))
+        safe_try(fail_if_5)(5), Err(Exception("failed"))
     )

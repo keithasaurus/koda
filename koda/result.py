@@ -7,9 +7,9 @@ B = TypeVar("B")
 FailT = TypeVar("FailT")
 
 __all__ = (
-    'Err',
-    'Result',
-    'Ok',
+    "Err",
+    "Result",
+    "Ok",
 )
 
 
@@ -17,19 +17,16 @@ __all__ = (
 class Ok(Generic[A]):
     val: A
 
-    def apply(self,
-              container: "Result[Callable[[A], B], FailT]") -> "Result[B, FailT]":
+    def apply(self, container: "Result[Callable[[A], B], FailT]") -> "Result[B, FailT]":
         if isinstance(container, Ok):
             return Ok(container.val(self.val))
         else:
             return container
 
-    def flat_map(self,
-                 fn: Callable[[A], "Result[B, FailT]"]) -> "Result[B, FailT]":
+    def flat_map(self, fn: Callable[[A], "Result[B, FailT]"]) -> "Result[B, FailT]":
         return fn(self.val)
 
-    def flat_map_err(self,
-                     fn: Callable[[Any], "Result[A, Any]"]) -> "Ok[A]":
+    def flat_map_err(self, fn: Callable[[Any], "Result[A, Any]"]) -> "Ok[A]":
         """
         >>> def add_one(val: int) -> Result[int, Any]: return Err(val + 1)
         >>> Ok(5).flat_map_err(add_one)
@@ -68,8 +65,9 @@ class Err(Generic[FailT]):
     def flat_map(self, _: Any) -> "Err[FailT]":
         return self
 
-    def flat_map_err(self,
-                     fn: Callable[[FailT], "Result[A, FailT]"]) -> "Result[A, FailT]":
+    def flat_map_err(
+        self, fn: Callable[[FailT], "Result[A, FailT]"]
+    ) -> "Result[A, FailT]":
         """
         >>> def add_one(val: int) -> Result[int, Any]: return Err(val + 1)
         >>> Err(5).flat_map_err(add_one)

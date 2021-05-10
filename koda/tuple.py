@@ -2,12 +2,9 @@ from typing import Tuple, TypeVar
 
 from koda._cruft.tuple import _typed_tuple
 
-A = TypeVar('A')
+A = TypeVar("A")
 
-__all__ = (
-    'typed_tuple',
-    'ntuple'
-)
+__all__ = ("typed_tuple", "ntuple")
 
 typed_tuple = _typed_tuple
 

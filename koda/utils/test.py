@@ -5,10 +5,10 @@ from koda import compose, identity
 A = TypeVar("A")
 
 __all__ = (
-    'enforce_functor_one_val',
-    'enforce_monad_unit',
-    'enforce_monad_flat_map',
-    'enforce_applicative_apply',
+    "enforce_functor_one_val",
+    "enforce_monad_unit",
+    "enforce_monad_flat_map",
+    "enforce_applicative_apply",
 )
 
 
@@ -20,10 +20,7 @@ def _int_to_str(x: int) -> str:
     return str(x)
 
 
-def enforce_functor_one_val(
-        functorable: Type[Any],
-        map_method: str
-) -> None:
+def enforce_functor_one_val(functorable: Type[Any], map_method: str) -> None:
     """
     requiring map_method to be specified, because the mapping may
     be done by variously named methods

@@ -4,17 +4,17 @@ from typing import Callable, Generic, TypeVar, final
 from koda._cruft.validation import _chain, _validate_and_map, _Validator
 from koda.result import Err, Result, Ok
 
-A = TypeVar('A')
-B = TypeVar('B')
-C = TypeVar('C')
+A = TypeVar("A")
+B = TypeVar("B")
+C = TypeVar("C")
 
-FailT = TypeVar('FailT')
+FailT = TypeVar("FailT")
 
 __all__ = (
-    'chain',
-    'PredicateValidator',
-    'validate_and_map',
-    'TransformableValidator',
+    "chain",
+    "PredicateValidator",
+    "validate_and_map",
+    "TransformableValidator",
 )
 
 Validator = _Validator[A, B, FailT]
@@ -31,6 +31,7 @@ class TransformableValidator(Generic[A, B, FailT]):
     Not using protocol because we want it to be runtime checkable without
     being implicit or a false positive.
     """
+
     @abstractmethod
     def __call__(self, val: A) -> Result[B, FailT]:
         raise NotImplementedError
@@ -43,6 +44,7 @@ class PredicateValidator(Generic[A, FailT]):
     mutable values in the course of json, but that is considered an
     error in the opinion of this library).
     """
+
     @abstractmethod
     def is_valid(self, val: A) -> bool:
         raise NotImplementedError

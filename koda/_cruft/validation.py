@@ -6,8 +6,8 @@ from typing import Callable, Optional, Tuple, TypeVar, Union, overload
 from koda._cruft.utils import _flat_map_same_type_if_not_none
 from koda.result import Err, Result, Ok
 
-A = TypeVar('A')
-B = TypeVar('B')
+A = TypeVar("A")
+B = TypeVar("B")
 C = TypeVar("C")
 D = TypeVar("D")
 E = TypeVar("E")
@@ -20,7 +20,7 @@ K = TypeVar("K")
 
 Ret = TypeVar("Ret")  # generic return type
 
-FailT = TypeVar('FailT')
+FailT = TypeVar("FailT")
 
 # simple alias allows to greatly reduce amount of characters required to define
 # validators
@@ -74,16 +74,16 @@ def _validate_and_map(
 
 
 @overload
-def _validate_and_map(r1: Result[A, FailT],
-                      r2: Result[B, FailT],
-                      r3: Result[C, FailT],
-                      r4: Result[D, FailT],
-                      r5: Result[E, FailT],
-                      r6: Callable[[A, B, C, D, E], Ret],
-                      *,
-                      validate_object: Optional[
-                          Callable[[Ret], Result[Ret, Tuple[FailT, ...]]]] = None
-                      ) -> Result[Ret, Tuple[FailT, ...]]:
+def _validate_and_map(
+    r1: Result[A, FailT],
+    r2: Result[B, FailT],
+    r3: Result[C, FailT],
+    r4: Result[D, FailT],
+    r5: Result[E, FailT],
+    r6: Callable[[A, B, C, D, E], Ret],
+    *,
+    validate_object: Optional[Callable[[Ret], Result[Ret, Tuple[FailT, ...]]]] = None
+) -> Result[Ret, Tuple[FailT, ...]]:
     ...
 
 
@@ -194,26 +194,22 @@ def _validate_and_map(
     """
     if callable(r2):
         return _flat_map_same_type_if_not_none(
-            validate_object,
-            _validate1_helper(Ok(r2), r1)
+            validate_object, _validate1_helper(Ok(r2), r1)
         )
     elif callable(r3):
         return _flat_map_same_type_if_not_none(
-            validate_object,
-            _validate2_helper(Ok(r3), r1, r2)
+            validate_object, _validate2_helper(Ok(r3), r1, r2)
         )
     elif callable(r4):
         assert r3 is not None
         return _flat_map_same_type_if_not_none(
-            validate_object,
-            _validate3_helper(Ok(r4), r1, r2, r3)
+            validate_object, _validate3_helper(Ok(r4), r1, r2, r3)
         )
     elif callable(r5):
         assert r3 is not None
         assert r4 is not None
         return _flat_map_same_type_if_not_none(
-            validate_object,
-            _validate4_helper(Ok(r5), r1, r2, r3, r4)
+            validate_object, _validate4_helper(Ok(r5), r1, r2, r3, r4)
         )
     elif callable(r6):
         assert r3 is not None
@@ -221,8 +217,7 @@ def _validate_and_map(
         assert r5 is not None
 
         return _flat_map_same_type_if_not_none(
-            validate_object,
-            _validate5_helper(Ok(r6), r1, r2, r3, r4, r5)
+            validate_object, _validate5_helper(Ok(r6), r1, r2, r3, r4, r5)
         )
     elif callable(r7):
         assert r3 is not None
@@ -231,8 +226,7 @@ def _validate_and_map(
         assert r6 is not None
 
         return _flat_map_same_type_if_not_none(
-            validate_object,
-            _validate6_helper(Ok(r7), r1, r2, r3, r4, r5, r6)
+            validate_object, _validate6_helper(Ok(r7), r1, r2, r3, r4, r5, r6)
         )
     elif callable(r8):
         assert r3 is not None
@@ -242,8 +236,7 @@ def _validate_and_map(
         assert r7 is not None
 
         return _flat_map_same_type_if_not_none(
-            validate_object,
-            _validate7_helper(Ok(r8), r1, r2, r3, r4, r5, r6, r7)
+            validate_object, _validate7_helper(Ok(r8), r1, r2, r3, r4, r5, r6, r7)
         )
     elif callable(r9):
         assert r3 is not None
@@ -254,8 +247,7 @@ def _validate_and_map(
         assert r8 is not None
 
         return _flat_map_same_type_if_not_none(
-            validate_object,
-            _validate8_helper(Ok(r9), r1, r2, r3, r4, r5, r6, r7, r8)
+            validate_object, _validate8_helper(Ok(r9), r1, r2, r3, r4, r5, r6, r7, r8)
         )
     elif callable(r10):
         assert r3 is not None
@@ -268,10 +260,7 @@ def _validate_and_map(
 
         return _flat_map_same_type_if_not_none(
             validate_object,
-            _validate9_helper(
-                Ok(r10),
-                r1, r2, r3, r4, r5, r6, r7, r8, r9
-            )
+            _validate9_helper(Ok(r10), r1, r2, r3, r4, r5, r6, r7, r8, r9),
         )
     else:
         assert r3 is not None
@@ -286,74 +275,85 @@ def _validate_and_map(
 
         return _flat_map_same_type_if_not_none(
             validate_object,
-            _validate10_helper(
-                Ok(r11),
-                r1, r2, r3, r4, r5, r6, r7, r8, r9, r10
-            )
+            _validate10_helper(Ok(r11), r1, r2, r3, r4, r5, r6, r7, r8, r9, r10),
         )
 
 
 @overload
-def _chain(fn1: _Validator[A, B, FailT],
-           fn2: _Validator[B, C, FailT]
-           ) -> _Validator[A, C, FailT]:
+def _chain(
+    fn1: _Validator[A, B, FailT], fn2: _Validator[B, C, FailT]
+) -> _Validator[A, C, FailT]:
     ...
 
 
 @overload
-def _chain(fn1: _Validator[A, B, FailT],
-           fn2: _Validator[B, C, FailT],
-           fn3: _Validator[C, D, FailT]
-           ) -> _Validator[A, D, FailT]:
+def _chain(
+    fn1: _Validator[A, B, FailT],
+    fn2: _Validator[B, C, FailT],
+    fn3: _Validator[C, D, FailT],
+) -> _Validator[A, D, FailT]:
     ...
 
 
 @overload
-def _chain(fn1: _Validator[A, B, FailT],
-           fn2: _Validator[B, C, FailT],
-           fn3: _Validator[C, D, FailT],
-           fn4: _Validator[D, E, FailT]
-           ) -> _Validator[A, E, FailT]:
+def _chain(
+    fn1: _Validator[A, B, FailT],
+    fn2: _Validator[B, C, FailT],
+    fn3: _Validator[C, D, FailT],
+    fn4: _Validator[D, E, FailT],
+) -> _Validator[A, E, FailT]:
     ...
 
 
 @overload
-def _chain(fn1: _Validator[A, B, FailT],
-           fn2: _Validator[B, C, FailT],
-           fn3: _Validator[C, D, FailT],
-           fn4: _Validator[D, E, FailT],
-           fn5: _Validator[E, F, FailT]
-           ) -> _Validator[A, F, FailT]:
+def _chain(
+    fn1: _Validator[A, B, FailT],
+    fn2: _Validator[B, C, FailT],
+    fn3: _Validator[C, D, FailT],
+    fn4: _Validator[D, E, FailT],
+    fn5: _Validator[E, F, FailT],
+) -> _Validator[A, F, FailT]:
     ...
 
 
 @overload
-def _chain(fn1: _Validator[A, B, FailT],
-           fn2: _Validator[B, C, FailT],
-           fn3: _Validator[C, D, FailT],
-           fn4: _Validator[D, E, FailT],
-           fn5: _Validator[E, F, FailT],
-           fn6: _Validator[F, G, FailT]
-           ) -> _Validator[A, G, FailT]:
+def _chain(
+    fn1: _Validator[A, B, FailT],
+    fn2: _Validator[B, C, FailT],
+    fn3: _Validator[C, D, FailT],
+    fn4: _Validator[D, E, FailT],
+    fn5: _Validator[E, F, FailT],
+    fn6: _Validator[F, G, FailT],
+) -> _Validator[A, G, FailT]:
     ...
 
 
-def _chain(fn1: _Validator[A, B, FailT],
-           fn2: _Validator[B, C, FailT],
-           fn3: Optional[_Validator[C, D, FailT]] = None,
-           fn4: Optional[_Validator[D, E, FailT]] = None,
-           fn5: Optional[_Validator[E, F, FailT]] = None,
-           fn6: Optional[_Validator[F, G, FailT]] = None,
-           ) -> Callable[[A], Union[Result[C, FailT],
-                                    Result[D, FailT],
-                                    Result[E, FailT],
-                                    Result[F, FailT],
-                                    Result[G, FailT]]]:
-    def inner(val: A) -> Union[Result[C, FailT],
-                               Result[D, FailT],
-                               Result[E, FailT],
-                               Result[F, FailT],
-                               Result[G, FailT]]:
+def _chain(
+    fn1: _Validator[A, B, FailT],
+    fn2: _Validator[B, C, FailT],
+    fn3: Optional[_Validator[C, D, FailT]] = None,
+    fn4: Optional[_Validator[D, E, FailT]] = None,
+    fn5: Optional[_Validator[E, F, FailT]] = None,
+    fn6: Optional[_Validator[F, G, FailT]] = None,
+) -> Callable[
+    [A],
+    Union[
+        Result[C, FailT],
+        Result[D, FailT],
+        Result[E, FailT],
+        Result[F, FailT],
+        Result[G, FailT],
+    ],
+]:
+    def inner(
+        val: A,
+    ) -> Union[
+        Result[C, FailT],
+        Result[D, FailT],
+        Result[E, FailT],
+        Result[F, FailT],
+        Result[G, FailT],
+    ]:
         if fn3 is None:
             return fn1(val).flat_map(fn2)
         elif fn4 is None:
@@ -361,18 +361,22 @@ def _chain(fn1: _Validator[A, B, FailT],
         elif fn5 is None:
             return fn1(val).flat_map(fn2).flat_map(fn3).flat_map(fn4)
         elif fn6 is None:
-            return fn1(val).flat_map(fn2).flat_map(fn3).flat_map(fn4).flat_map(
-                fn5)
+            return fn1(val).flat_map(fn2).flat_map(fn3).flat_map(fn4).flat_map(fn5)
         else:
-            return fn1(val).flat_map(fn2).flat_map(fn3).flat_map(fn4).flat_map(
-                fn5).flat_map(fn6)
+            return (
+                fn1(val)
+                .flat_map(fn2)
+                .flat_map(fn3)
+                .flat_map(fn4)
+                .flat_map(fn5)
+                .flat_map(fn6)
+            )
 
     return inner
 
 
 def _validate1_helper(
-        state: Result[Callable[[A], B], Tuple[FailT, ...]],
-        r: Result[A, FailT]
+    state: Result[Callable[[A], B], Tuple[FailT, ...]], r: Result[A, FailT]
 ) -> Result[B, Tuple[FailT, ...]]:
     if isinstance(r, Err):
         if isinstance(state, Err):
@@ -387,9 +391,9 @@ def _validate1_helper(
 
 
 def _validate2_helper(
-        state: Result[Callable[[A, B], C], Tuple[FailT, ...]],
-        r1: Result[A, FailT],
-        r2: Result[B, FailT],
+    state: Result[Callable[[A, B], C], Tuple[FailT, ...]],
+    r1: Result[A, FailT],
+    r2: Result[B, FailT],
 ) -> Result[C, Tuple[FailT, ...]]:
     if isinstance(r1, Err):
         if isinstance(state, Err):
@@ -408,15 +412,14 @@ def _validate2_helper(
 
 
 def _validate3_helper(
-        state: Result[Callable[[A, B, C], D], Tuple[FailT, ...]],
-        r1: Result[A, FailT],
-        r2: Result[B, FailT],
-        r3: Result[C, FailT],
+    state: Result[Callable[[A, B, C], D], Tuple[FailT, ...]],
+    r1: Result[A, FailT],
+    r2: Result[B, FailT],
+    r3: Result[C, FailT],
 ) -> Result[D, Tuple[FailT, ...]]:
     if isinstance(r1, Err):
         if isinstance(state, Err):
-            next_state: Result[
-                Callable[[B, C], D], Tuple[FailT, ...]] = Err(
+            next_state: Result[Callable[[B, C], D], Tuple[FailT, ...]] = Err(
                 state.val + (r1.val,)
             )
         else:
@@ -431,16 +434,17 @@ def _validate3_helper(
 
 
 def _validate4_helper(
-        state: Result[Callable[[A, B, C, D], E], Tuple[FailT, ...]],
-        r1: Result[A, FailT],
-        r2: Result[B, FailT],
-        r3: Result[C, FailT],
-        r4: Result[D, FailT],
+    state: Result[Callable[[A, B, C, D], E], Tuple[FailT, ...]],
+    r1: Result[A, FailT],
+    r2: Result[B, FailT],
+    r3: Result[C, FailT],
+    r4: Result[D, FailT],
 ) -> Result[E, Tuple[FailT, ...]]:
     if isinstance(r1, Err):
         if isinstance(state, Err):
-            next_state: Result[Callable[[B, C, D], E], Tuple[FailT, ...]] = \
-                Err(state.val + (r1.val,))
+            next_state: Result[Callable[[B, C, D], E], Tuple[FailT, ...]] = Err(
+                state.val + (r1.val,)
+            )
         else:
             next_state = Err((r1.val,))
     else:
@@ -453,19 +457,18 @@ def _validate4_helper(
 
 
 def _validate5_helper(
-        state: Result[Callable[[A, B, C, D, E], F], Tuple[FailT, ...]],
-        r1: Result[A, FailT],
-        r2: Result[B, FailT],
-        r3: Result[C, FailT],
-        r4: Result[D, FailT],
-        r5: Result[E, FailT],
+    state: Result[Callable[[A, B, C, D, E], F], Tuple[FailT, ...]],
+    r1: Result[A, FailT],
+    r2: Result[B, FailT],
+    r3: Result[C, FailT],
+    r4: Result[D, FailT],
+    r5: Result[E, FailT],
 ) -> Result[F, Tuple[FailT, ...]]:
     if isinstance(r1, Err):
         if isinstance(state, Err):
-            next_state: Result[
-                Callable[[B, C, D, E], F],
-                Tuple[FailT, ...]
-            ] = Err(state.val + (r1.val,))
+            next_state: Result[Callable[[B, C, D, E], F], Tuple[FailT, ...]] = Err(
+                state.val + (r1.val,)
+            )
         else:
             next_state = Err((r1.val,))
     else:
@@ -478,20 +481,19 @@ def _validate5_helper(
 
 
 def _validate6_helper(
-        state: Result[Callable[[A, B, C, D, E, F], G], Tuple[FailT, ...]],
-        r1: Result[A, FailT],
-        r2: Result[B, FailT],
-        r3: Result[C, FailT],
-        r4: Result[D, FailT],
-        r5: Result[E, FailT],
-        r6: Result[F, FailT],
+    state: Result[Callable[[A, B, C, D, E, F], G], Tuple[FailT, ...]],
+    r1: Result[A, FailT],
+    r2: Result[B, FailT],
+    r3: Result[C, FailT],
+    r4: Result[D, FailT],
+    r5: Result[E, FailT],
+    r6: Result[F, FailT],
 ) -> Result[G, Tuple[FailT, ...]]:
     if isinstance(r1, Err):
         if isinstance(state, Err):
-            next_state: Result[
-                Callable[[B, C, D, E, F], G],
-                Tuple[FailT, ...]
-            ] = Err(state.val + (r1.val,))
+            next_state: Result[Callable[[B, C, D, E, F], G], Tuple[FailT, ...]] = Err(
+                state.val + (r1.val,)
+            )
         else:
             next_state = Err((r1.val,))
     else:
@@ -504,21 +506,19 @@ def _validate6_helper(
 
 
 def _validate7_helper(
-        state: Result[
-            Callable[[A, B, C, D, E, F, G], H], Tuple[FailT, ...]],
-        r1: Result[A, FailT],
-        r2: Result[B, FailT],
-        r3: Result[C, FailT],
-        r4: Result[D, FailT],
-        r5: Result[E, FailT],
-        r6: Result[F, FailT],
-        r7: Result[G, FailT]
+    state: Result[Callable[[A, B, C, D, E, F, G], H], Tuple[FailT, ...]],
+    r1: Result[A, FailT],
+    r2: Result[B, FailT],
+    r3: Result[C, FailT],
+    r4: Result[D, FailT],
+    r5: Result[E, FailT],
+    r6: Result[F, FailT],
+    r7: Result[G, FailT],
 ) -> Result[H, Tuple[FailT, ...]]:
     if isinstance(r1, Err):
         if isinstance(state, Err):
             next_state: Result[
-                Callable[[B, C, D, E, F, G], H],
-                Tuple[FailT, ...]
+                Callable[[B, C, D, E, F, G], H], Tuple[FailT, ...]
             ] = Err(state.val + (r1.val,))
         else:
             next_state = Err((r1.val,))
@@ -532,24 +532,20 @@ def _validate7_helper(
 
 
 def _validate8_helper(
-        state: Result[
-            Callable[[A, B, C, D, E, F, G, H], I],
-            Tuple[FailT, ...]
-        ],
-        r1: Result[A, FailT],
-        r2: Result[B, FailT],
-        r3: Result[C, FailT],
-        r4: Result[D, FailT],
-        r5: Result[E, FailT],
-        r6: Result[F, FailT],
-        r7: Result[G, FailT],
-        r8: Result[H, FailT]
+    state: Result[Callable[[A, B, C, D, E, F, G, H], I], Tuple[FailT, ...]],
+    r1: Result[A, FailT],
+    r2: Result[B, FailT],
+    r3: Result[C, FailT],
+    r4: Result[D, FailT],
+    r5: Result[E, FailT],
+    r6: Result[F, FailT],
+    r7: Result[G, FailT],
+    r8: Result[H, FailT],
 ) -> Result[I, Tuple[FailT, ...]]:
     if isinstance(r1, Err):
         if isinstance(state, Err):
             next_state: Result[
-                Callable[[B, C, D, E, F, G, H], I],
-                Tuple[FailT, ...]
+                Callable[[B, C, D, E, F, G, H], I], Tuple[FailT, ...]
             ] = Err(state.val + (r1.val,))
         else:
             next_state = Err((r1.val,))
@@ -563,25 +559,21 @@ def _validate8_helper(
 
 
 def _validate9_helper(
-        state: Result[
-            Callable[[A, B, C, D, E, F, G, H, I], J],
-            Tuple[FailT, ...]
-        ],
-        r1: Result[A, FailT],
-        r2: Result[B, FailT],
-        r3: Result[C, FailT],
-        r4: Result[D, FailT],
-        r5: Result[E, FailT],
-        r6: Result[F, FailT],
-        r7: Result[G, FailT],
-        r8: Result[H, FailT],
-        r9: Result[I, FailT]
+    state: Result[Callable[[A, B, C, D, E, F, G, H, I], J], Tuple[FailT, ...]],
+    r1: Result[A, FailT],
+    r2: Result[B, FailT],
+    r3: Result[C, FailT],
+    r4: Result[D, FailT],
+    r5: Result[E, FailT],
+    r6: Result[F, FailT],
+    r7: Result[G, FailT],
+    r8: Result[H, FailT],
+    r9: Result[I, FailT],
 ) -> Result[J, Tuple[FailT, ...]]:
     if isinstance(r1, Err):
         if isinstance(state, Err):
             next_state: Result[
-                Callable[[B, C, D, E, F, G, H, I], J],
-                Tuple[FailT, ...]
+                Callable[[B, C, D, E, F, G, H, I], J], Tuple[FailT, ...]
             ] = Err(state.val + (r1.val,))
         else:
             next_state = Err((r1.val,))
@@ -595,26 +587,22 @@ def _validate9_helper(
 
 
 def _validate10_helper(
-        state: Result[
-            Callable[[A, B, C, D, E, F, G, H, I, J], K],
-            Tuple[FailT, ...]
-        ],
-        r1: Result[A, FailT],
-        r2: Result[B, FailT],
-        r3: Result[C, FailT],
-        r4: Result[D, FailT],
-        r5: Result[E, FailT],
-        r6: Result[F, FailT],
-        r7: Result[G, FailT],
-        r8: Result[H, FailT],
-        r9: Result[I, FailT],
-        r10: Result[J, FailT]
+    state: Result[Callable[[A, B, C, D, E, F, G, H, I, J], K], Tuple[FailT, ...]],
+    r1: Result[A, FailT],
+    r2: Result[B, FailT],
+    r3: Result[C, FailT],
+    r4: Result[D, FailT],
+    r5: Result[E, FailT],
+    r6: Result[F, FailT],
+    r7: Result[G, FailT],
+    r8: Result[H, FailT],
+    r9: Result[I, FailT],
+    r10: Result[J, FailT],
 ) -> Result[K, Tuple[FailT, ...]]:
     if isinstance(r1, Err):
         if isinstance(state, Err):
             next_state: Result[
-                Callable[[B, C, D, E, F, G, H, I, J], K],
-                Tuple[FailT, ...]
+                Callable[[B, C, D, E, F, G, H, I, J], K], Tuple[FailT, ...]
             ] = Err(state.val + (r1.val,))
         else:
             next_state = Err((r1.val,))

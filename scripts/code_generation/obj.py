@@ -17,21 +17,23 @@ def generate_code(obj_count: int) -> str:
         type_vars = get_type_vars(i)
         predicate_type_vars = ", ".join(type_vars)
 
-        fields_init = ",\n                 ".join([
-            f"field{j + 1}: KeyValidator[{type_var}]"
-            for j, type_var in enumerate(type_vars)
-        ])
+        fields_init = ",\n                 ".join(
+            [
+                f"field{j + 1}: KeyValidator[{type_var}]"
+                for j, type_var in enumerate(type_vars)
+            ]
+        )
 
         fields_init_tuple = ",\n                       ".join(
             [f"field{j + 1}" for j in range(i)]
         )
 
-        key_validations = "\n                ".join([
-            f"_validate_with_key(self.fields[{j}], result.val),"
-            for j in range(i)
-        ])
+        key_validations = "\n                ".join(
+            [f"_validate_with_key(self.fields[{j}], result.val)," for j in range(i)]
+        )
 
-        obj_classes.append(f"""
+        obj_classes.append(
+            f"""
 class Obj{i}(Generic[{predicate_type_vars}, Ret],
            TransformableValidator[Any, Ret, Jsonable]):
     def __init__(self,
@@ -60,20 +62,21 @@ class Obj{i}(Generic[{predicate_type_vars}, Ret],
             return _flat_map_same_type_if_not_none(
                 self.validate_object,
                 result_1.map_failure(_tuples_to_jsonable_dict))
-                """)
+                """
+        )
 
     obj_overloads = []
 
     for i in range(1, obj_count + 1):
         type_vars = get_type_vars(i)
-        field_validators = "\n        ".join([
-            f"f{j + 1}: KeyValidator[{tv}]," for j, tv
-            in enumerate(type_vars)
-        ])
+        field_validators = "\n        ".join(
+            [f"f{j + 1}: KeyValidator[{tv}]," for j, tv in enumerate(type_vars)]
+        )
 
         type_vars_joined = ", ".join(type_vars)
 
-        obj_overloads.append(f"""
+        obj_overloads.append(
+            f"""
 @overload
 def obj(
         {field_validators}
@@ -82,7 +85,8 @@ def obj(
 ) -> Obj{i}[{type_vars_joined}, Ret]:
     ...
 
-""")
+"""
+        )
 
     return "\n\n".join(obj_classes)
 

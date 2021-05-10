@@ -6,10 +6,10 @@ B = TypeVar("B")
 C = TypeVar("C")
 
 __all__ = (
-    'Just',
-    'Maybe',
-    'Nothing',
-    'NothingType',
+    "Just",
+    "Maybe",
+    "Nothing",
+    "NothingType",
 )
 
 

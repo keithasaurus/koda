@@ -1,13 +1,9 @@
 # A sample schema
 schema = {
     "type": "object",
-    "required": [
-        "name"
-    ],
+    "required": ["name"],
     "properties": {
-        "name": {
-            "type": "string"
-        },
+        "name": {"type": "string"},
         "age": {
             "type": "integer",
             "format": "int32",
@@ -17,7 +13,7 @@ schema = {
         "birth-date": {
             "type": "string",
             "format": "date",
-        }
+        },
     },
     "additionalProperties": False,
 }

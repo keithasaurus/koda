@@ -8,15 +8,15 @@ D = TypeVar("D")
 E = TypeVar("E")
 
 __all__ = (
-    'First',
-    'Second',
-    'Third',
-    'Fourth',
-    'Fifth',
-    'Either',
-    'Either3',
-    'Either4',
-    'Either5',
+    "First",
+    "Second",
+    "Third",
+    "Fourth",
+    "Fifth",
+    "Either",
+    "Either3",
+    "Either4",
+    "Either5",
 )
 
 
@@ -24,19 +24,19 @@ __all__ = (
 class First(Generic[A]):
     val: A
 
-    def map_first(self, fn: Callable[[A], B]) -> 'First[B]':
+    def map_first(self, fn: Callable[[A], B]) -> "First[B]":
         return First(fn(self.val))
 
-    def map_second(self, fn: Callable[[Any], Any]) -> 'First[A]':
+    def map_second(self, fn: Callable[[Any], Any]) -> "First[A]":
         return self
 
-    def map_third(self, fn: Callable[[Any], Any]) -> 'First[A]':
+    def map_third(self, fn: Callable[[Any], Any]) -> "First[A]":
         return self
 
-    def map_fourth(self, fn: Callable[[Any], Any]) -> 'First[A]':
+    def map_fourth(self, fn: Callable[[Any], Any]) -> "First[A]":
         return self
 
-    def map_fifth(self, fn: Callable[[Any], Any]) -> 'First[A]':
+    def map_fifth(self, fn: Callable[[Any], Any]) -> "First[A]":
         return self
 
 
@@ -44,19 +44,19 @@ class First(Generic[A]):
 class Second(Generic[A]):
     val: A
 
-    def map_first(self, fn: Callable[[Any], Any]) -> 'Second[A]':
+    def map_first(self, fn: Callable[[Any], Any]) -> "Second[A]":
         return self
 
-    def map_second(self, fn: Callable[[A], B]) -> 'Second[B]':
+    def map_second(self, fn: Callable[[A], B]) -> "Second[B]":
         return Second(fn(self.val))
 
-    def map_third(self, fn: Callable[[Any], Any]) -> 'Second[A]':
+    def map_third(self, fn: Callable[[Any], Any]) -> "Second[A]":
         return self
 
-    def map_fourth(self, fn: Callable[[Any], Any]) -> 'Second[A]':
+    def map_fourth(self, fn: Callable[[Any], Any]) -> "Second[A]":
         return self
 
-    def map_fifth(self, fn: Callable[[Any], Any]) -> 'Second[A]':
+    def map_fifth(self, fn: Callable[[Any], Any]) -> "Second[A]":
         return self
 
 
@@ -64,19 +64,19 @@ class Second(Generic[A]):
 class Third(Generic[A]):
     val: A
 
-    def map_first(self, fn: Callable[[Any], Any]) -> 'Third[A]':
+    def map_first(self, fn: Callable[[Any], Any]) -> "Third[A]":
         return self
 
-    def map_second(self, fn: Callable[[Any], Any]) -> 'Third[A]':
+    def map_second(self, fn: Callable[[Any], Any]) -> "Third[A]":
         return self
 
-    def map_third(self, fn: Callable[[A], B]) -> 'Third[B]':
+    def map_third(self, fn: Callable[[A], B]) -> "Third[B]":
         return Third(fn(self.val))
 
-    def map_fourth(self, fn: Callable[[Any], Any]) -> 'Third[A]':
+    def map_fourth(self, fn: Callable[[Any], Any]) -> "Third[A]":
         return self
 
-    def map_fifth(self, fn: Callable[[Any], Any]) -> 'Third[A]':
+    def map_fifth(self, fn: Callable[[Any], Any]) -> "Third[A]":
         return self
 
 
@@ -84,19 +84,19 @@ class Third(Generic[A]):
 class Fourth(Generic[A]):
     val: A
 
-    def map_first(self, fn: Callable[[Any], Any]) -> 'Fourth[A]':
+    def map_first(self, fn: Callable[[Any], Any]) -> "Fourth[A]":
         return self
 
-    def map_second(self, fn: Callable[[Any], Any]) -> 'Fourth[A]':
+    def map_second(self, fn: Callable[[Any], Any]) -> "Fourth[A]":
         return self
 
-    def map_third(self, fn: Callable[[Any], Any]) -> 'Fourth[A]':
+    def map_third(self, fn: Callable[[Any], Any]) -> "Fourth[A]":
         return self
 
-    def map_fourth(self, fn: Callable[[A], B]) -> 'Fourth[B]':
+    def map_fourth(self, fn: Callable[[A], B]) -> "Fourth[B]":
         return Fourth(fn(self.val))
 
-    def map_fifth(self, fn: Callable[[Any], Any]) -> 'Fourth[A]':
+    def map_fifth(self, fn: Callable[[Any], Any]) -> "Fourth[A]":
         return self
 
 
@@ -104,19 +104,19 @@ class Fourth(Generic[A]):
 class Fifth(Generic[A]):
     val: A
 
-    def map_first(self, fn: Callable[[Any], Any]) -> 'Fifth[A]':
+    def map_first(self, fn: Callable[[Any], Any]) -> "Fifth[A]":
         return self
 
-    def map_second(self, fn: Callable[[Any], Any]) -> 'Fifth[A]':
+    def map_second(self, fn: Callable[[Any], Any]) -> "Fifth[A]":
         return self
 
-    def map_third(self, fn: Callable[[Any], Any]) -> 'Fifth[A]':
+    def map_third(self, fn: Callable[[Any], Any]) -> "Fifth[A]":
         return self
 
-    def map_fourth(self, fn: Callable[[Any], Any]) -> 'Fifth[A]':
+    def map_fourth(self, fn: Callable[[Any], Any]) -> "Fifth[A]":
         return self
 
-    def map_fifth(self, fn: Callable[[A], B]) -> 'Fifth[B]':
+    def map_fifth(self, fn: Callable[[A], B]) -> "Fifth[B]":
         return Fifth(fn(self.val))
 
 

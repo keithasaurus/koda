@@ -5,7 +5,7 @@ from koda.utils.test import enforce_functor_one_val
 
 
 def _append_bla(s: str) -> str:
-    return f'{s}bla'
+    return f"{s}bla"
 
 
 def _test_first_returns_self(ordinal: Type[Any]) -> None:
@@ -34,7 +34,7 @@ def _test_fifth_returns_self(ordinal: Type[Any]) -> None:
 
 
 def test_first() -> None:
-    enforce_functor_one_val(First, 'map_first')
+    enforce_functor_one_val(First, "map_first")
     _test_second_returns_self(First)
     _test_third_returns_self(First)
     _test_fourth_returns_self(First)
@@ -42,7 +42,7 @@ def test_first() -> None:
 
 
 def test_second() -> None:
-    enforce_functor_one_val(Second, 'map_second')
+    enforce_functor_one_val(Second, "map_second")
     _test_first_returns_self(Second)
     _test_third_returns_self(Second)
     _test_fourth_returns_self(Second)
@@ -50,7 +50,7 @@ def test_second() -> None:
 
 
 def test_third() -> None:
-    enforce_functor_one_val(Third, 'map_third')
+    enforce_functor_one_val(Third, "map_third")
     _test_first_returns_self(Third)
     _test_second_returns_self(Third)
     _test_fourth_returns_self(Third)
@@ -58,7 +58,7 @@ def test_third() -> None:
 
 
 def test_fourth() -> None:
-    enforce_functor_one_val(Fourth, 'map_fourth')
+    enforce_functor_one_val(Fourth, "map_fourth")
     _test_first_returns_self(Fourth)
     _test_second_returns_self(Fourth)
     _test_third_returns_self(Fourth)
@@ -66,7 +66,7 @@ def test_fourth() -> None:
 
 
 def test_fifth() -> None:
-    enforce_functor_one_val(Fifth, 'map_fifth')
+    enforce_functor_one_val(Fifth, "map_fifth")
     _test_first_returns_self(Fifth)
     _test_second_returns_self(Fifth)
     _test_third_returns_self(Fifth)
