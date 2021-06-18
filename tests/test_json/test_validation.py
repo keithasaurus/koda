@@ -103,7 +103,8 @@ def test_decimal() -> None:
 
     assert Decimal()(5) == Ok(DecimalStdLib(5))
 
-    assert Decimal()
+    assert Decimal(Minimum(DecimalStdLib(4)),
+                   Maximum(DecimalStdLib("5.5")))(5) == Ok(DecimalStdLib(5))
 
 
 def test_boolean() -> None:

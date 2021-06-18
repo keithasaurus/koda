@@ -837,7 +837,7 @@ class Nullable(TransformableValidator[Any, Maybe[A], Jsonable]):
             return self.validator(val).map(Just)
 
 
-Num = TypeVar("Num", int, float)
+Num = TypeVar("Num", int, float, DecimalStdLib)
 
 
 @dataclass(frozen=True)
