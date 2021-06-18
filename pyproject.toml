@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "pyfp"
+name = "koda"
 version = "0.1.0"
 description = ""
 authors = ["Keith Philpott"]
