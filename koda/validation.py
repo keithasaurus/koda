@@ -1,7 +1,8 @@
 from abc import abstractmethod
-from typing import Callable, Generic, TypeVar, final
+from typing import Generic, TypeVar, final
 
 from koda._cruft.validation import _chain, _validate_and_map, _Validator
+from koda.generics import Fn1
 from koda.result import Err, Result, Ok
 
 A = TypeVar("A")
@@ -19,7 +20,7 @@ __all__ = (
 
 Validator = _Validator[A, B, FailT]
 
-Predicate = Callable[[A], bool]
+Predicate = Fn1[A, bool]
 
 
 class TransformableValidator(Generic[A, B, FailT]):

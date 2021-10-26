@@ -27,6 +27,7 @@ from typing import (
 from koda import compose, get_mapping_val, safe_try
 from koda._cruft.utils import _flat_map_same_type_if_not_none
 from koda.either import Either, Either3, First, Second, Third
+from koda.generics import Fn1
 from koda.json.serialization import JsonSerializable
 from koda.json.utils import expected
 from koda.maybe import Just, Maybe, Nothing, NothingType
@@ -524,7 +525,7 @@ def err(
         return Err(Jsonable(val))
 
 
-KeyValidator = Tuple[str, Callable[[Maybe[Any]], Result[A, Jsonable]]]
+KeyValidator = Tuple[str, Fn1[Maybe[Any], Result[A, Jsonable]]]
 
 
 def _validate_with_key(
@@ -807,7 +808,6 @@ def unwrap_jsonable(data: Jsonable) -> JsonSerializable:
     elif isinstance(data.val, tuple):
         return tuple(unwrap_jsonable(item) for item in data.val)
     else:
-        assert isinstance(data.val, dict)
         return {k: unwrap_jsonable(val) for k, val in data.val.items()}
 
 

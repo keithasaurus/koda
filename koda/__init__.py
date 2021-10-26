@@ -1,6 +1,7 @@
-from typing import Any, Callable, List, Mapping, TypeVar
+from typing import Any, Callable, List, Mapping, TypeVar, NoReturn, Union, Type
 
 from koda._cruft.general import _compose
+from koda.generics import Fn1, Fn0
 from koda.maybe import Just, Maybe, Nothing
 from koda.result import Err, Result, Ok
 
@@ -15,12 +16,13 @@ H = TypeVar("H")
 I = TypeVar("I")
 
 FailT = TypeVar("FailT")
+Ret = TypeVar("Ret")
+
 
 __all__ = (
     "compose",
     "get_mapping_val",
     "identity",
-    "match",
     "load_once",
     "maybe_to_result",
     "result_to_maybe",
@@ -33,7 +35,7 @@ def identity(x: A) -> A:
     return x
 
 
-def get_mapping_val(key: A) -> Callable[[Mapping[A, B]], Maybe[B]]:
+def get_mapping_val(key: A) -> Fn1[Mapping[A, B], Maybe[B]]:
     def inner(
             data: Mapping[A, B],
     ) -> Maybe[B]:
@@ -60,7 +62,7 @@ def result_to_maybe(orig: Result[A, Any]) -> Maybe[A]:
     return Just(orig.val) if isinstance(orig, Ok) else Nothing
 
 
-def load_once(fn: Callable[[], A]) -> Callable[[], A]:
+def load_once(fn: Fn0[A]) -> Fn0[A]:
     """
     Lazily get some value
     """
@@ -77,7 +79,7 @@ def load_once(fn: Callable[[], A]) -> Callable[[], A]:
     return inner
 
 
-def safe_try(fn: Callable[[A], B]) -> Callable[[A], Result[B, Exception]]:
+def safe_try(fn: Fn1[A, B]) -> Fn1[A, Result[B, Exception]]:
     def inner(val: A) -> Result[B, Exception]:
         try:
             return Ok(fn(val))
