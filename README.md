@@ -17,7 +17,7 @@ Let's make a simple person validator.
 ```python
 from dataclasses import dataclass
 
-import koda.json.validation as v
+from koda.json.validation import Obj2, String, Integer, MinLength, Minimum, prop
 
 
 # a class we can instantiate with valid data 
@@ -27,9 +27,9 @@ class Person:
     age: int
 
 
-person_validator = v.Obj2( 
-    v.prop("name", v.String(v.MinLength(1))),
-    v.prop("age", v.Integer(v.Minimum(0))),
+person_validator = Obj2( 
+    prop("name", String(MinLength(1))),
+    prop("age", Integer(Minimum(0))),
     into=Person
 )
 ```

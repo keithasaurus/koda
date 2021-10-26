@@ -1,6 +1,6 @@
 from typing import Any, Callable, List, Mapping, TypeVar
 
-from koda._cruft.general import _compose, _match
+from koda._cruft.general import _compose
 from koda.maybe import Just, Maybe, Nothing
 from koda.result import Err, Result, Ok
 
@@ -28,8 +28,6 @@ __all__ = (
 
 compose = _compose
 
-match = _match
-
 
 def identity(x: A) -> A:
     return x
@@ -37,7 +35,7 @@ def identity(x: A) -> A:
 
 def get_mapping_val(key: A) -> Callable[[Mapping[A, B]], Maybe[B]]:
     def inner(
-        data: Mapping[A, B],
+            data: Mapping[A, B],
     ) -> Maybe[B]:
         # this is better than data.get(...) because None could be a valid vale
         try:
@@ -59,10 +57,7 @@ def maybe_to_result(fail_message: FailT) -> Callable[[Maybe[A]], Result[A, FailT
 
 
 def result_to_maybe(orig: Result[A, Any]) -> Maybe[A]:
-    if isinstance(orig, Ok):
-        return Just(orig.val)
-    else:
-        return Nothing
+    return Just(orig.val) if isinstance(orig, Ok) else Nothing
 
 
 def load_once(fn: Callable[[], A]) -> Callable[[], A]:

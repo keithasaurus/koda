@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Tuple, TypeVar, Union
 
-from koda import compose, load_once, match, maybe_to_result, result_to_maybe, safe_try
+from koda import compose, load_once, maybe_to_result, result_to_maybe, safe_try
 from koda.maybe import Just, Nothing
 from koda.result import Err, Result, Ok
 from tests.utils import assert_same_error_type_with_same_message
@@ -98,51 +98,6 @@ def test_compose8() -> None:
         _reverse_tuple,
     )
     assert composed_func(7.3) == ("5", "a")
-
-
-def test_match_2() -> None:
-    matcher = match((str, _prepend_a), (int, _int_to_str))
-
-    assert matcher("s") == "as"
-    assert matcher(5) == "5"
-
-
-def test_match_3() -> None:
-    matcher = match((str, _prepend_a), (int, _int_to_str), (float, _float_to_int))
-
-    assert matcher("s") == "as"
-    assert matcher(5) == "5"
-    assert matcher(5.7) == 6
-
-
-def test_match_4() -> None:
-    matcher = match(
-        (str, _prepend_a),
-        (int, _int_to_str),
-        (float, _float_to_int),
-        (Ok, _get_result_val),
-    )
-
-    assert matcher("s") == "as"
-    assert matcher(5) == "5"
-    assert matcher(5.7) == 6
-    assert matcher(Ok(25)) == 25
-
-
-def test_match_5() -> None:
-    matcher = match(
-        (str, _prepend_a),
-        (int, _int_to_str),
-        (float, _float_to_int),
-        (Ok, _get_result_val),
-        (Err, _get_result_val),
-    )
-
-    assert matcher("s") == "as"
-    assert matcher(5) == "5"
-    assert matcher(5.7) == 6
-    assert matcher(Ok(25)) == 25
-    assert matcher(Err("bad")) == "bad"
 
 
 def test_maybe_to_result() -> None:

@@ -8,11 +8,11 @@ authors = ["Keith Philpott"]
 python = "^3.9"
 
 [tool.poetry.dev-dependencies]
-coverage = "~5.5"
-mypy = "~0.812"
-pytest = "~6.2.3"
-pytest-cov = "~2.11.1"
-openapi-spec-validator = "~0.3.0"
+coverage = "6.0.2"
+mypy = "0.910"
+pytest = "6.2.5"
+pytest-cov = "3.0.0"
+openapi-spec-validator = "0.3.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
