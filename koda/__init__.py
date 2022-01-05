@@ -37,7 +37,8 @@ def get_mapping_val(key: A) -> Callable[[Mapping[A, B]], Maybe[B]]:
     def inner(
             data: Mapping[A, B],
     ) -> Maybe[B]:
-        # this is better than data.get(...) because None could be a valid vale
+        # this is better than data.get(...) because if None is a valid return value,
+        # there's no way to know if the value is the value from the map or the deafult value
         try:
             return Just(data[key])
         except KeyError:
