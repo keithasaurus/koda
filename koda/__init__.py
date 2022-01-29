@@ -18,9 +18,8 @@ FailT = TypeVar("FailT")
 
 __all__ = (
     "compose",
-    "get_mapping_val",
+    "mapping_get",
     "identity",
-    "match",
     "load_once",
     "maybe_to_result",
     "result_to_maybe",
@@ -33,18 +32,13 @@ def identity(x: A) -> A:
     return x
 
 
-def get_mapping_val(key: A) -> Callable[[Mapping[A, B]], Maybe[B]]:
-    def inner(
-            data: Mapping[A, B],
-    ) -> Maybe[B]:
-        # this is better than data.get(...) because if None is a valid return value,
-        # there's no way to know if the value is the value from the map or the deafult value
-        try:
-            return Just(data[key])
-        except KeyError:
-            return Nothing
-
-    return inner
+def mapping_get(data: Mapping[A, B], key: A) -> Maybe[B]:
+    # this is better than data.get(...) because if None is a valid return value,
+    # there's no way to know if the value is the value from the map or the deafult value
+    try:
+        return Just(data[key])
+    except KeyError:
+        return Nothing
 
 
 def maybe_to_result(fail_message: FailT) -> Callable[[Maybe[A]], Result[A, FailT]]:

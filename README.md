@@ -1,83 +1,51 @@
 # Koda
 
-Koda is a collection of type-safe tools for Python. One particular area
-of focus is on validation of Json data.
+Koda is a collection of practical type-safe tools for Python.
 
-## JSON Validation
+At it's core are a number of datatypes that are common in functional programming.
 
-Koda aims to make it easy (and non-magical) to build validators. To that end
-it provides combinable validators, which return validated (and possibly transformed)
-data when valid; and strucured error messages on failure. They can also be 
-used to define OpenAPI schemas out of the box. 
+## Maybe
+`Maybe` is similar to Python's `Optional` type. It has two variants: `Nothing` and `Just`, and they work in similar
+ways to other languages.
+```python3
+from koda.maybe import Maybe, Just, Nothing
 
-### Quickstart
-
-Let's make a simple person validator.
-
-```python
-from dataclasses import dataclass
-
-from koda.json.validation import Obj2, String, Integer, MinLength, Minimum, prop
-
-
-# a class we can instantiate with valid data 
-@dataclass
-class Person:
-    name: str
-    age: int
-
-
-person_validator = Obj2( 
-    prop("name", String(MinLength(1))),
-    prop("age", Integer(Minimum(0))),
-    into=Person
-)
+a: Maybe[int] == Just(5)
+b: Maybe[int] == Nothing
 ```
 
-We can now send in data to the validator and get appropriate responses.
+`Maybe` has methods for convenience stringing together logic.
+```python3
 
-```python
-from koda.result import Ok
-
-assert person_validator({"name": "bob", "age": 25}) == Ok(Person("bob", 25))
 ```
-Great, a valid example gives us a `Person`! Note that it's wrapped in an `Ok` object. 
-This explicitly tells us the result was successful. Let's see what happens if it fails.
 
-```python
-bad_age_result = person_validator({"name": "bob", "age": -100})
-assert bad_age_result == v.err({"age": ["minimum allowed value is 0"]})
+
+
+The main difference is that 
+its `NothingType` is unambiguous. To illustrate the point, consider how Python's `dict.get(...)`  works.  
+
+```python3
+from typing import Optional
+
+example_dict: dict[str, Optional[str]] = {"a": None, "b": "ok"}
+ 
+a_val: Optional[str] = example_dict.get("a")
+assert a_val is None
+c_val: Optional[str] = example_dict.get("c")
+assert c_val is None
 ```
-In the case of invalid data, we return a `Err` object. note that `err` here is a 
-simple helper function that allows for easier reading. To demonstrate why,
-the  actual value looks like this:
+In the example above, if we look at `a_val` and `c_val`, we cannot tell which keys existed in the original map.
 
-```python
-Error(val=Jsonable(val={'age': Jsonable(val=[Jsonable(val='minimum allowed value is 0')])}))
+In koda, we could use `get_mapping_val` to get an unambiguous result:
+
+```python3
+from typing import Optional
+from koda import mapping_get
+from koda.maybe import Nothing, Just
+
+example_dict: dict[str, Optional[str]] = {"a": None, "b": "ok"}
+
+assert mapping_get("a")(example_dict) == Just(None)
+assert mapping_get("c")(example_dict) == Nothing
 ```
-This verbose `Jsonable` type exists because of current limitations in mypy's typechecking.
-
-Finally, we can generate OpenAPI schemas from our validators.
-
-```python
-from koda.json.openapi import generate_schema
-
-assert generate_schema("Person", person_validator) == {
-    "Person": {
-        "type": "object",
-        "additionalProperties": False,
-        "required": ["name", "age"],
-        "properties": {
-            "name": {
-                "type": "string",
-                "minLength": 1
-            },
-            "age": {
-                "type": "integer",
-                "minimum": 0,
-                "exclusiveMinimum": False
-            }
-        }
-    }
-}
-```
+In this case, we can tell that `None` was set as the value for key "a" and 

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from typing import List, Tuple, TypeVar, Union
+from typing import List, Tuple, TypeVar, Union, Optional
 
-from koda import compose, load_once, maybe_to_result, result_to_maybe, safe_try
+from koda import compose, load_once, maybe_to_result, result_to_maybe, safe_try, mapping_get
 from koda.maybe import Just, Nothing
 from koda.result import Err, Result, Ok
 from tests.utils import assert_same_error_type_with_same_message
@@ -151,3 +151,11 @@ def test_safe_try() -> None:
     assert_same_error_type_with_same_message(
         safe_try(fail_if_5)(5), Err(Exception("failed"))
     )
+
+
+def test_mapping_get():
+    d: dict[str, Optional[str]] = {"a": None, "b": "ok"}
+
+    assert mapping_get(d, "a") == Just(None)
+    assert mapping_get(d, "b") == Just("ok")
+    assert mapping_get(d, "c") == Nothing
