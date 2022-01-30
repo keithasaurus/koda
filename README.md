@@ -12,8 +12,8 @@ to what you may have seen in other languages.
 ```python3
 from koda.maybe import Maybe, Just, Nothing
 
-a: Maybe[int] == Just(5)
-b: Maybe[int] == Nothing
+a: Maybe[int] = Just(5)
+b: Maybe[int] = Nothing
 ```
 
 `Maybe` has methods for conveniently stringing logic together.
@@ -44,8 +44,8 @@ Nothing.map(lambda x: divide_by(10, x))  # Nothing
 
 ## Result
 
-`Result` provides a means for whether a computation succeeded or failed. For these two scenarios, we have the classes
-`Ok` and `Err`. Compared to `Maybe`, `Result` is most useful in that the "failure" case also returns data.
+`Result` provides a means to represent whether a computation succeeded or failed. For these two scenarios, we have the classes
+`Ok` and `Err`. Compared to `Maybe`, `Result` is perhaps most useful in that the "failure" case also returns data.
 ```python3
 from koda.result import Ok, Err, Result 
 
