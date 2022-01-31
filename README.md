@@ -21,18 +21,18 @@ To know if a `Maybe` is a `Just` or a `Nothing`, you'll need to inspect it.
 ```python3
 from koda.maybe import Just, Maybe, Nothing
 
-maybe_random_val: Maybe[float] = some_function_that_returns_maybe_float()
+maybe_random_val: Maybe[str] = some_function_that_returns_maybe_str()
 
 # unwrap by checking instance type
 if isinstance(maybe_random_val, Just):
-    print(f"Got a val: {maybe_random_val.val}")
+    print(maybe_random_val.val)
 else:
     print("No value!")
 
 # unwrap with structural pattern matching (python 3.10 +)
 match maybe_random_val:
     case Just(val):
-        print(f"Got a val: {val}")
+        print(val)
     case Nothing:
         print("No value!")
 ```
