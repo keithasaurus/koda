@@ -1,7 +1,7 @@
 from typing import Any, Type
 
 from koda.either import Fifth, First, Fourth, Second, Third
-from koda.utils.test import enforce_functor_one_val
+from tests.utils import enforce_functor_one_val
 
 
 def _append_bla(s: str) -> str:

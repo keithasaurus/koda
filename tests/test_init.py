@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from typing import List, Tuple, TypeVar, Union
+from typing import List, Tuple, TypeVar, Union, Optional
 
-from koda import compose, load_once, maybe_to_result, result_to_maybe, safe_try
-from koda.maybe import Just, Nothing
+from koda import compose, load_once, maybe_to_result, result_to_maybe, safe_try, mapping_get
+from koda.maybe import Just, nothing
 from koda.result import Err, Result, Ok
 from tests.utils import assert_same_error_type_with_same_message
 
@@ -107,16 +107,15 @@ def test_maybe_to_result() -> None:
         params: List[str]
 
     fail_message = SomeError("it failed", ["a", "b"])
-    fn = maybe_to_result(fail_message)
 
-    assert fn(Just(5)) == Ok(5)
+    assert maybe_to_result(fail_message, Just(5)) == Ok(5)
 
-    assert fn(Nothing) == Err(fail_message)
+    assert maybe_to_result(fail_message, nothing) == Err(fail_message)
 
 
 def test_result_to_maybe() -> None:
     assert result_to_maybe(Ok(3)) == Just(3)
-    assert result_to_maybe(Err("something")) == Nothing
+    assert result_to_maybe(Err("something")) == nothing
 
 
 def test_load_once() -> None:
@@ -151,3 +150,11 @@ def test_safe_try() -> None:
     assert_same_error_type_with_same_message(
         safe_try(fail_if_5)(5), Err(Exception("failed"))
     )
+
+
+def test_mapping_get():
+    d: dict[str, Optional[str]] = {"a": None, "b": "ok"}
+
+    assert mapping_get(d, "a") == Just(None)
+    assert mapping_get(d, "b") == Just("ok")
+    assert mapping_get(d, "c") == nothing

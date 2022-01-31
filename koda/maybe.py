@@ -8,31 +8,32 @@ C = TypeVar("C")
 __all__ = (
     "Just",
     "Maybe",
+    "nothing",
     "Nothing",
-    "NothingType",
 )
 
 
 @dataclass(frozen=True)
-class NothingType:
-    def map(self, _: Callable[[Any], Any]) -> "NothingType":
+class Nothing:
+    def map(self, _: Callable[[Any], Any]) -> "Nothing":
         """
-        >>> Nothing.map(lambda _: 5)
+        >>> nothing.map(lambda _: 5)
         Nothing
         """
         return self
 
-    def flat_map(self, _: Callable[[Any], Any]) -> "NothingType":
+    def flat_map(self, _: Callable[[Any], Any]) -> "Nothing":
         return self
 
-    def apply(self, _: "Maybe[Callable[[Any], Any]]") -> "NothingType":
+    def apply(self, _: "Maybe[Callable[[Any], Any]]") -> "Nothing":
         return self
 
     def __repr__(self) -> str:
         return "Nothing"
 
 
-Nothing: Final[NothingType] = NothingType()
+# just a pre-init-ed instance of nothing.
+nothing: Final[Nothing] = Nothing()
 
 
 @dataclass(frozen=True)
@@ -46,10 +47,10 @@ class Just(Generic[A]):
         return fn(self.val)
 
     def apply(self, container: "Maybe[Callable[[A], B]]") -> "Maybe[B]":
-        if isinstance(container, NothingType):
-            return Nothing
+        if isinstance(container, Nothing):
+            return nothing
         else:
             return Just(container.val(self.val))
 
 
-Maybe = Union[Just[A], NothingType]
+Maybe = Union[Just[A], Nothing]
