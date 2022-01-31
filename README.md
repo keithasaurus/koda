@@ -16,6 +16,34 @@ a: Maybe[int] = Just(5)
 b: Maybe[int] = Nothing
 ```
 
+To know if a `Maybe` is a `Just` or a `Nothing`, you'll need to inspect it.  
+```python3
+import random
+from koda.maybe import Just, Maybe, Nothing
+
+def get_random_val_if_above_half() -> Maybe[float]:
+    rand_val = random.random()
+    if rand_val > .5:
+        return Just(rand_val)
+    else:
+        return Nothing
+    
+maybe_random_val: Maybe[float] = get_random_val_if_above_half() 
+
+# unwrap by checking instance type
+if isinstance(maybe_random_val, Just):
+    print(f"Got a val: {maybe_random_val.val}")
+else:
+    print("No value!")
+
+# unwrap with structural pattern matching (python 3.10 +)
+match maybe_random_val:
+    case Just(val):
+        print(f"Got a val: {val}")
+    case Nothing:
+        print("No value!")
+```
+
 `Maybe` has methods for conveniently stringing logic together.
 
 #### map
@@ -25,6 +53,7 @@ from koda.maybe import Just, Nothing
 
 Just(5).map(lambda x: x + 10)  # Just(15)
 Nothing.map(lambda x: x + 10)  # Nothing
+Just(5).map(lambda x: x + 10).map(lambda x: f"abc{x}")  # Just("abc15")
 ```
 
 #### flat_map
@@ -59,37 +88,97 @@ Ok(0).flat_map(lambda x: divide_by(10, x))  # Err("cannot divide by zero!")
 Err("some other error").map(lambda x: divide_by(10, x))  # Err("some other error")
 ```
 
-One of the main reasons you might want to 
-
-
-
-The main difference is that its `NothingType` is unambiguous. To illustrate the point, consider how
-Python's `dict.get(...)` works.
-
+`Result` is can be convenient with `try`/`except` logic.
 ```python3
-from typing import Optional
+from koda.result import Result, Ok, Err
 
-example_dict: dict[str, Optional[str]] = {"a": None, "b": "ok"}
+def divide_by(dividend: int, divisor: int) -> Result[float, ZeroDivisionError]:
+    try:
+        return Ok(dividend / divisor)
+    except ZeroDivisionError as exc:
+        return Err(exc)
 
-a_val: Optional[str] = example_dict.get("a")
-assert a_val is None
-c_val: Optional[str] = example_dict.get("c")
-assert c_val is None
+
+divided: Result[float, ZeroDivisionError] = divide_by(10, 0)  # Err(ZeroDivisionError("division by zero"))
 ```
 
-In the example above, if we look at `a_val` and `c_val`, we cannot tell which keys existed in the original map.
+A different way to perform the same computation would be to use `safe_try`
+from koda.result import Result, Ok, Err
 
-In koda, we could use `get_mapping_val` to get an unambiguous result:
+```python3
+from koda.result import Result
+from koda import safe_try
+
+
+def divide_by(dividend: int, divisor: int) -> float:
+    return dividend / divisor
+
+safe_divide_by = safe_try(divide_by)
+
+divided: Result[float, ZeroDivisionError] = divide_by(10, 0)  # Err(ZeroDivisionError("division by zero"))
+```
+
+## More
+
+There are many other functions and datatypes included. Some examples:
+
+### compose
+Combine functions by sequencing.
+
+```python3
+from koda import compose
+from typing import Callable
+
+add_5_and_convert_to_string: Callable[[int], str] = compose(lambda x: x +5, str)
+assert add_5_and_convert_to_string(10) == "15"
+```
+
+### mapping_get
+Try to get a value from a `Mapping` object, and return an unambiguous result. 
 
 ```python3
 from typing import Optional
 from koda import mapping_get
-from koda.maybe import Nothing, Just
+from koda.maybe import Just, Maybe, Nothing
 
-example_dict: dict[str, Optional[str]] = {"a": None, "b": "ok"}
+example_dict: dict[str, Maybe[int]] = {"a": Just(1), "b": Nothing}
 
-assert mapping_get("a")(example_dict) == Just(None)
-assert mapping_get("c")(example_dict) == Nothing
+assert mapping_get(example_dict, "a") == Just(Just(1))
+assert mapping_get(example_dict, "b") == Just(Nothing)
+assert mapping_get(example_dict, "c") == Nothing
 ```
 
-In this case, we can tell that `None` was set as the value for key "a" and 
+### load_once
+Execute a function the first time it's called, and return the cached result
+for every successive call.
+```python3
+from random import random
+from koda import load_once
+
+call_random_once = load_once(random)  # has not called random yet
+assert call_random_once() == call_random_once() == call_random_once()
+```
+
+### maybe_to_result
+
+Convert a `Maybe` to a `Result` type.
+```python3
+from koda import maybe_to_result
+from koda.maybe import Just, Nothing
+from koda.result import Ok, Err
+
+assert maybe_to_result("bad result", Just(5)) == Ok(5)
+assert maybe_to_result("bad result", Nothing) == Err("bad result") 
+```
+
+### result_to_maybe
+
+Convert a `Result` to a `Maybe` type.
+```python3
+from koda import result_to_maybe 
+from koda.maybe import Just, Nothing
+from koda.result import Ok, Err
+
+assert result_to_maybe(Ok(5)) == Just(5)
+assert result_to_maybe(Err("any error")) == Nothing 
+```

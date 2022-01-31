@@ -18,11 +18,12 @@ FailT = TypeVar("FailT")
 
 __all__ = (
     "compose",
-    "mapping_get",
     "identity",
+    "mapping_get",
     "load_once",
     "maybe_to_result",
     "result_to_maybe",
+    "safe_try"
 )
 
 compose = _compose
@@ -41,14 +42,12 @@ def mapping_get(data: Mapping[A, B], key: A) -> Maybe[B]:
         return Nothing
 
 
-def maybe_to_result(fail_message: FailT) -> Callable[[Maybe[A]], Result[A, FailT]]:
-    def inner(orig: Maybe[A]) -> Result[A, FailT]:
-        if isinstance(orig, Just):
-            return Ok(orig.val)
-        else:
-            return Err(fail_message)
-
-    return inner
+def maybe_to_result(fail_message: FailT,
+                    orig: Maybe[A]) -> Result[A, FailT]:
+    if isinstance(orig, Just):
+        return Ok(orig.val)
+    else:
+        return Err(fail_message)
 
 
 def result_to_maybe(orig: Result[A, Any]) -> Maybe[A]:

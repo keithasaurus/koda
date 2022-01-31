@@ -107,11 +107,10 @@ def test_maybe_to_result() -> None:
         params: List[str]
 
     fail_message = SomeError("it failed", ["a", "b"])
-    fn = maybe_to_result(fail_message)
 
-    assert fn(Just(5)) == Ok(5)
+    assert maybe_to_result(fail_message, Just(5)) == Ok(5)
 
-    assert fn(Nothing) == Err(fail_message)
+    assert maybe_to_result(fail_message, Nothing) == Err(fail_message)
 
 
 def test_result_to_maybe() -> None:
