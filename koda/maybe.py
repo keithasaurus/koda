@@ -32,6 +32,7 @@ class Nothing:
         return "Nothing"
 
 
+# just a pre-init-ed instance of nothing.
 nothing: Final[Nothing] = Nothing()
 
 
