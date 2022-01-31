@@ -12,6 +12,7 @@ coverage = "6.3"
 mypy = "0.931"
 pytest = "6.2.5"
 pytest-cov = "3.0.0"
+pyright = "0.0.13"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

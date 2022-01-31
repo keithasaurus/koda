@@ -185,6 +185,7 @@ assert result_to_maybe(Err("any error")) == nothing
 
 ## Intent
 
-This library is intended to focus on a small set of practical data types and utility functions for Python. It will not 
+Koda is intended to focus on a small set of practical data types and utility functions for Python. It will not 
 grow to encompass every possible functional or typesafe concept. Similarly, the intent of this library is to avoid 
-requiring extra plugins (beyond a type-checker like mypy or pyright) or specific typchecker settings. 
+requiring extra plugins (beyond a type-checker like mypy or pyright) or specific typchecker settings. As such,
+it is unlikely that things like Higher Kinded Types will be emulated/implemented in this library.
