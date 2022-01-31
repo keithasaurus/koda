@@ -39,7 +39,7 @@ match maybe_random_val:
 
 `Maybe` has methods for conveniently stringing logic together.
 
-#### map
+#### Maybe.map
 
 ```python3
 from koda.maybe import Just, nothing
@@ -49,7 +49,7 @@ nothing.map(lambda x: x + 10)  # Nothing
 Just(5).map(lambda x: x + 10).map(lambda x: f"abc{x}")  # Just("abc15")
 ```
 
-#### flat_map
+#### Maybe.flat_map
 
 ```python3
 from koda.maybe import Maybe, Just, nothing
