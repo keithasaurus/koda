@@ -81,7 +81,7 @@ Ok(0).flat_map(lambda x: divide_by(10, x))  # Err("cannot divide by zero!")
 Err("some other error").map(lambda x: divide_by(10, x))  # Err("some other error")
 ```
 
-`Result` is can be convenient with `try`/`except` logic.
+`Result` can be convenient with `try`/`except` logic.
 ```python3
 from koda.result import Result, Ok, Err
 
@@ -122,15 +122,20 @@ Combine functions by sequencing.
 from koda import compose
 from typing import Callable
 
-add_5_and_convert_to_string: Callable[[int], str] = compose(lambda x: x +5, str)
-assert add_5_and_convert_to_string(10) == "15"
+def int_to_str(val: int) -> str:
+    return str(val)
+
+def prepend_str_abc(val: str) -> str
+    return f"abc{val}"    
+
+combined_func: Callable[[int], str] = compose(lambda x: x + 5, int_to_str, prepend_str_abc)
+assert combined_func(10) == "abc15"
 ```
 
 ### mapping_get
 Try to get a value from a `Mapping` object, and return an unambiguous result.
 
 ```python3
-from typing import Optional
 from koda import mapping_get
 from koda.maybe import Just, Maybe, nothing
 
@@ -142,7 +147,7 @@ assert mapping_get(example_dict, "c") == nothing
 ```
 
 ### load_once
-Execute a function the first time it's called, and return the cached result
+Execute a function the first time it's called, cache the result, and return the cached result
 for every successive call.
 ```python3
 from random import random
@@ -177,3 +182,9 @@ from koda.result import Ok, Err
 assert result_to_maybe(Ok(5)) == Just(5)
 assert result_to_maybe(Err("any error")) == nothing 
 ```
+
+## Intent
+
+This library is intended to focus on a small set of practical data types and utility functions for Python. It will not 
+grow to encompass every possible functional or typesafe concept. Similarly, the intent of this library is to avoid 
+requiring extra plugins (beyond a type-checker like mypy or pyright) or specific typchecker settings. 
