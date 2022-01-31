@@ -10,17 +10,18 @@ At it's core are a number of datatypes that are common in functional programming
 to what you may have seen in other languages.
 
 ```python3
-from koda.maybe import Maybe, Just, Nothing
+from koda.maybe import Maybe, Just, nothing
 
 a: Maybe[int] = Just(5)
-b: Maybe[int] = Nothing
+b: Maybe[int] = nothing
 ```
 
-To know if a `Maybe` is a `Just` or a `Nothing`, you'll need to inspect it.  
-```python3
-from koda.maybe import Just, Maybe 
+To know if a `Maybe` is a `Just` or a `Nothing`, you'll need to inspect it.
 
-maybe_random_val: Maybe[float] = some_function_that_returns_maybe_float() 
+```python3
+from koda.maybe import Just, Maybe, Nothing
+
+maybe_random_val: Maybe[float] = some_function_that_returns_maybe_float()
 
 # unwrap by checking instance type
 if isinstance(maybe_random_val, Just):
@@ -41,26 +42,26 @@ match maybe_random_val:
 #### map
 
 ```python3
-from koda.maybe import Just, Nothing
+from koda.maybe import Just, nothing
 
 Just(5).map(lambda x: x + 10)  # Just(15)
-Nothing.map(lambda x: x + 10)  # Nothing
+nothing.map(lambda x: x + 10)  # Nothing
 Just(5).map(lambda x: x + 10).map(lambda x: f"abc{x}")  # Just("abc15")
 ```
 
 #### flat_map
 
 ```python3
-from koda.maybe import Maybe, Just, Nothing
+from koda.maybe import Maybe, Just, nothing
 
 
 def divide_by(dividend: int, divisor: int) -> Maybe[float]:
-    return Just(dividend / divisor) if divisor != 0 else Nothing
+    return Just(dividend / divisor) if divisor != 0 else nothing
 
 
 Just(5).flat_map(lambda x: divide_by(10, x))  # Just(2)
 Just(0).flat_map(lambda x: divide_by(10, x))  # Nothing
-Nothing.map(lambda x: divide_by(10, x))  # Nothing
+nothing.map(lambda x: divide_by(10, x))  # Nothing
 ```
 
 ## Result
@@ -126,18 +127,18 @@ assert add_5_and_convert_to_string(10) == "15"
 ```
 
 ### mapping_get
-Try to get a value from a `Mapping` object, and return an unambiguous result. 
+Try to get a value from a `Mapping` object, and return an unambiguous result.
 
 ```python3
 from typing import Optional
 from koda import mapping_get
-from koda.maybe import Just, Maybe, Nothing
+from koda.maybe import Just, Maybe, nothing
 
-example_dict: dict[str, Maybe[int]] = {"a": Just(1), "b": Nothing}
+example_dict: dict[str, Maybe[int]] = {"a": Just(1), "b": nothing}
 
 assert mapping_get(example_dict, "a") == Just(Just(1))
-assert mapping_get(example_dict, "b") == Just(Nothing)
-assert mapping_get(example_dict, "c") == Nothing
+assert mapping_get(example_dict, "b") == Just(nothing)
+assert mapping_get(example_dict, "c") == nothing
 ```
 
 ### load_once
@@ -154,23 +155,25 @@ assert call_random_once() == call_random_once() == call_random_once()
 ### maybe_to_result
 
 Convert a `Maybe` to a `Result` type.
+
 ```python3
 from koda import maybe_to_result
-from koda.maybe import Just, Nothing
+from koda.maybe import Just, nothing
 from koda.result import Ok, Err
 
 assert maybe_to_result("bad result", Just(5)) == Ok(5)
-assert maybe_to_result("bad result", Nothing) == Err("bad result") 
+assert maybe_to_result("bad result", nothing) == Err("bad result") 
 ```
 
 ### result_to_maybe
 
 Convert a `Result` to a `Maybe` type.
+
 ```python3
-from koda import result_to_maybe 
-from koda.maybe import Just, Nothing
+from koda import result_to_maybe
+from koda.maybe import Just, nothing
 from koda.result import Ok, Err
 
 assert result_to_maybe(Ok(5)) == Just(5)
-assert result_to_maybe(Err("any error")) == Nothing 
+assert result_to_maybe(Err("any error")) == nothing 
 ```

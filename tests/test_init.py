@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Tuple, TypeVar, Union, Optional
 
 from koda import compose, load_once, maybe_to_result, result_to_maybe, safe_try, mapping_get
-from koda.maybe import Just, Nothing
+from koda.maybe import Just, nothing
 from koda.result import Err, Result, Ok
 from tests.utils import assert_same_error_type_with_same_message
 
@@ -110,12 +110,12 @@ def test_maybe_to_result() -> None:
 
     assert maybe_to_result(fail_message, Just(5)) == Ok(5)
 
-    assert maybe_to_result(fail_message, Nothing) == Err(fail_message)
+    assert maybe_to_result(fail_message, nothing) == Err(fail_message)
 
 
 def test_result_to_maybe() -> None:
     assert result_to_maybe(Ok(3)) == Just(3)
-    assert result_to_maybe(Err("something")) == Nothing
+    assert result_to_maybe(Err("something")) == nothing
 
 
 def test_load_once() -> None:
@@ -157,4 +157,4 @@ def test_mapping_get():
 
     assert mapping_get(d, "a") == Just(None)
     assert mapping_get(d, "b") == Just("ok")
-    assert mapping_get(d, "c") == Nothing
+    assert mapping_get(d, "c") == nothing

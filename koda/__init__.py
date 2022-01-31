@@ -1,7 +1,7 @@
 from typing import Any, Callable, List, Mapping, TypeVar
 
 from koda._cruft.general import _compose
-from koda.maybe import Just, Maybe, Nothing
+from koda.maybe import Just, Maybe, nothing
 from koda.result import Err, Result, Ok
 
 A = TypeVar("A")
@@ -39,7 +39,7 @@ def mapping_get(data: Mapping[A, B], key: A) -> Maybe[B]:
     try:
         return Just(data[key])
     except KeyError:
-        return Nothing
+        return nothing
 
 
 def maybe_to_result(fail_message: FailT,
@@ -51,7 +51,7 @@ def maybe_to_result(fail_message: FailT,
 
 
 def result_to_maybe(orig: Result[A, Any]) -> Maybe[A]:
-    return Just(orig.val) if isinstance(orig, Ok) else Nothing
+    return Just(orig.val) if isinstance(orig, Ok) else nothing
 
 
 def load_once(fn: Callable[[], A]) -> Callable[[], A]:
