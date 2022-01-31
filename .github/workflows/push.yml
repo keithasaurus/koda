@@ -22,6 +22,8 @@ jobs:
       - name: poetry install
         run: poetry install
       - name: mypy
-        run: poetry run mypy --strict simple_html
+        run: poetry run mypy --strict koda
+      - name: pyright
+        run: poetry run pyright koda
       - name: run tests
         run: poetry run pytest
