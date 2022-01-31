@@ -18,17 +18,9 @@ b: Maybe[int] = Nothing
 
 To know if a `Maybe` is a `Just` or a `Nothing`, you'll need to inspect it.  
 ```python3
-import random
-from koda.maybe import Just, Maybe, Nothing
+from koda.maybe import Just, Maybe 
 
-def get_random_val_if_above_half() -> Maybe[float]:
-    rand_val = random.random()
-    if rand_val > .5:
-        return Just(rand_val)
-    else:
-        return Nothing
-    
-maybe_random_val: Maybe[float] = get_random_val_if_above_half() 
+maybe_random_val: Maybe[float] = some_function_that_returns_maybe_float() 
 
 # unwrap by checking instance type
 if isinstance(maybe_random_val, Just):
