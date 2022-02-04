@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, Mapping, TypeVar
+from typing import Any, Callable, Mapping, TypeVar
 
 from koda._cruft.general import _compose, _safe_try
 from koda.maybe import Just, Maybe, nothing
@@ -58,7 +58,7 @@ def load_once(fn: Callable[[], A]) -> Callable[[], A]:
     """
     Lazily get some value
     """
-    container: List[A] = []
+    container: list[A] = []
 
     def inner() -> A:
         if len(container) == 0:

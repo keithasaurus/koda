@@ -117,54 +117,6 @@ def _compose(
     return inner
 
 
-def _safe_try_3(
-        fn: Callable[[A, B, C], D]
-) -> Callable[[A, B, C], Result[D, Exception]]:
-    def inner(v1: A, v2: B, v3: C) -> Result[D, Exception]:
-        try:
-            return Ok(fn(v1, v2, v3))
-        except Exception as e:
-            return Err(e)
-
-    return inner
-
-
-def _safe_try_4(
-        fn: Callable[[A, B, C, D], E]
-) -> Callable[[A, B, C, D], Result[E, Exception]]:
-    def inner(v1: A, v2: B, v3: C, v4: D) -> Result[E, Exception]:
-        try:
-            return Ok(fn(v1, v2, v3, v4))
-        except Exception as e:
-            return Err(e)
-
-    return inner
-
-
-def _safe_try_5(
-        fn: Callable[[A, B, C, D, E], F]
-) -> Callable[[A, B, C, D, E], Result[F, Exception]]:
-    def inner(v1: A, v2: B, v3: C, v4: D, v5: E) -> Result[F, Exception]:
-        try:
-            return Ok(fn(v1, v2, v3, v4, v5))
-        except Exception as e:
-            return Err(e)
-
-    return inner
-
-
-def _safe_try_6(
-        fn: Callable[[A, B, C, D, E, F], G]
-) -> Callable[[A, B, C, D, E, F], Result[G, Exception]]:
-    def inner(v1: A, v2: B, v3: C, v4: D, v5: E, v6: F) -> Result[G, Exception]:
-        try:
-            return Ok(fn(v1, v2, v3, v4, v5, v6))
-        except Exception as e:
-            return Err(e)
-
-    return inner
-
-
 class _Unset:
     pass
 
@@ -193,7 +145,8 @@ def _safe_try(fn: Callable[[A, B, C, D, E], F], v1: A, v2: B, v3: C, v4: D, v5: 
 
 
 @overload
-def _safe_try(fn: Callable[[A, B, C, D, E, F], G], v1: A, v2: B, v3: C, v4: D, v5: E, v6: F) -> Result[G, Exception]: ...
+def _safe_try(fn: Callable[[A, B, C, D, E, F], G], v1: A, v2: B, v3: C, v4: D, v5: E, v6: F) -> Result[
+    G, Exception]: ...
 
 
 def _safe_try(
