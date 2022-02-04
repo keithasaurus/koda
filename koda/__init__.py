@@ -1,6 +1,6 @@
-from typing import Any, Callable, List, Mapping, TypeVar
+from typing import Any, Callable, Mapping, TypeVar, List
 
-from koda._cruft.general import _compose
+from koda._cruft.general import _compose, _safe_try
 from koda.maybe import Just, Maybe, nothing
 from koda.result import Err, Result, Ok
 
@@ -23,7 +23,7 @@ __all__ = (
     "load_once",
     "maybe_to_result",
     "result_to_maybe",
-    "safe_try"
+    "safe_try",
 )
 
 compose = _compose
@@ -42,8 +42,7 @@ def mapping_get(data: Mapping[A, B], key: A) -> Maybe[B]:
         return nothing
 
 
-def maybe_to_result(fail_message: FailT,
-                    orig: Maybe[A]) -> Result[A, FailT]:
+def maybe_to_result(fail_message: FailT, orig: Maybe[A]) -> Result[A, FailT]:
     if isinstance(orig, Just):
         return Ok(orig.val)
     else:
@@ -71,11 +70,4 @@ def load_once(fn: Callable[[], A]) -> Callable[[], A]:
     return inner
 
 
-def safe_try(fn: Callable[[A], B]) -> Callable[[A], Result[B, Exception]]:
-    def inner(val: A) -> Result[B, Exception]:
-        try:
-            return Ok(fn(val))
-        except Exception as e:
-            return Err(e)
-
-    return inner
+safe_try = _safe_try

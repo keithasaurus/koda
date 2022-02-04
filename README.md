@@ -106,9 +106,7 @@ from koda import safe_try
 def divide_by(dividend: int, divisor: int) -> float:
     return dividend / divisor
 
-safe_divide_by = safe_try(divide_by)
-
-divided: Result[float, ZeroDivisionError] = divide_by(10, 0)  # Err(ZeroDivisionError("division by zero"))
+divided: Result[float, ZeroDivisionError] = safe_try(divide_by, 10, 0)  # Err(ZeroDivisionError("division by zero"))
 ```
 
 ## More
