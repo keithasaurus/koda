@@ -152,6 +152,17 @@ def test_safe_try() -> None:
     )
 
 
+def test_safe_try_with_more_params() -> None:
+    def divide_two(a: int, b: int) -> float:
+        return a / b
+
+    assert safe_try(divide_two)(4, 2) == Ok(2)
+    assert_same_error_type_with_same_message(
+        safe_try(divide_two)(4, 0),
+        Err(ZeroDivisionError('division by zero'))
+    )
+
+
 def test_mapping_get():
     d: dict[str, Optional[str]] = {"a": None, "b": "ok"}
 

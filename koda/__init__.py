@@ -1,6 +1,6 @@
 from typing import Any, Callable, List, Mapping, TypeVar
 
-from koda._cruft.general import _compose
+from koda._cruft.general import _compose, _safe_try
 from koda.maybe import Just, Maybe, nothing
 from koda.result import Err, Result, Ok
 
@@ -71,11 +71,4 @@ def load_once(fn: Callable[[], A]) -> Callable[[], A]:
     return inner
 
 
-def safe_try(fn: Callable[[A], B]) -> Callable[[A], Result[B, Exception]]:
-    def inner(val: A) -> Result[B, Exception]:
-        try:
-            return Ok(fn(val))
-        except Exception as e:
-            return Err(e)
-
-    return inner
+safe_try = _safe_try
