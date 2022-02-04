@@ -1,4 +1,4 @@
-from typing import Any, Callable, Mapping, TypeVar
+from typing import Any, Callable, Mapping, TypeVar, List
 
 from koda._cruft.general import _compose, _safe_try
 from koda.maybe import Just, Maybe, nothing
@@ -23,7 +23,7 @@ __all__ = (
     "load_once",
     "maybe_to_result",
     "result_to_maybe",
-    "safe_try"
+    "safe_try",
 )
 
 compose = _compose
@@ -42,8 +42,7 @@ def mapping_get(data: Mapping[A, B], key: A) -> Maybe[B]:
         return nothing
 
 
-def maybe_to_result(fail_message: FailT,
-                    orig: Maybe[A]) -> Result[A, FailT]:
+def maybe_to_result(fail_message: FailT, orig: Maybe[A]) -> Result[A, FailT]:
     if isinstance(orig, Just):
         return Ok(orig.val)
     else:
@@ -58,7 +57,7 @@ def load_once(fn: Callable[[], A]) -> Callable[[], A]:
     """
     Lazily get some value
     """
-    container: list[A] = []
+    container: List[A] = []
 
     def inner() -> A:
         if len(container) == 0:
