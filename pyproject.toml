@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "koda"
-version = "0.10.0"
+version = "0.10.1"
 readme = "README.md"
 description = "Type-safe functional tools for Python"
 authors = ["Keith Philpott"]
@@ -9,7 +9,7 @@ homepage = "https://github.com/keithasaurus/koda"
 keywords = ["functional programming", "type hints"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 
 [tool.poetry.dev-dependencies]
 coverage = "6.3.1"
