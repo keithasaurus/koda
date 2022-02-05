@@ -1,20 +1,9 @@
-from typing import Any, Callable, Mapping, TypeVar, List
+from typing import Any, Callable, Mapping, List
 
-from koda._cruft.general import _compose, _safe_try
+from koda._cruft import _compose, _safe_try
+from koda._generics import A, B, FailT
 from koda.maybe import Just, Maybe, nothing
 from koda.result import Err, Result, Ok
-
-A = TypeVar("A")
-B = TypeVar("B")
-C = TypeVar("C")
-D = TypeVar("D")
-E = TypeVar("E")
-F = TypeVar("F")
-G = TypeVar("G")
-H = TypeVar("H")
-I = TypeVar("I")
-
-FailT = TypeVar("FailT")
 
 __all__ = (
     "compose",

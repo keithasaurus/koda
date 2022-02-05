@@ -1,13 +1,18 @@
 from dataclasses import dataclass
-from typing import List, Tuple, TypeVar, Union, Optional
+from typing import List, Tuple, Union, Optional
 
-from koda import compose, load_once, maybe_to_result, result_to_maybe, safe_try, mapping_get
+from koda import (
+    compose,
+    load_once,
+    maybe_to_result,
+    result_to_maybe,
+    safe_try,
+    mapping_get,
+)
+from koda._generics import A, B
 from koda.maybe import Just, nothing
 from koda.result import Err, Result, Ok
 from tests.utils import assert_same_error_type_with_same_message
-
-A = TypeVar("A")
-B = TypeVar("B")
 
 
 def _halve(f: float) -> float:
@@ -158,8 +163,7 @@ def test_safe_try_with_more_params() -> None:
 
     assert safe_try(divide_two, 4, 2) == Ok(2)
     assert_same_error_type_with_same_message(
-        safe_try(divide_two, 4, 0),
-        Err(ZeroDivisionError('division by zero'))
+        safe_try(divide_two, 4, 0), Err(ZeroDivisionError("division by zero"))
     )
 
     def fn3(a: float, b: float, c: float) -> float:
@@ -167,8 +171,7 @@ def test_safe_try_with_more_params() -> None:
 
     assert safe_try(fn3, 4, 2, 1) == Ok(2.0)
     assert_same_error_type_with_same_message(
-        safe_try(fn3, 4, 0, 2),
-        Err(ZeroDivisionError('division by zero'))
+        safe_try(fn3, 4, 0, 2), Err(ZeroDivisionError("division by zero"))
     )
 
     def fn4(a: float, b: float, c: float, d: str) -> str:
@@ -176,8 +179,7 @@ def test_safe_try_with_more_params() -> None:
 
     assert safe_try(fn4, 4, 2, 1, "F") == Ok("2.0F")
     assert_same_error_type_with_same_message(
-        safe_try(fn4, 4, 0, 2, "bla"),
-        Err(ZeroDivisionError('division by zero'))
+        safe_try(fn4, 4, 0, 2, "bla"), Err(ZeroDivisionError("division by zero"))
     )
 
     def fn5(a: float, b: float, c: float, d: str, e: bool) -> str:
@@ -186,8 +188,7 @@ def test_safe_try_with_more_params() -> None:
 
     assert safe_try(fn5, 4, 2, 1, "F", True) == Ok("2.0F")
     assert_same_error_type_with_same_message(
-        safe_try(fn5, 4, 0, 2, "bla", False),
-        Err(AssertionError('assert False'))
+        safe_try(fn5, 4, 0, 2, "bla", False), Err(AssertionError("assert False"))
     )
 
     def fn6(a: float, b: float, c: float, d: str, e: bool, f: bool) -> str:
@@ -197,7 +198,7 @@ def test_safe_try_with_more_params() -> None:
     assert safe_try(fn6, 4, 2, 1, "F", True, True) == Ok("2.0F")
     assert_same_error_type_with_same_message(
         safe_try(fn6, 4, 0, 2, "bla", False, True),
-        Err(AssertionError('assert (False)'))
+        Err(AssertionError("assert (False)")),
     )
 
 

@@ -1,4 +1,4 @@
-from typing import Any, TypeVar, Type
+from typing import Any, Type
 
 from koda import identity, compose
 from koda.result import Err, Result
@@ -14,9 +14,6 @@ def assert_same_error_type_with_same_message(
     assert isinstance(error_2, Err)
     assert type(error_1.val) == type(error_2.val)  # noqa: E721
     assert error_1.val.args == error_2.val.args
-
-
-A = TypeVar("A")
 
 
 def _int_inc_5(x: int) -> int:
