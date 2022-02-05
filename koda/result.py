@@ -1,16 +1,7 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Generic, TypeVar, Union
+from typing import Any, Callable, Generic, Union
 
-A = TypeVar("A")
-B = TypeVar("B")
-
-FailT = TypeVar("FailT")
-
-__all__ = (
-    "Err",
-    "Result",
-    "Ok",
-)
+from koda._generics import A, FailT, B
 
 
 @dataclass(frozen=True)
