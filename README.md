@@ -10,7 +10,7 @@ At it's core are a number of datatypes that are common in functional programming
 to what you may have seen in other languages.
 
 ```python3
-from koda.maybe import Maybe, Just, nothing
+from koda import Maybe, Just, nothing
 
 a: Maybe[int] = Just(5)
 b: Maybe[int] = nothing
@@ -19,7 +19,7 @@ b: Maybe[int] = nothing
 To know if a `Maybe` is a `Just` or a `Nothing`, you'll need to inspect it.
 
 ```python3
-from koda.maybe import Just, Maybe
+from koda import Just, Maybe
 
 maybe_str: Maybe[str] = function_returning_maybe_str()
 
@@ -42,7 +42,7 @@ match maybe_str:
 #### Maybe.map
 
 ```python3
-from koda.maybe import Just, nothing
+from koda import Just, nothing
 
 Just(5).map(lambda x: x + 10)  # Just(15)
 nothing.map(lambda x: x + 10)  # Nothing
@@ -52,7 +52,7 @@ Just(5).map(lambda x: x + 10).map(lambda x: f"abc{x}")  # Just("abc15")
 #### Maybe.flat_map
 
 ```python3
-from koda.maybe import Maybe, Just, nothing
+from koda import Maybe, Just, nothing
 
 
 def safe_divide(dividend: int, divisor: int) -> Maybe[float]:
@@ -73,7 +73,7 @@ for failures we can use `Err`. Compared to `Maybe`, `Result` is perhaps most use
 whereas `Nothing` contains no data.
 
 ```python3
-from koda.result import Ok, Err, Result 
+from koda import Ok, Err, Result 
 
 
 def safe_divide_result(dividend: int, divisor: int) -> Result[float, str]:
@@ -90,7 +90,7 @@ Err("some other error").map(lambda x: safe_divide_result(10, x))  # Err("some ot
 
 `Result` can be convenient with `try`/`except` logic.
 ```python3
-from koda.result import Result, Ok, Err
+from koda import Result, Ok, Err
 
 def divide_by(dividend: int, divisor: int) -> Result[float, ZeroDivisionError]:
     try:
@@ -104,8 +104,7 @@ divided: Result[float, ZeroDivisionError] = divide_by(10, 0)  # Err(ZeroDivision
 
 Another way to perform the same computation would be to use `safe_try`:
 ```python3
-from koda.result import Result
-from koda import safe_try
+from koda import Result, safe_try
 
 
 # not safe on its own!
@@ -142,8 +141,7 @@ assert combined_func(10) == "abc10"
 Try to get a value from a `Mapping` object, and return an unambiguous result.
 
 ```python3
-from koda import mapping_get
-from koda.maybe import Just, Maybe, nothing
+from koda import mapping_get, Just, Maybe, nothing
 
 example_dict: dict[str, Maybe[int]] = {"a": Just(1), "b": nothing}
 
@@ -183,9 +181,7 @@ assert retrieved_val == call_random_once()
 Convert a `Maybe` to a `Result` type.
 
 ```python3
-from koda import maybe_to_result
-from koda.maybe import Just, nothing
-from koda.result import Ok, Err
+from koda import maybe_to_result, Just, nothing, Ok, Err
 
 assert maybe_to_result("value if nothing", nothing) == Err("value if nothing")
 assert maybe_to_result("value if nothing", Just(5)) == Ok(5)
@@ -196,9 +192,7 @@ assert maybe_to_result("value if nothing", Just(5)) == Ok(5)
 Convert a `Result` to a `Maybe` type.
 
 ```python3
-from koda import result_to_maybe
-from koda.maybe import Just, nothing
-from koda.result import Ok, Err
+from koda import result_to_maybe, Just, nothing, Ok, Err
 
 assert result_to_maybe(Ok(5)) == Just(5)
 assert result_to_maybe(Err("any error")) == nothing 
