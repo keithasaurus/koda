@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List, Tuple, Union, Optional
 
-from koda import (
+from koda.utils import (
     compose,
     load_once,
     maybe_to_result,
