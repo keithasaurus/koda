@@ -69,7 +69,7 @@ nothing.flat_map(lambda x: safe_divide(10, x))  # Nothing
 ## Result
 
 `Result` provides a means of representing whether a computation succeeded or failed. To represent success, we can use `OK`;
-for failures we can use `Err`. Compared to `Maybe`, `Result` is perhaps most useful in that the "failure" case also returns,
+for failures we can use `Err`. Compared to `Maybe`, `Result` is perhaps most useful in that the "failure" case also returns data,
 whereas `Nothing` contains no data.
 
 ```python3
