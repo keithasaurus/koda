@@ -2,7 +2,7 @@
 
 Koda is a collection of practical type-safe tools for Python.
 
-At it's core are a number of datatypes that are common in functional programming.
+At its core are a number of datatypes that are common in functional programming.
 
 ## Maybe
 
