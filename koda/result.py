@@ -38,6 +38,10 @@ class Ok(Generic[A]):
         """
         return Err(self.val)
 
+    @staticmethod
+    def ok() -> bool:
+        return True
+
 
 @dataclass(frozen=True)
 class Err(Generic[FailT]):
@@ -80,6 +84,10 @@ class Err(Generic[FailT]):
         Ok(val=3)
         """
         return Ok(self.val)
+
+    @staticmethod
+    def ok() -> bool:
+        return False
 
 
 Result = Union[Ok[A], Err[FailT]]
