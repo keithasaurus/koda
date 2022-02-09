@@ -8,5 +8,8 @@
 - [ ] unit tests were written / updated
 
 ## Documentation
+Check one:
+
 - [ ] I updated documentation
+OR
 - [ ] No documentation updates required
