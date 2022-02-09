@@ -22,8 +22,10 @@ jobs:
       - name: poetry install
         run: poetry install
       - name: mypy
-        run: poetry run mypy --strict koda
+        run: poetry run mypy .
       - name: pyright
-        run: poetry run pyright koda
+        run: poetry run pyright
       - name: run tests
         run: poetry run pytest
+      - name: linting
+        run: flake8
