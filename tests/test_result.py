@@ -1,7 +1,6 @@
 from koda.result import Err, Ok, Result
 from tests.utils import enforce_functor_one_val, enforce_monad_unit, \
     enforce_monad_flat_map, enforce_applicative_apply
-from typing import Any
 
 
 def test_result() -> None:
@@ -12,10 +11,11 @@ def test_result() -> None:
 
 
 def test_ok_flat_map_err() -> None:
-    def add_one(val: int) -> Result[int, Any]:
-        return Err(val + 1)
+    def add_one(val: int) -> Result[int, str]:
+        return Err(str(val) + "ok")
 
-    assert Ok(5).flat_map_err(add_one) == Ok(5)
+    result: Result[int, str] = Ok(5).flat_map_err(add_one)
+    assert result == Ok(5)
 
 
 def test_ok_map_err() -> None:
@@ -37,14 +37,16 @@ def test_err_flat_map_err() -> None:
     def add_one(val: int) -> Result[str, int]:
         return Err(val + 1)
 
-    assert Err(5).flat_map_err(add_one) == Err(6)
+    result: Result[str, int] = Err(5).flat_map_err(add_one)
+    assert result == Err(6)
 
 
 def test_err_map_err() -> None:
     def _int_to_str(n: int) -> str:
         return str(n)
 
-    assert Err(5).map_err(_int_to_str) == Err('5')
+    result: Result[bool, str] = Err(5).map_err(_int_to_str)
+    assert result == Err('5')
 
 
 def test_err_swap() -> None:
