@@ -29,6 +29,11 @@ class Ok(Generic[A]):
         return Ok(fn(self.val))
 
     def map_err(self, fn: Callable[[Any], Any]) -> "Ok[A]":
+        """
+        >>> def add_one(val: int) -> Result[int, Any]: return Err(val + 1)
+        >>> Ok(5).map_err(add_one)
+        Ok(val=5)
+        """
         return self
 
     def swap(self) -> "Err[A]":
