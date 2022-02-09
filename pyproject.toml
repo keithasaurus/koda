@@ -19,6 +19,7 @@ pytest = "7.0.0"
 pytest-cov = "3.0.0"
 pyright = "0.0.13"
 pre-commit = "2.17.0"
+flake8 = "4.0.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
