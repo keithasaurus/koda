@@ -8,16 +8,16 @@ from koda._generics import A, FailT, B
 class Ok(Generic[A]):
     val: A
 
-    def apply(self, container: "Result[Callable[[A], B], FailT]") -> "Result[B, FailT]":
+    def apply(self, container: Result[Callable[[A], B], FailT]) -> Result[B, FailT]:
         if isinstance(container, Ok):
             return Ok(container.val(self.val))
         else:
             return container
 
-    def flat_map(self, fn: Callable[[A], "Result[B, FailT]"]) -> "Result[B, FailT]":
+    def flat_map(self, fn: Callable[[A], Result[B, FailT]]) -> Result[B, FailT]:
         return fn(self.val)
 
-    def flat_map_err(self, fn: Callable[[Any], "Result[A, Any]"]) -> "Ok[A]":
+    def flat_map_err(self, fn: Callable[[Any], Result[A, Any]]) -> "Ok[A]":
         """
         >>> def add_one(val: int) -> Result[int, Any]: return Err(val + 1)
         >>> Ok(5).flat_map_err(add_one)
@@ -28,7 +28,7 @@ class Ok(Generic[A]):
     def map(self, fn: Callable[[A], B]) -> "Ok[B]":
         return Ok(fn(self.val))
 
-    def map_err(self, fn: Callable[[Any], Any]) -> "Ok[A]":
+    def map_err(self, fn: Callable[[Any], Result[Any, Any]]) -> "Ok[A]":
         """
         >>> def add_one(val: int) -> Result[int, Any]: return Err(val + 1)
         >>> Ok(5).map_err(add_one)
@@ -48,7 +48,7 @@ class Ok(Generic[A]):
 class Err(Generic[FailT]):
     val: FailT
 
-    def apply(self, _: "Result[Callable[[Any], Any], FailT]") -> "Err[FailT]":
+    def apply(self, _: Result[Callable[[Any], Any], FailT]) -> "Err[FailT]":
         return self
 
     def map(self, _: Callable[[Any], Any]) -> "Err[FailT]":
@@ -58,12 +58,12 @@ class Err(Generic[FailT]):
         """
         return self
 
-    def flat_map(self, _: Any) -> "Err[FailT]":
+    def flat_map(self, _: Callable[[Any], Result[Any, Any]]) -> "Err[FailT]":
         return self
 
     def flat_map_err(
-        self, fn: Callable[[FailT], "Result[A, FailT]"]
-    ) -> "Result[A, FailT]":
+        self, fn: Callable[[FailT], Result[A, FailT]]
+    ) -> Result[A, FailT]:
         """
         >>> def add_one(val: int) -> Result[int, Any]: return Err(val + 1)
         >>> Err(5).flat_map_err(add_one)
@@ -79,7 +79,7 @@ class Err(Generic[FailT]):
         """
         return Err(fn(self.val))
 
-    def swap(self) -> "Ok[FailT]":
+    def swap(self) -> Ok[FailT]:
         """
         >>> Err(3).swap()
         Ok(val=3)
