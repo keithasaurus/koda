@@ -7,14 +7,14 @@ from koda.result import Result, Ok, Err
 
 @overload
 def _compose(fn1: Callable[[A], B], fn2: Callable[[B], C]) -> Callable[[A], C]:
-    ...
+    ...  # pragma: no cover
 
 
 @overload
 def _compose(
     fn1: Callable[[A], B], fn2: Callable[[B], C], fn3: Callable[[C], D]
 ) -> Callable[[A], D]:
-    ...
+    ...  # pragma: no cover
 
 
 @overload
@@ -24,7 +24,7 @@ def _compose(
     fn3: Callable[[C], D],
     fn4: Callable[[D], E],
 ) -> Callable[[A], E]:
-    ...
+    ...  # pragma: no cover
 
 
 @overload
@@ -35,7 +35,7 @@ def _compose(
     fn4: Callable[[D], E],
     fn5: Callable[[E], F],
 ) -> Callable[[A], F]:
-    ...
+    ...  # pragma: no cover
 
 
 @overload
@@ -47,7 +47,7 @@ def _compose(
     fn5: Callable[[E], F],
     fn6: Callable[[F], G],
 ) -> Callable[[A], G]:
-    ...
+    ...  # pragma: no cover
 
 
 @overload
@@ -60,7 +60,7 @@ def _compose(
     fn6: Callable[[F], G],
     fn7: Callable[[G], H],
 ) -> Callable[[A], H]:
-    ...
+    ...  # pragma: no cover
 
 
 @overload
@@ -74,7 +74,7 @@ def _compose(
     fn7: Callable[[G], H],
     fn8: Callable[[H], I],
 ) -> Callable[[A], I]:
-    ...
+    ...  # pragma: no cover
 
 
 def _compose(
@@ -115,38 +115,38 @@ _unset: Final[_Unset] = _Unset()
 
 @overload
 def _safe_try(fn: Callable[[A], B], v1: A) -> Result[B, Exception]:
-    ...
+    ...  # pragma: no cover
 
 
 @overload
 def _safe_try(fn: Callable[[A, B], C], v1: A, v2: B) -> Result[C, Exception]:
-    ...
+    ...  # pragma: no cover
 
 
 @overload
 def _safe_try(fn: Callable[[A, B, C], D], v1: A, v2: B, v3: C) -> Result[D, Exception]:
-    ...
+    ...  # pragma: no cover
 
 
 @overload
 def _safe_try(
     fn: Callable[[A, B, C, D], E], v1: A, v2: B, v3: C, v4: D
 ) -> Result[E, Exception]:
-    ...
+    ...  # pragma: no cover
 
 
 @overload
 def _safe_try(
     fn: Callable[[A, B, C, D, E], F], v1: A, v2: B, v3: C, v4: D, v5: E
 ) -> Result[F, Exception]:
-    ...
+    ...  # pragma: no cover
 
 
 @overload
 def _safe_try(
     fn: Callable[[A, B, C, D, E, F], G], v1: A, v2: B, v3: C, v4: D, v5: E, v6: F
 ) -> Result[G, Exception]:
-    ...
+    ...  # pragma: no cover
 
 
 def _safe_try(

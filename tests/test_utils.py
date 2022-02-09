@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Tuple, Union, Optional
+from typing import List, Tuple, Union, Optional, Dict
 
 from koda.utils import (
     compose,
@@ -203,7 +203,7 @@ def test_safe_try_with_more_params() -> None:
 
 
 def test_mapping_get() -> None:
-    d: dict[str, Optional[str]] = {"a": None, "b": "ok"}
+    d: Dict[str, Optional[str]] = {"a": None, "b": "ok"}
 
     assert mapping_get(d, "a") == Just(None)
     assert mapping_get(d, "b") == Just("ok")

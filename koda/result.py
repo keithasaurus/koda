@@ -18,24 +18,15 @@ class Ok(Generic[A]):
         return fn(self.val)
 
     def flat_map_err(self, fn: Callable[[Any], "Result[A, Any]"]) -> "Ok[A]":
-        """
-        >>> def add_one(val: int) -> Result[int, Any]: return Err(val + 1)
-        >>> Ok(5).flat_map_err(add_one)
-        Ok(val=5)
-        """
         return self
 
     def map(self, fn: Callable[[A], B]) -> "Ok[B]":
         return Ok(fn(self.val))
 
-    def map_err(self, fn: Callable[[Any], Any]) -> "Ok[A]":
+    def map_err(self, fn: Callable[[Any], "Any"]) -> "Ok[A]":
         return self
 
     def swap(self) -> "Err[A]":
-        """
-        >>> Ok(5).swap()
-        Err(val=5)
-        """
         return Err(self.val)
 
 
@@ -47,38 +38,20 @@ class Err(Generic[FailT]):
         return self
 
     def map(self, _: Callable[[Any], Any]) -> "Err[FailT]":
-        """
-        >>> Err(3).map(lambda _: 25)
-        Err(val=3)
-        """
         return self
 
-    def flat_map(self, _: Any) -> "Err[FailT]":
+    def flat_map(self, _: Callable[[Any], "Result[Any, Any]"]) -> "Err[FailT]":
         return self
 
     def flat_map_err(
-        self, fn: Callable[[FailT], "Result[A, FailT]"]
-    ) -> "Result[A, FailT]":
-        """
-        >>> def add_one(val: int) -> Result[int, Any]: return Err(val + 1)
-        >>> Err(5).flat_map_err(add_one)
-        Err(val=6)
-        """
+        self, fn: Callable[[FailT], "Result[A, B]"]
+    ) -> "Result[A, B]":
         return fn(self.val)
 
     def map_err(self, fn: Callable[[FailT], B]) -> "Err[B]":
-        """
-        >>> def _int_to_str(n: int) -> str: return str(n)
-        >>> Err(5).map_err(_int_to_str)
-        Err(val='5')
-        """
         return Err(fn(self.val))
 
-    def swap(self) -> "Ok[FailT]":
-        """
-        >>> Err(3).swap()
-        Ok(val=3)
-        """
+    def swap(self) -> Ok[FailT]:
         return Ok(self.val)
 
 
