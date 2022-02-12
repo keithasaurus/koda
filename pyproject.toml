@@ -47,3 +47,9 @@ warn_return_any = true
 warn_unused_configs = true
 warn_unused_ignores = true
 warn_unreachable = true
+
+
+[tool.pyright]
+typeCheckingMode = "strict"
+reportUnusedFunction = "none"
+reportPrivateUsage = "none"
