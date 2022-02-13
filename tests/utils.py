@@ -60,7 +60,9 @@ def enforce_monad_flat_map(bindable: Type[Any], non_bindable: Any) -> None:
 
     assert bindable(test_val).flat_map(flat_mapped) == bindable(test_val + 5)
 
-    assert bindable(test_val).flat_map(lambda _: non_bindable) == non_bindable
+    assert (
+        bindable(test_val).flat_map(lambda _: non_bindable) == non_bindable
+    )  # pyright: reportUnknownLambdaType=false
 
     assert non_bindable.flat_map(_int_inc_5) == non_bindable
 
