@@ -1,10 +1,9 @@
-from typing import Any, Callable, Mapping, List
+from typing import Any, Callable, List, Mapping
 
 from koda._cruft import _compose, _safe_try
 from koda._generics import A, B, FailT
 from koda.maybe import Just, Maybe, nothing
-from koda.result import Err, Result, Ok
-
+from koda.result import Err, Ok, Result
 
 compose = _compose
 

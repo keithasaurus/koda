@@ -3,21 +3,21 @@ from koda.either import (
     Either3,
     Either4,
     Either5,
+    Fifth,
     First,
+    Fourth,
     Second,
     Third,
-    Fourth,
-    Fifth,
 )
-from koda.maybe import Maybe, Just, nothing, Nothing
-from koda.result import Result, Ok, Err
+from koda.maybe import Just, Maybe, Nothing, nothing
+from koda.result import Err, Ok, Result
 from koda.utils import (
     compose,
     identity,
+    load_once,
     mapping_get,
     maybe_to_result,
     result_to_maybe,
-    load_once,
     safe_try,
 )
 

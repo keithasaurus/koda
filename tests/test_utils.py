@@ -1,17 +1,17 @@
 from dataclasses import dataclass
-from typing import List, Tuple, Union, Optional, Dict
+from typing import Dict, List, Optional, Tuple, Union
 
+from koda._generics import A, B
+from koda.maybe import Just, nothing
+from koda.result import Err, Ok, Result
 from koda.utils import (
     compose,
     load_once,
+    mapping_get,
     maybe_to_result,
     result_to_maybe,
     safe_try,
-    mapping_get,
 )
-from koda._generics import A, B
-from koda.maybe import Just, nothing
-from koda.result import Err, Result, Ok
 from tests.utils import assert_same_error_type_with_same_message
 
 

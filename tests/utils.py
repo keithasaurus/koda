@@ -1,6 +1,6 @@
 from typing import Any, Type
 
-from koda import identity, compose
+from koda import compose, identity
 from koda.result import Err, Result
 
 
