@@ -5,8 +5,6 @@
 ## How to test
 
 
-- [ ] unit tests were written / updated
-
 ## Documentation
 Check one:
 
