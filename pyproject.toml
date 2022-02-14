@@ -20,6 +20,7 @@ pytest-cov = "3.0.0"
 pyright = "0.0.13"
 pre-commit = "2.17.0"
 flake8 = "4.0.1"
+isort = "5.10.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -53,3 +54,16 @@ warn_unreachable = true
 typeCheckingMode = "strict"
 reportUnusedFunction = "none"
 reportPrivateUsage = "none"
+
+[tool.pytest.ini_options]
+addopts ="""
+  --cov=koda
+  --cov-report=term:skip-covered
+  --cov-report=html
+  --cov-branch
+  --cov-fail-under=100
+"""
+
+[tool.isort]
+line_length = 90
+profile = "black"

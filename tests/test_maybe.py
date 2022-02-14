@@ -1,6 +1,10 @@
 from koda.maybe import Just, nothing
-from tests.utils import enforce_functor_one_val, enforce_monad_unit, \
-    enforce_monad_flat_map, enforce_applicative_apply
+from tests.utils import (
+    enforce_applicative_apply,
+    enforce_functor_one_val,
+    enforce_monad_flat_map,
+    enforce_monad_unit,
+)
 
 
 def test_maybe() -> None:

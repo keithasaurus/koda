@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Callable, Generic, Union
 
-from koda._generics import A, FailT, B
+from koda._generics import A, B, FailT
 
 
 @dataclass(frozen=True)
@@ -43,9 +43,7 @@ class Err(Generic[FailT]):
     def flat_map(self, _: Callable[[Any], "Result[Any, Any]"]) -> "Err[FailT]":
         return self
 
-    def flat_map_err(
-        self, fn: Callable[[FailT], "Result[A, B]"]
-    ) -> "Result[A, B]":
+    def flat_map_err(self, fn: Callable[[FailT], "Result[A, B]"]) -> "Result[A, B]":
         return fn(self.val)
 
     def map_err(self, fn: Callable[[FailT], B]) -> "Err[B]":

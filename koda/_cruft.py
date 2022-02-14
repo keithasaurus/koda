@@ -1,8 +1,7 @@
-from typing import Callable, Optional, Union, overload
-from typing import cast, Final
+from typing import Callable, Final, Optional, Union, cast, overload
 
-from koda._generics import A, B, C, G, I, E, D, F, H
-from koda.result import Result, Ok, Err
+from koda._generics import A, B, C, D, E, F, G, H, I
+from koda.result import Err, Ok, Result
 
 
 @overload

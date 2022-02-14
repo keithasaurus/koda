@@ -1,6 +1,10 @@
 from koda.result import Err, Ok, Result
-from tests.utils import enforce_functor_one_val, enforce_monad_unit, \
-    enforce_monad_flat_map, enforce_applicative_apply
+from tests.utils import (
+    enforce_applicative_apply,
+    enforce_functor_one_val,
+    enforce_monad_flat_map,
+    enforce_monad_unit,
+)
 
 
 def test_result() -> None:
@@ -46,7 +50,7 @@ def test_err_map_err() -> None:
         return str(n)
 
     result: Result[bool, str] = Err(5).map_err(_int_to_str)
-    assert result == Err('5')
+    assert result == Err("5")
 
 
 def test_err_swap() -> None:
