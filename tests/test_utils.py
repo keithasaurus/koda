@@ -11,6 +11,7 @@ from koda.utils import (
     maybe_to_result,
     result_to_maybe,
     safe_try,
+    to_maybe,
 )
 from tests.utils import assert_same_error_type_with_same_message
 
@@ -208,3 +209,11 @@ def test_mapping_get() -> None:
     assert mapping_get(d, "a") == Just(None)
     assert mapping_get(d, "b") == Just("ok")
     assert mapping_get(d, "c") == nothing
+
+
+def test_to_maybe() -> None:
+    assert to_maybe(5) == Just(5)
+    assert to_maybe("abc") == Just("abc")
+    assert to_maybe(False) == Just(False)
+
+    assert to_maybe(None) == nothing
