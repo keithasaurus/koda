@@ -19,6 +19,7 @@ from koda.utils import (
     maybe_to_result,
     result_to_maybe,
     safe_try,
+    to_maybe,
 )
 
 __all__ = (
@@ -45,4 +46,5 @@ __all__ = (
     "result_to_maybe",
     "load_once",
     "safe_try",
+    "to_maybe",
 )

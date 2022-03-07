@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, Mapping
+from typing import Any, Callable, List, Mapping, Optional
 
 from koda._cruft import _compose, _safe_try
 from koda._generics import A, B, FailT
@@ -26,6 +26,13 @@ def maybe_to_result(fail_message: FailT, orig: Maybe[A]) -> Result[A, FailT]:
         return Ok(orig.val)
     else:
         return Err(fail_message)
+
+
+def to_maybe(val: Optional[A]) -> Maybe[A]:
+    if val is None:
+        return nothing
+    else:
+        return Just(val)
 
 
 def result_to_maybe(orig: Result[A, Any]) -> Maybe[A]:

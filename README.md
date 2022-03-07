@@ -198,6 +198,20 @@ assert result_to_maybe(Ok(5)) == Just(5)
 assert result_to_maybe(Err("any error")) == nothing 
 ```
 
+### to_maybe
+
+Convert an `Optional` value to a `Maybe`.
+
+```python3
+from koda import to_maybe, Just, nothing
+
+assert to_maybe(5) == Just(5)
+assert to_maybe("abc") == Just("abc")
+assert to_maybe(False) == Just(False)
+
+assert to_maybe(None) == nothing
+```
+
 ## Intent
 
 Koda is intended to focus on a small set of practical data types and utility functions for Python. It will not 
