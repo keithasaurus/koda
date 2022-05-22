@@ -17,16 +17,16 @@ class Ok(Generic[A]):
     def flat_map(self, fn: Callable[[A], "Result[B, FailT]"]) -> "Result[B, FailT]":
         return fn(self.val)
 
-    def flat_map_err(self, fn: Callable[[Any], "Result[A, Any]"]) -> "Ok[A]":
+    def flat_map_err(self, fn: Callable[[FailT], "Result[A, B]"]) -> "Result[A, B]":
         return self
 
-    def map(self, fn: Callable[[A], B]) -> "Ok[B]":
+    def map(self, fn: Callable[[A], B]) -> "Result[B, FailT]":
         return Ok(fn(self.val))
 
-    def map_err(self, fn: Callable[[Any], "Any"]) -> "Ok[A]":
+    def map_err(self, fn: Callable[[FailT], "B"]) -> "Result[A, B]":
         return self
 
-    def swap(self) -> "Err[A]":
+    def swap(self) -> "Result[FailT, A]":
         return Err(self.val)
 
 
@@ -34,22 +34,22 @@ class Ok(Generic[A]):
 class Err(Generic[FailT]):
     val: FailT
 
-    def apply(self, _: "Result[Callable[[Any], Any], FailT]") -> "Err[FailT]":
+    def apply(self, _: "Result[Callable[[A], B], FailT]") -> "Result[B, FailT]":
         return self
 
-    def map(self, _: Callable[[Any], Any]) -> "Err[FailT]":
+    def map(self, _: Callable[[A], B]) -> "Result[B, FailT]":
         return self
 
-    def flat_map(self, _: Callable[[Any], "Result[Any, Any]"]) -> "Err[FailT]":
+    def flat_map(self, _: Callable[[A], "Result[B, FailT]"]) -> "Result[B, FailT]":
         return self
 
     def flat_map_err(self, fn: Callable[[FailT], "Result[A, B]"]) -> "Result[A, B]":
         return fn(self.val)
 
-    def map_err(self, fn: Callable[[FailT], B]) -> "Err[B]":
+    def map_err(self, fn: Callable[[FailT], B]) -> "Result[A, B]":
         return Err(fn(self.val))
 
-    def swap(self) -> Ok[FailT]:
+    def swap(self) -> "Result[FailT, A]":
         return Ok(self.val)
 
 

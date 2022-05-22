@@ -1,3 +1,5 @@
+from typing import Any
+
 from koda.result import Err, Ok, Result
 from tests.utils import (
     enforce_applicative_apply,
@@ -34,7 +36,10 @@ def test_ok_swap() -> None:
 
 
 def test_err_map() -> None:
-    assert Err(3).map(lambda _: 25) == Err(3)
+    def return_25(a: Any) -> int:
+        return 25
+
+    assert Err(3).map(return_25) == Err(3)
 
 
 def test_err_flat_map_err() -> None:

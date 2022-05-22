@@ -1,3 +1,5 @@
+from typing import Any
+
 from koda.maybe import Just, nothing
 from tests.utils import (
     enforce_applicative_apply,
@@ -15,4 +17,7 @@ def test_maybe() -> None:
 
 
 def test_nothing_map() -> None:
-    assert nothing.map(lambda _: 5) == nothing
+    def anything_to_5(_: Any) -> int:
+        return 5
+
+    assert nothing.map(anything_to_5) == nothing
