@@ -9,13 +9,13 @@ class Nothing:
     def get_or_else(self, fallback: A) -> A:
         return fallback
 
-    def map(self, _: Callable[[A], B]) -> "Maybe[B]":
+    def map(self, _: Callable[[Any], B]) -> "Maybe[B]":
         return self
 
-    def flat_map(self, _: Callable[[A], "Maybe[B]"]) -> "Maybe[B]":
+    def flat_map(self, _: Callable[[Any], "Maybe[B]"]) -> "Maybe[B]":
         return self
 
-    def apply(self, _: "Maybe[Callable[[A], B]]") -> "Maybe[B]":
+    def apply(self, _: "Maybe[Callable[[Any], B]]") -> "Maybe[B]":
         return self
 
 
@@ -27,7 +27,7 @@ nothing: Final[Nothing] = Nothing()
 class Just(Generic[A]):
     val: A
 
-    def get_or_else(self, _: B) -> A:
+    def get_or_else(self, _: Any) -> A:
         return self.val
 
     def map(self, fn: Callable[[A], B]) -> "Maybe[B]":
