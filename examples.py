@@ -42,13 +42,11 @@ def function_returning_maybe_str() -> Maybe[str]:
 
 maybe_str: Maybe[str] = function_returning_maybe_str()
 
-# unwrap by checking instance type
 if isinstance(maybe_str, Just):
     print(maybe_str.val)
 else:
     print("No value!")
 
-# unwrap with structural pattern matching (python 3.10 +)
 match maybe_str:
     case Just(val):
         print(val)

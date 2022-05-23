@@ -21,3 +21,8 @@ def test_nothing_map() -> None:
         return 5
 
     assert nothing.map(anything_to_5) == nothing
+
+
+def test_get_or_else() -> None:
+    assert Just(5).get_or_else(12) == 5
+    assert nothing.get_or_else(12) == 12

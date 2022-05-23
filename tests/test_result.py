@@ -60,3 +60,8 @@ def test_err_map_err() -> None:
 
 def test_err_swap() -> None:
     assert Err(3).swap() == Ok(3)
+
+
+def test_get_or_else() -> None:
+    assert Ok(5).get_or_else(12) == 5
+    assert Err("some error").get_or_else(12) == 12

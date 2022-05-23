@@ -14,6 +14,9 @@ class Ok(Generic[A]):
         else:
             return container
 
+    def get_or_else(self, _: A) -> A:
+        return self.val
+
     def flat_map(self, fn: Callable[[A], "Result[B, FailT]"]) -> "Result[B, FailT]":
         return fn(self.val)
 
@@ -36,6 +39,9 @@ class Err(Generic[FailT]):
 
     def apply(self, _: "Result[Callable[[Any], B], FailT]") -> "Result[B, FailT]":
         return self
+
+    def get_or_else(self, fallback: A) -> A:
+        return fallback
 
     def map(self, _: Callable[[Any], B]) -> "Result[B, FailT]":
         return self
