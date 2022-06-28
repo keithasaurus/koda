@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple, Union
 
 from koda._generics import A, B
-from koda.maybe import Just, nothing
+from koda.maybe import Just, just, nothing
 from koda.result import Err, Ok, Result
 from koda.utils import (
     compose,
@@ -114,13 +114,13 @@ def test_maybe_to_result() -> None:
 
     fail_message = SomeError("it failed", ["a", "b"])
 
-    assert maybe_to_result(fail_message, Just(5)) == Ok(5)
+    assert maybe_to_result(fail_message, just(5)) == Ok(5)
 
     assert maybe_to_result(fail_message, nothing) == Err(fail_message)
 
 
 def test_result_to_maybe() -> None:
-    assert result_to_maybe(Ok(3)) == Just(3)
+    assert result_to_maybe(Ok(3)) == just(3)
     assert result_to_maybe(Err("something")) == nothing
 
 
@@ -206,14 +206,14 @@ def test_safe_try_with_more_params() -> None:
 def test_mapping_get() -> None:
     d: Dict[str, Optional[str]] = {"a": None, "b": "ok"}
 
-    assert mapping_get(d, "a") == Just(None)
-    assert mapping_get(d, "b") == Just("ok")
+    assert mapping_get(d, "a") == just(None)
+    assert mapping_get(d, "b") == just("ok")
     assert mapping_get(d, "c") == nothing
 
 
 def test_to_maybe() -> None:
-    assert to_maybe(5) == Just(5)
-    assert to_maybe("abc") == Just("abc")
-    assert to_maybe(False) == Just(False)
+    assert to_maybe(5) == just(5)
+    assert to_maybe("abc") == just("abc")
+    assert to_maybe(False) == just(False)
 
     assert to_maybe(None) == nothing

@@ -15,6 +15,7 @@ from koda import (
     safe_try,
     to_maybe,
 )
+from koda.maybe import just
 
 
 def str_to_int(a: str) -> Maybe[int]:
@@ -23,31 +24,31 @@ def str_to_int(a: str) -> Maybe[int]:
     except ValueError:
         return nothing
     else:
-        return Just(int_val)
+        return just(int_val)
 
 
 x = str_to_int("5").map(str).get_or_else("ok")
 
 
-a: Maybe[int] = Just(5)
+a: Maybe[int] = just(5)
 b: Maybe[int] = nothing
 
 
 def function_returning_maybe_str() -> Maybe[str]:
     if random() > 0.5:
-        return Just("ok")
+        return just("ok")
     else:
         return nothing
 
 
 maybe_str: Maybe[str] = function_returning_maybe_str()
 
-if isinstance(maybe_str, Just):
-    print(maybe_str.val)
+if isinstance(maybe_str.val, Just):
+    print(maybe_str.val.val)
 else:
     print("No value!")
 
-match maybe_str:
+match maybe_str.val:
     case Just(val):
         print(val)
     case Nothing:
@@ -58,20 +59,20 @@ def int_add_10(x: int) -> int:
     return x + 10
 
 
-Just(5).map(int_add_10)  # Just(15)
+just(5).map(int_add_10)  # Just(15)
 nothing.map(int_add_10)  # Nothing
-Just(5).map(int_add_10).map(lambda x: f"abc{x}")  # Just("abc15")
+just(5).map(int_add_10).map(lambda x: f"abc{x}")  # Just("abc15")
 
 
 def safe_divide(dividend: int, divisor: int) -> Maybe[float]:
     if divisor != 0:
-        return Just(dividend / divisor)
+        return just(dividend / divisor)
     else:
         return nothing
 
 
-Just(5).flat_map(lambda x: safe_divide(10, x))  # Just(2)
-Just(0).flat_map(lambda x: safe_divide(10, x))  # Nothing
+just(5).flat_map(lambda x: safe_divide(10, x))  # Just(2)
+just(0).flat_map(lambda x: safe_divide(10, x))  # Nothing
 nothing.flat_map(lambda x: safe_divide(10, x))  # Nothing
 
 
@@ -125,10 +126,10 @@ combined_func: Callable[[int], str] = compose(int_to_str, prepend_str_abc)
 assert combined_func(10) == "abc10"
 
 
-example_dict: dict[str, Maybe[int]] = {"a": Just(1), "b": nothing}
+example_dict: dict[str, Maybe[int]] = {"a": just(1), "b": nothing}
 
-assert mapping_get(example_dict, "a") == Just(Just(1))
-assert mapping_get(example_dict, "b") == Just(nothing)
+assert mapping_get(example_dict, "a") == just(just(1))
+assert mapping_get(example_dict, "b") == just(nothing)
 assert mapping_get(example_dict, "c") == nothing
 
 
@@ -146,14 +147,14 @@ assert retrieved_val == call_random_once()
 from koda import Err, Just, Ok, maybe_to_result, nothing
 
 assert maybe_to_result("value if nothing", nothing) == Err("value if nothing")
-assert maybe_to_result("value if nothing", Just(5)) == Ok(5)
+assert maybe_to_result("value if nothing", just(5)) == Ok(5)
 
 
-assert result_to_maybe(Ok(5)) == Just(5)
+assert result_to_maybe(Ok(5)) == just(5)
 assert result_to_maybe(Err("any error")) == nothing
 
-assert to_maybe(5) == Just(5)
-assert to_maybe("abc") == Just("abc")
-assert to_maybe(False) == Just(False)
+assert to_maybe(5) == just(5)
+assert to_maybe("abc") == just("abc")
+assert to_maybe(False) == just(False)
 
 assert to_maybe(None) == nothing

@@ -1,46 +1,48 @@
 from dataclasses import dataclass
 from typing import Any, Callable, Final, Generic, Union
 
+from koda import compose, identity
 from koda._generics import A, B
 
 
 @dataclass(frozen=True)
 class Nothing:
-    def get_or_else(self, fallback: A) -> A:
-        return fallback
-
-    def map(self, _: Callable[[Any], B]) -> "Maybe[B]":
-        return self
-
-    def flat_map(self, _: Callable[[Any], "Maybe[B]"]) -> "Maybe[B]":
-        return self
-
-    def apply(self, _: "Maybe[Callable[[Any], B]]") -> "Maybe[B]":
-        return self
+    pass
 
 
-# just a pre-init-ed instance of nothing.
-nothing: Final[Nothing] = Nothing()
-
-
-@dataclass(frozen=True)
+@dataclass
 class Just(Generic[A]):
     val: A
 
-    def get_or_else(self, _: Any) -> A:
-        return self.val
+
+_Maybe = Nothing | Just[A]
+
+
+@dataclass(frozen=True)
+class Maybe(Generic[A]):
+    val: _Maybe[A]
+
+    def switch(self, if_just: Callable[[A], B], if_nothing: B) -> B:
+        if isinstance(self.val, Just):
+            return if_just(self.val.val)
+        else:
+            return if_nothing
+
+    def get_or_else(self, fallback: A) -> A:
+        return self.switch(identity, fallback)
 
     def map(self, fn: Callable[[A], B]) -> "Maybe[B]":
-        return Just(fn(self.val))
+        return self.switch(compose(fn, just), nothing)
 
     def flat_map(self, fn: Callable[[A], "Maybe[B]"]) -> "Maybe[B]":
-        return fn(self.val)
+        return self.switch(fn, nothing)
 
     def apply(self, container: "Maybe[Callable[[A], B]]") -> "Maybe[B]":
-        if isinstance(container, Nothing):
-            return nothing
-        else:
-            return Just(container.val(self.val))
+        return container.switch(self.map, nothing)
 
 
-Maybe = Union[Just[A], Nothing]
+nothing: Final[Maybe[Any]] = Maybe(Nothing())
+
+
+def just(val: A) -> Maybe[A]:
+    return Maybe(Just(val))
