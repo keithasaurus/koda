@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Final, Generic, Union
+from typing import Any, Callable, Final, Generic
 
-from koda import compose, identity
 from koda._generics import A, B
+from koda.utils import compose, identity
 
 
 @dataclass(frozen=True)
@@ -30,6 +30,12 @@ class Maybe(Generic[A]):
 
     def get_or_else(self, fallback: A) -> A:
         return self.switch(identity, fallback)
+
+    def if_just(self, fn: Callable[[A], Any]) -> None:
+        self.switch(fn, None)
+
+    def if_nothing(self, fn: Callable[[], Any]) -> None:
+        self.switch(lambda _: None, fn())
 
     def map(self, fn: Callable[[A], B]) -> "Maybe[B]":
         return self.switch(compose(fn, just), nothing)

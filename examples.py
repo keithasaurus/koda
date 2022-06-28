@@ -16,6 +16,7 @@ from koda import (
     to_maybe,
 )
 from koda.maybe import just
+from koda.result import err, ok
 
 
 def str_to_int(a: str) -> Maybe[int]:
@@ -78,28 +79,28 @@ nothing.flat_map(lambda x: safe_divide(10, x))  # Nothing
 
 def safe_divide_result(dividend: int, divisor: int) -> Result[float, str]:
     if divisor != 0:
-        return Ok(dividend / divisor)
+        return ok(dividend / divisor)
     else:
-        return Err("cannot divide by zero!")
+        return err("cannot divide by zero!")
 
 
-Ok(5).flat_map(lambda x: safe_divide_result(10, x))  # Ok(2)
-Ok(0).flat_map(lambda x: safe_divide_result(10, x))  # Err("cannot divide by zero!")
-Err("some other error").map(
+ok(5).flat_map(lambda x: safe_divide_result(10, x))  # ok(2)
+ok(0).flat_map(lambda x: safe_divide_result(10, x))  # err("cannot divide by zero!")
+err("some other error").map(
     lambda x: safe_divide_result(10, x)
-)  # Err("some other error")
+)  # err("some other error")
 
 
 def divide_by(dividend: int, divisor: int) -> Result[float, ZeroDivisionError]:
     try:
-        return Ok(dividend / divisor)
+        return ok(dividend / divisor)
     except ZeroDivisionError as exc:
-        return Err(exc)
+        return err(exc)
 
 
 divided: Result[float, ZeroDivisionError] = divide_by(
     10, 0
-)  # Err(ZeroDivisionError("division by zero"))
+)  # err(ZeroDivisionError("division by zero"))
 
 
 # not safe on its own!
@@ -108,10 +109,10 @@ def divide(dividend: int, divisor: int) -> float:
 
 
 # safe if used with `safe_try`
-divided_ok: Result[float, Exception] = safe_try(divide, 10, 2)  # Ok(5)
+divided_ok: Result[float, Exception] = safe_try(divide, 10, 2)  # ok(5)
 divided_err: Result[float, Exception] = safe_try(
     divide, 10, 0
-)  # Err(ZeroDivisionError("division by zero"))
+)  # err(ZeroDivisionError("division by zero"))
 
 
 def int_to_str(val: int) -> str:
@@ -146,12 +147,12 @@ assert retrieved_val == call_random_once()
 
 from koda import Err, Just, Ok, maybe_to_result, nothing
 
-assert maybe_to_result("value if nothing", nothing) == Err("value if nothing")
-assert maybe_to_result("value if nothing", just(5)) == Ok(5)
+assert maybe_to_result("value if nothing", nothing) == err("value if nothing")
+assert maybe_to_result("value if nothing", just(5)) == ok(5)
 
 
-assert result_to_maybe(Ok(5)) == just(5)
-assert result_to_maybe(Err("any error")) == nothing
+assert result_to_maybe(ok(5)) == just(5)
+assert result_to_maybe(err("any error")) == nothing
 
 assert to_maybe(5) == just(5)
 assert to_maybe("abc") == just("abc")

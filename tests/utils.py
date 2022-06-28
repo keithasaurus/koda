@@ -10,10 +10,10 @@ def assert_same_error_type_with_same_message(
     """
     There may be a better/more concise way to compare exceptions
     """
-    assert isinstance(error_1, Err)
-    assert isinstance(error_2, Err)
+    assert isinstance(error_1.val, Err)
+    assert isinstance(error_2.val, Err)
     assert type(error_1.val) == type(error_2.val)  # noqa: E721
-    assert error_1.val.args == error_2.val.args
+    assert error_1.val.val.args == error_2.val.val.args
 
 
 def _int_inc_5(x: int) -> int:

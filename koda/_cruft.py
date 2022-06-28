@@ -1,7 +1,7 @@
 from typing import Callable, Final, Optional, Union, cast, overload
 
 from koda._generics import A, B, C, D, E, F, G, H, I
-from koda.result import Err, Ok, Result
+from koda.result import Err, Ok, Result, err, ok
 
 
 @overload
@@ -173,31 +173,31 @@ def _safe_try(
 ]:
     if isinstance(v2, _Unset):
         try:
-            return Ok(cast(Callable[[A], B], fn)(v1))
+            return ok(cast(Callable[[A], B], fn)(v1))
         except Exception as e:
-            return Err(e)
+            return err(e)
     elif isinstance(v3, _Unset):
         try:
-            return Ok(cast(Callable[[A, B], C], fn)(v1, v2))
+            return ok(cast(Callable[[A, B], C], fn)(v1, v2))
         except Exception as e:
-            return Err(e)
+            return err(e)
     elif isinstance(v4, _Unset):
         try:
-            return Ok(cast(Callable[[A, B, C], D], fn)(v1, v2, v3))
+            return ok(cast(Callable[[A, B, C], D], fn)(v1, v2, v3))
         except Exception as e:
-            return Err(e)
+            return err(e)
     elif isinstance(v5, _Unset):
         try:
-            return Ok(cast(Callable[[A, B, C, D], E], fn)(v1, v2, v3, v4))
+            return ok(cast(Callable[[A, B, C, D], E], fn)(v1, v2, v3, v4))
         except Exception as e:
-            return Err(e)
+            return err(e)
     elif isinstance(v6, _Unset):
         try:
-            return Ok(cast(Callable[[A, B, C, D, E], F], fn)(v1, v2, v3, v4, v5))
+            return ok(cast(Callable[[A, B, C, D, E], F], fn)(v1, v2, v3, v4, v5))
         except Exception as e:
-            return Err(e)
+            return err(e)
     else:
         try:
-            return Ok(cast(Callable[[A, B, C, D, E, F], G], fn)(v1, v2, v3, v4, v5, v6))
+            return ok(cast(Callable[[A, B, C, D, E, F], G], fn)(v1, v2, v3, v4, v5, v6))
         except Exception as e:
-            return Err(e)
+            return err(e)

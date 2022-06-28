@@ -3,7 +3,7 @@ from typing import Any, Callable, List, Mapping, Optional, Protocol, TypeVar
 from koda._cruft import _compose, _safe_try
 from koda._generics import A, B, FailT
 from koda.maybe import Just, Maybe, just, nothing
-from koda.result import Err, Ok, Result
+from koda.result import Err, Ok, Result, err, ok
 
 compose = _compose
 
@@ -23,9 +23,9 @@ def mapping_get(data: Mapping[A, B], key: A) -> Maybe[B]:
 
 def maybe_to_result(fail_message: FailT, orig: Maybe[A]) -> Result[A, FailT]:
     if isinstance(orig.val, Just):
-        return Ok(orig.val.val)
+        return ok(orig.val.val)
     else:
-        return Err(fail_message)
+        return err(fail_message)
 
 
 def to_maybe(val: Optional[A]) -> Maybe[A]:
@@ -36,7 +36,7 @@ def to_maybe(val: Optional[A]) -> Maybe[A]:
 
 
 def result_to_maybe(orig: Result[A, Any]) -> Maybe[A]:
-    return just(orig.val) if isinstance(orig, Ok) else nothing
+    return just(orig.val.val) if isinstance(orig.val, Ok) else nothing
 
 
 def load_once(fn: Callable[[], A]) -> Callable[[], A]:
