@@ -3,7 +3,7 @@ from typing import Any, Callable, List, Mapping, Optional, Protocol, TypeVar
 from koda._cruft import _compose, _safe_try
 from koda._generics import A, B, FailT
 from koda.maybe import Just, Maybe, just, nothing
-from koda.result import Err, Ok, Result, err, ok
+from koda.result import Ok, Result, err, ok
 
 compose = _compose
 

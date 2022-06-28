@@ -11,5 +11,6 @@ H = TypeVar("H")
 I = TypeVar("I")
 J = TypeVar("J")
 K = TypeVar("K")
+T = TypeVar("T")
 
 FailT = TypeVar("FailT")

@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Generic, Union
+from typing import Any, Callable, Generic
 
 from koda._generics import A, B, E, F
-from koda.utils import always, compose, identity
+from koda.utils import always, compose
 
 
 @dataclass(frozen=True)
