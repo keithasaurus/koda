@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Final, Generic
+from typing import Any, Callable, Final, Generic, Union
 
 from koda._generics import A, B
 from koda.compose_ import compose
@@ -16,7 +16,7 @@ class Just(Generic[A]):
     val: A
 
 
-_Maybe = Nothing | Just[A]
+_Maybe = Union[Nothing, Just[A]]
 
 
 @dataclass(frozen=True)
