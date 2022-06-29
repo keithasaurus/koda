@@ -1,4 +1,3 @@
-import sys
 from random import random
 from typing import Callable, Optional
 
@@ -50,12 +49,11 @@ else:
     print("No value!")
 
 
-if sys.version_info >= (3, 10):
-    match maybe_str.val:
-        case Just(val):
-            print(val)
-        case Nothing:
-            print("No value!")
+# match maybe_str.val:
+#     case Just(val):
+#         print(val)
+#     case Nothing:
+#         print("No value!")
 
 
 def int_add_10(x: int) -> int:
