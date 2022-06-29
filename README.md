@@ -24,7 +24,7 @@ from koda import Just, Maybe
 maybe_str: Maybe[str] = function_returning_maybe_str()
 
 # unwrap with structural pattern matching (python 3.10 +)
-match maybe_str.val:
+match maybe_str.variant:
     case Just(v):
         print(v)
     case Nothing:

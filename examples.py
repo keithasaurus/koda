@@ -43,8 +43,8 @@ def function_returning_maybe_str() -> Maybe[str]:
 
 maybe_str: Maybe[str] = function_returning_maybe_str()
 
-if isinstance(maybe_str.val, Just):
-    print(maybe_str.val.val)
+if isinstance(maybe_str.variant, Just):
+    print(maybe_str.variant.val)
 else:
     print("No value!")
 

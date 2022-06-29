@@ -21,7 +21,7 @@ _Result = Union[Ok[A], Err[E]]
 
 @dataclass(frozen=True)
 class Result(Generic[A, E]):
-    val: _Result[A, E]
+    variant: _Result[A, E]
 
     def if_ok(self, fn: Callable[[A], Any]) -> None:
         self.switch(fn, lambda _: None)
@@ -55,10 +55,10 @@ class Result(Generic[A, E]):
         return self.switch(err, ok)
 
     def switch(self, if_ok: Callable[[A], B], if_err: Callable[[E], B]) -> B:
-        if isinstance(self.val, Ok):
-            return if_ok(self.val.val)
+        if isinstance(self.variant, Ok):
+            return if_ok(self.variant.val)
         else:
-            return if_err(self.val.val)
+            return if_err(self.variant.val)
 
 
 def ok(val: A) -> Result[A, Any]:

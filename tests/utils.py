@@ -11,10 +11,10 @@ def assert_same_error_type_with_same_message(
     """
     There may be a better/more concise way to compare exceptions
     """
-    assert isinstance(error_1.val, Err)
-    assert isinstance(error_2.val, Err)
-    assert type(error_1.val) == type(error_2.val)  # noqa: E721
-    assert error_1.val.val.args == error_2.val.val.args
+    assert isinstance(error_1.variant, Err)
+    assert isinstance(error_2.variant, Err)
+    assert type(error_1.variant) == type(error_2.variant)  # noqa: E721
+    assert error_1.variant.val.args == error_2.variant.val.args
 
 
 def _int_inc_5(x: int) -> int:
@@ -49,7 +49,7 @@ def enforce_functor_one_val(functorable: Callable[[Any], Any], map_method: str) 
 
 def enforce_monad_unit(unitable: Callable[[Any], Any]) -> None:
     test_val: int = 10
-    assert unitable(test_val).val.val == test_val
+    assert unitable(test_val).variant.val == test_val
 
 
 def enforce_monad_flat_map(bindable: Callable[[Any], Any], non_bindable: Any) -> None:

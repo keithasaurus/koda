@@ -6,8 +6,8 @@ from koda.result import Ok, Result, err, ok
 
 
 def maybe_to_result(fail_message: FailT, orig: Maybe[A]) -> Result[A, FailT]:
-    if isinstance(orig.val, Just):
-        return ok(orig.val.val)
+    if isinstance(orig.variant, Just):
+        return ok(orig.variant.val)
     else:
         return err(fail_message)
 
@@ -20,4 +20,4 @@ def to_maybe(val: Optional[A]) -> Maybe[A]:
 
 
 def result_to_maybe(orig: Result[A, Any]) -> Maybe[A]:
-    return just(orig.val.val) if isinstance(orig.val, Ok) else nothing
+    return just(orig.variant.val) if isinstance(orig.variant, Ok) else nothing

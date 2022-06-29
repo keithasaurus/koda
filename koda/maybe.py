@@ -21,11 +21,11 @@ _Maybe = Union[Nothing, Just[A]]
 
 @dataclass(frozen=True)
 class Maybe(Generic[A]):
-    val: _Maybe[A]
+    variant: _Maybe[A]
 
     def switch(self, if_just: Callable[[A], B], if_nothing: B) -> B:
-        if isinstance(self.val, Just):
-            return if_just(self.val.val)
+        if isinstance(self.variant, Just):
+            return if_just(self.variant.val)
         else:
             return if_nothing
 
@@ -36,7 +36,7 @@ class Maybe(Generic[A]):
         self.switch(fn, None)
 
     def if_nothing(self, fn: Callable[[], Any]) -> None:
-        if isinstance(self.val, Nothing):
+        if isinstance(self.variant, Nothing):
             fn()
 
     def map(self, fn: Callable[[A], B]) -> "Maybe[B]":
@@ -46,8 +46,8 @@ class Maybe(Generic[A]):
         return self.switch(fn, nothing)
 
     def apply(self, container: "Maybe[Callable[[A], B]]") -> "Maybe[B]":
-        if isinstance(container.val, Just):
-            return self.map(container.val.val)
+        if isinstance(container.variant, Just):
+            return self.map(container.variant.val)
         else:
             return nothing
 

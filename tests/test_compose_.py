@@ -38,7 +38,7 @@ def _reverse_tuple(s: tuple[str, ...]) -> tuple[str, ...]:
 
 
 def _get_result_val(data: Result[A, B]) -> Union[A, B]:
-    return data.val.val
+    return data.variant.val
 
 
 def test_compose2() -> None:
