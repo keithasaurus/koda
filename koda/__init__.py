@@ -12,6 +12,7 @@ from koda.either import (
 from koda.maybe import Just, Maybe, Nothing, nothing
 from koda.result import Err, Ok, Result
 from koda.utils import (
+    always,
     compose,
     identity,
     load_once,
@@ -23,6 +24,7 @@ from koda.utils import (
 )
 
 __all__ = (
+    "always",
     "Either",
     "Either3",
     "Either4",

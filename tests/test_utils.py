@@ -5,6 +5,7 @@ from koda._generics import A, B
 from koda.maybe import Just, nothing
 from koda.result import Err, Ok, Result
 from koda.utils import (
+    always,
     compose,
     load_once,
     mapping_get,
@@ -217,3 +218,9 @@ def test_to_maybe() -> None:
     assert to_maybe(False) == Just(False)
 
     assert to_maybe(None) == nothing
+
+
+def test_always() -> None:
+    fn = always(5)
+    assert fn() == 5
+    assert fn(1, 2, 3, arg=12) == 5
