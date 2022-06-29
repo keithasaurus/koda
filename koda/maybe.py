@@ -6,13 +6,16 @@ from koda._generics import A, B
 
 @dataclass(frozen=True)
 class Nothing:
-    def map(self, _: Callable[[Any], Any]) -> "Nothing":
+    def get_or_else(self, fallback: A) -> A:
+        return fallback
+
+    def map(self, _: Callable[[Any], B]) -> "Maybe[B]":
         return self
 
-    def flat_map(self, _: Callable[[Any], "Maybe[Any]"]) -> "Nothing":
+    def flat_map(self, _: Callable[[Any], "Maybe[B]"]) -> "Maybe[B]":
         return self
 
-    def apply(self, _: "Maybe[Callable[[Any], Any]]") -> "Nothing":
+    def apply(self, _: "Maybe[Callable[[Any], B]]") -> "Maybe[B]":
         return self
 
 
@@ -24,7 +27,10 @@ nothing: Final[Nothing] = Nothing()
 class Just(Generic[A]):
     val: A
 
-    def map(self, fn: Callable[[A], B]) -> "Just[B]":
+    def get_or_else(self, _: Any) -> A:
+        return self.val
+
+    def map(self, fn: Callable[[A], B]) -> "Maybe[B]":
         return Just(fn(self.val))
 
     def flat_map(self, fn: Callable[[A], "Maybe[B]"]) -> "Maybe[B]":

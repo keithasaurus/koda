@@ -44,9 +44,13 @@ match maybe_str:
 ```python3
 from koda import Just, nothing
 
-Just(5).map(lambda x: x + 10)  # Just(15)
-nothing.map(lambda x: x + 10)  # Nothing
-Just(5).map(lambda x: x + 10).map(lambda x: f"abc{x}")  # Just("abc15")
+def int_add_10(x: int) -> int:
+    return x + 10
+
+
+Just(5).map(int_add_10)  # Just(15)
+nothing.map(int_add_10)  # Nothing
+Just(5).map(int_add_10).map(lambda x: f"abc{x}")  # Just("abc15")
 ```
 
 #### Maybe.flat_map
@@ -112,8 +116,8 @@ def divide(dividend: int, divisor: int) -> float:
     return dividend / divisor
 
 # safe if used with `safe_try`
-divided_ok: Result[float, ZeroDivisionError] = safe_try(divide, 10, 2)  # Ok(5)
-divided_err: Result[float, ZeroDivisionError] = safe_try(divide, 10, 0)  # Err(ZeroDivisionError("division by zero"))
+divided_ok: Result[float, Exception] = safe_try(divide, 10, 2)  # Ok(5)
+divided_err: Result[float, Exception] = safe_try(divide, 10, 0)  # Err(ZeroDivisionError("division by zero"))
 ```
 
 ## More

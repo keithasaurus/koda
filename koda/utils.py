@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, Mapping, Optional
+from typing import Any, Callable, List, Mapping, Optional, Protocol, TypeVar
 
 from koda._cruft import _compose, _safe_try
 from koda._generics import A, B, FailT
@@ -57,3 +57,18 @@ def load_once(fn: Callable[[], A]) -> Callable[[], A]:
 
 
 safe_try = _safe_try
+
+
+A_co = TypeVar("A_co", covariant=True)
+
+
+class _AnyArgs(Protocol[A_co]):  # pragma: no cover
+    def __call__(self, *args: Any, **kwargs: Any) -> A_co:
+        ...
+
+
+def always(x: A) -> _AnyArgs[A]:
+    def inner(*args: Any, **kwargs: Any) -> A:
+        return x
+
+    return inner
