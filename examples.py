@@ -48,11 +48,13 @@ if isinstance(maybe_str, Just):
 else:
     print("No value!")
 
-match maybe_str:
-    case Just(val):
-        print(val)
-    case Nothing:
-        print("No value!")
+# todo: extract to py3.10-only file
+# match maybe_str:
+#     case Just(val):
+#         print(val)
+#     case Nothing:
+#         print("No value!")
+#
 
 
 def int_add_10(x: int) -> int:
