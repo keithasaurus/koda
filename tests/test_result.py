@@ -1,6 +1,6 @@
 from typing import Any
 
-from koda.result import Err, Ok, Result, err, ok
+from koda.result import Ok, Result, err, ok
 from tests.utils import (
     enforce_applicative_apply,
     enforce_functor_one_val,

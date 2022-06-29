@@ -2,10 +2,8 @@ from random import random
 from typing import Callable, Optional
 
 from koda import (
-    Err,
     Just,
     Maybe,
-    Ok,
     Result,
     compose,
     load_once,
@@ -145,7 +143,7 @@ call_random_once = load_once(random)  # has not called random yet
 retrieved_val: float = call_random_once()
 assert retrieved_val == call_random_once()
 
-from koda import Err, Just, Ok, maybe_to_result, nothing
+from koda import maybe_to_result, nothing
 
 assert maybe_to_result("value if nothing", nothing) == err("value if nothing")
 assert maybe_to_result("value if nothing", just(5)) == ok(5)

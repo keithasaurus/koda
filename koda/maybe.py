@@ -44,7 +44,10 @@ class Maybe(Generic[A]):
         return self.switch(fn, nothing)
 
     def apply(self, container: "Maybe[Callable[[A], B]]") -> "Maybe[B]":
-        return container.switch(self.map, nothing)
+        if isinstance(container.val, Just):
+            return self.map(container.val.val)
+        else:
+            return nothing
 
 
 nothing: Final[Maybe[Any]] = Maybe(Nothing())

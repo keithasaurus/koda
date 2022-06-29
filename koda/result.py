@@ -22,9 +22,6 @@ _Result = Ok[A] | Err[E]
 class Result(Generic[A, E]):
     val: _Result[A, E]
 
-    def apply(self, container: "Result[Callable[[A], B], E]") -> "Result[B, E]":
-        return container.switch(self.map, err)
-
     def if_ok(self, fn: Callable[[A], Any]) -> None:
         self.switch(fn, lambda _: None)
 

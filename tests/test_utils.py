@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple, Union
 
 from koda._generics import A, B
-from koda.maybe import Just, just, nothing
-from koda.result import Err, Ok, Result, err, ok
+from koda.maybe import just, nothing
+from koda.result import Result, err, ok
 from koda.utils import (
     compose,
     load_once,
