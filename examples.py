@@ -1,5 +1,5 @@
 from random import random
-from typing import Callable, Optional
+from typing import Callable, Dict, Optional
 
 from koda import (
     Err,
@@ -128,14 +128,14 @@ combined_func: Callable[[int], str] = compose(int_to_str, prepend_str_abc)
 assert combined_func(10) == "abc10"
 
 
-example_dict: dict[str, Maybe[int]] = {"a": Just(1), "b": nothing}
+example_dict: Dict[str, Maybe[int]] = {"a": Just(1), "b": nothing}
 
 assert mapping_get(example_dict, "a") == Just(Just(1))
 assert mapping_get(example_dict, "b") == Just(nothing)
 assert mapping_get(example_dict, "c") == nothing
 
 
-example_dict_1: dict[str, Optional[int]] = {"a": 1, "b": None}
+example_dict_1: Dict[str, Optional[int]] = {"a": 1, "b": None}
 
 assert example_dict_1.get("b") is None
 assert example_dict_1.get("c") is None
