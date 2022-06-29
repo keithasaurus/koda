@@ -39,7 +39,7 @@ def test_if_just() -> None:
 
 
 def test_if_nothing() -> None:
-    box = []
+    box: list[int] = []
 
     just(10).if_nothing(lambda: box.append(5))
     assert box == []
