@@ -5,7 +5,6 @@ from koda import (
     Just,
     Maybe,
     Result,
-    compose,
     load_once,
     mapping_get,
     nothing,
@@ -13,6 +12,7 @@ from koda import (
     safe_try,
     to_maybe,
 )
+from koda.compose_ import compose
 from koda.maybe import just
 from koda.result import err, ok
 

@@ -1,8 +1,9 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Generic
+from typing import Any, Callable, Generic, Union
 
 from koda._generics import A, B, E, F
-from koda.utils import always, compose
+from koda.compose_ import compose
+from koda.utils import always
 
 
 @dataclass(frozen=True)
@@ -15,7 +16,7 @@ class Err(Generic[E]):
     val: E
 
 
-_Result = Ok[A] | Err[E]
+_Result = Union[Ok[A], Err[E]]
 
 
 @dataclass(frozen=True)

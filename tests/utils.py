@@ -1,7 +1,8 @@
-from typing import Any, Type
+from typing import Any, Callable
 
-from koda import compose, identity
+from koda.compose_ import compose
 from koda.result import Err, Result
+from koda.utils import identity
 
 
 def assert_same_error_type_with_same_message(
@@ -24,7 +25,7 @@ def _int_to_str(x: int) -> str:
     return str(x)
 
 
-def enforce_functor_one_val(functorable: Type[Any], map_method: str) -> None:
+def enforce_functor_one_val(functorable: Callable[[Any], Any], map_method: str) -> None:
     """
     requiring map_method to be specified, because the mapping may
     be done by variously named methods
@@ -46,12 +47,12 @@ def enforce_functor_one_val(functorable: Type[Any], map_method: str) -> None:
     assert two_maps_val2 == composed_val
 
 
-def enforce_monad_unit(unitable: Type[Any]) -> None:
+def enforce_monad_unit(unitable: Callable[[Any], Any]) -> None:
     test_val: int = 10
-    assert unitable(test_val).val == test_val
+    assert unitable(test_val).val.val == test_val
 
 
-def enforce_monad_flat_map(bindable: Type[Any], non_bindable: Any) -> None:
+def enforce_monad_flat_map(bindable: Callable[[Any], Any], non_bindable: Any) -> None:
     # should be able to flatmap left
     test_val: int = 10
 
@@ -67,7 +68,9 @@ def enforce_monad_flat_map(bindable: Type[Any], non_bindable: Any) -> None:
     assert non_bindable.flat_map(_int_inc_5) == non_bindable
 
 
-def enforce_applicative_apply(applyable: Type[Any], non_applyable: Any) -> None:
+def enforce_applicative_apply(
+    applyable: Callable[[Any], Any], non_applyable: Any
+) -> None:
     test_val: int = 10
     assert applyable(test_val).apply(applyable(_int_to_str)) == applyable(
         _int_to_str(test_val)

@@ -10,9 +10,9 @@ At its core are a number of datatypes that are common in functional programming.
 to what you may have seen in other languages.
 
 ```python3
-from koda import Maybe, Just, nothing
+from koda import Maybe, just, nothing
 
-a: Maybe[int] = Just(5)
+a: Maybe[int] = just(5)
 b: Maybe[int] = nothing
 ```
 
@@ -23,16 +23,10 @@ from koda import Just, Maybe
 
 maybe_str: Maybe[str] = function_returning_maybe_str()
 
-# unwrap by checking instance type
-if isinstance(maybe_str, Just):
-    print(maybe_str.val)
-else:
-    print("No value!")
-
 # unwrap with structural pattern matching (python 3.10 +)
-match maybe_str:
-    case Just(val):
-        print(val)
+match maybe_str.val:
+    case Just(v):
+        print(v)
     case Nothing:
         print("No value!")
 ```
@@ -42,32 +36,32 @@ match maybe_str:
 #### Maybe.map
 
 ```python3
-from koda import Just, nothing
+from koda import just, nothing
 
 def int_add_10(x: int) -> int:
     return x + 10
 
 
-Just(5).map(int_add_10)  # Just(15)
-nothing.map(int_add_10)  # Nothing
-Just(5).map(int_add_10).map(lambda x: f"abc{x}")  # Just("abc15")
+just(5).map(int_add_10).get_or_else(0) # 15
+nothing.map(int_add_10).get_or_else(0) # 0 
+just(5).map(int_add_10).map(lambda x: f"abc{x}").get_or_else("fallback!")  # "abc15" 
 ```
 
 #### Maybe.flat_map
 
 ```python3
-from koda import Maybe, Just, nothing
+from koda import Maybe, just, nothing
 
 
 def safe_divide(dividend: int, divisor: int) -> Maybe[float]:
     if divisor != 0:
-        return Just(dividend / divisor)
+        return just(dividend / divisor)
     else:
         return nothing
 
-Just(5).flat_map(lambda x: safe_divide(10, x))  # Just(2)
-Just(0).flat_map(lambda x: safe_divide(10, x))  # Nothing
-nothing.flat_map(lambda x: safe_divide(10, x))  # Nothing
+just(5).flat_map(lambda x: safe_divide(10, x))  # just(2)
+just(0).flat_map(lambda x: safe_divide(10, x))  # nothing
+nothing.flat_map(lambda x: safe_divide(10, x))  # nothing
 ```
 
 ## Result
@@ -77,30 +71,30 @@ for failures we can use `Err`. Compared to `Maybe`, `Result` is perhaps most use
 whereas `Nothing` contains no data.
 
 ```python3
-from koda import Ok, Err, Result 
+from koda import ok, err, Result 
 
 
 def safe_divide_result(dividend: int, divisor: int) -> Result[float, str]:
     if divisor != 0:
-        return Ok(dividend / divisor)
+        return ok(dividend / divisor)
     else:
-        return Err("cannot divide by zero!")
+        return err("cannot divide by zero!")
 
 
-Ok(5).flat_map(lambda x: safe_divide_result(10, x))  # Ok(2)
-Ok(0).flat_map(lambda x: safe_divide_result(10, x))  # Err("cannot divide by zero!") 
-Err("some other error").map(lambda x: safe_divide_result(10, x))  # Err("some other error")
+ok(5).flat_map(lambda x: safe_divide_result(10, x))  # ok(2)
+ok(0).flat_map(lambda x: safe_divide_result(10, x))  # err("cannot divide by zero!") 
+err("some other error").map(lambda x: safe_divide_result(10, x))  # err("some other error")
 ```
 
 `Result` can be convenient with `try`/`except` logic.
 ```python3
-from koda import Result, Ok, Err
+from koda import Result, ok, err
 
 def divide_by(dividend: int, divisor: int) -> Result[float, ZeroDivisionError]:
     try:
-        return Ok(dividend / divisor)
+        return ok(dividend / divisor)
     except ZeroDivisionError as exc:
-        return Err(exc)
+        return err(exc)
 
 
 divided: Result[float, ZeroDivisionError] = divide_by(10, 0)  # Err(ZeroDivisionError("division by zero"))
@@ -116,8 +110,8 @@ def divide(dividend: int, divisor: int) -> float:
     return dividend / divisor
 
 # safe if used with `safe_try`
-divided_ok: Result[float, Exception] = safe_try(divide, 10, 2)  # Ok(5)
-divided_err: Result[float, Exception] = safe_try(divide, 10, 0)  # Err(ZeroDivisionError("division by zero"))
+divided_ok: Result[float, Exception] = safe_try(divide, 10, 2)  # ok(5)
+divided_err: Result[float, Exception] = safe_try(divide, 10, 0)  # err(ZeroDivisionError("division by zero"))
 ```
 
 ## More
@@ -145,12 +139,12 @@ assert combined_func(10) == "abc10"
 Try to get a value from a `Mapping` object, and return an unambiguous result.
 
 ```python3
-from koda import mapping_get, Just, Maybe, nothing
+from koda import mapping_get, just, Maybe, nothing
 
-example_dict: dict[str, Maybe[int]] = {"a": Just(1), "b": nothing}
+example_dict: dict[str, Maybe[int]] = {"a": just(1), "b": nothing}
 
-assert mapping_get(example_dict, "a") == Just(Just(1))
-assert mapping_get(example_dict, "b") == Just(nothing)
+assert mapping_get(example_dict, "a") == just(just(1))
+assert mapping_get(example_dict, "b") == just(nothing)
 assert mapping_get(example_dict, "c") == nothing
 ```
 
@@ -185,10 +179,10 @@ assert retrieved_val == call_random_once()
 Convert a `Maybe` to a `Result` type.
 
 ```python3
-from koda import maybe_to_result, Just, nothing, Ok, Err
+from koda import maybe_to_result, just, nothing, ok, err
 
-assert maybe_to_result("value if nothing", nothing) == Err("value if nothing")
-assert maybe_to_result("value if nothing", Just(5)) == Ok(5)
+assert maybe_to_result("value if nothing", nothing) == err("value if nothing")
+assert maybe_to_result("value if nothing", just(5)) == ok(5)
 ```
 
 ### result_to_maybe
@@ -196,10 +190,10 @@ assert maybe_to_result("value if nothing", Just(5)) == Ok(5)
 Convert a `Result` to a `Maybe` type.
 
 ```python3
-from koda import result_to_maybe, Just, nothing, Ok, Err
+from koda import result_to_maybe, just, nothing, ok, err
 
-assert result_to_maybe(Ok(5)) == Just(5)
-assert result_to_maybe(Err("any error")) == nothing 
+assert result_to_maybe(ok(5)) == just(5)
+assert result_to_maybe(err("any error")) == nothing 
 ```
 
 ### to_maybe
@@ -207,11 +201,11 @@ assert result_to_maybe(Err("any error")) == nothing
 Convert an `Optional` value to a `Maybe`.
 
 ```python3
-from koda import to_maybe, Just, nothing
+from koda import to_maybe, just, nothing
 
-assert to_maybe(5) == Just(5)
-assert to_maybe("abc") == Just("abc")
-assert to_maybe(False) == Just(False)
+assert to_maybe(5) == just(5)
+assert to_maybe("abc") == just("abc")
+assert to_maybe(False) == just(False)
 
 assert to_maybe(None) == nothing
 ```

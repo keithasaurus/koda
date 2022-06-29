@@ -1,8 +1,7 @@
 from typing import Any
 
-from koda.result import Ok, Result, err, ok
+from koda.result import Result, err, ok
 from tests.utils import (
-    enforce_applicative_apply,
     enforce_functor_one_val,
     enforce_monad_flat_map,
     enforce_monad_unit,
@@ -10,10 +9,9 @@ from tests.utils import (
 
 
 def test_result() -> None:
-    enforce_functor_one_val(Ok, "map")
-    enforce_monad_unit(Ok)
-    enforce_monad_flat_map(Ok, err("something went wrong"))
-    enforce_applicative_apply(Ok, err("something went wrong"))
+    enforce_functor_one_val(ok, "map")
+    enforce_monad_unit(ok)
+    enforce_monad_flat_map(ok, err("something went wrong"))
 
 
 def test_ok_flat_map_err() -> None:
@@ -65,3 +63,28 @@ def test_err_swap() -> None:
 def test_get_or_else() -> None:
     assert ok(5).get_or_else(12) == 5
     assert err("some error").get_or_else(12) == 12
+
+
+def test_err_get_or_else() -> None:
+    assert err(5).get_err_or_else(12) == 5
+    assert ok("some error").get_err_or_else(12) == 12
+
+
+def test_if_ok() -> None:
+    box: list[int] = []
+
+    err(5).if_ok(box.append)
+    assert box == []
+
+    ok(10).if_ok(box.append)
+    assert box == [10]
+
+
+def test_if_err() -> None:
+    box: list[int] = []
+
+    ok(10).if_err(box.append)
+    assert box == []
+
+    err(5).if_err(box.append)
+    assert box == [5]

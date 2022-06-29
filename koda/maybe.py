@@ -2,7 +2,8 @@ from dataclasses import dataclass
 from typing import Any, Callable, Final, Generic
 
 from koda._generics import A, B
-from koda.utils import compose, identity
+from koda.compose_ import compose
+from koda.utils import identity
 
 
 @dataclass(frozen=True)
@@ -35,7 +36,8 @@ class Maybe(Generic[A]):
         self.switch(fn, None)
 
     def if_nothing(self, fn: Callable[[], Any]) -> None:
-        self.switch(lambda _: None, fn())
+        if isinstance(self.val, Nothing):
+            fn()
 
     def map(self, fn: Callable[[A], B]) -> "Maybe[B]":
         return self.switch(compose(fn, just), nothing)
