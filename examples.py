@@ -10,6 +10,7 @@ from koda import (
     compose,
     load_once,
     mapping_get,
+    maybe_to_result,
     nothing,
     result_to_maybe,
     safe_try,
@@ -142,8 +143,6 @@ call_random_once = load_once(random)  # has not called random yet
 
 retrieved_val: float = call_random_once()
 assert retrieved_val == call_random_once()
-
-from koda import Err, Just, Ok, maybe_to_result, nothing
 
 assert maybe_to_result("value if nothing", nothing) == Err("value if nothing")
 assert maybe_to_result("value if nothing", Just(5)) == Ok(5)
