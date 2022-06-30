@@ -23,6 +23,9 @@ class Nothing:
 
     @property
     def to_optional(self) -> Optional[Any]:
+        """
+        Note that `Just[None]` will return None!
+        """
         return None
 
     def to_result(self, fail_obj: FailT) -> "Result[Any, FailT]":

@@ -37,6 +37,9 @@ class Ok(Generic[A]):
 
     @property
     def to_optional(self) -> Optional[A]:
+        """
+        Note that `Ok[None]` will return None!
+        """
         return self.val
 
     @property
@@ -72,7 +75,7 @@ class Err(Generic[FailT]):
         return Ok(self.val)
 
     @property
-    def to_optional(self):
+    def to_optional(self) -> Optional[Any]:
         return None
 
     @property
