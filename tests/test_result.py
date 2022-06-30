@@ -1,5 +1,6 @@
 from typing import Any
 
+from koda.maybe import Just, nothing
 from koda.result import Err, Ok, Result
 from tests.utils import (
     enforce_applicative_apply,
@@ -65,3 +66,15 @@ def test_err_swap() -> None:
 def test_get_or_else() -> None:
     assert Ok(5).get_or_else(12) == 5
     assert Err("some error").get_or_else(12) == 12
+
+
+def test_to_maybe() -> None:
+    assert Ok(123).to_maybe == Just(123)
+    assert Ok(None).to_maybe == Just(None)
+    assert Err("some error").to_maybe == nothing
+
+
+def test_to_optional() -> None:
+    assert Ok(123).to_optional == 123
+    assert Ok(None).to_optional is None
+    assert Err("some error").to_optional is None

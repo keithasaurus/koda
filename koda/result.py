@@ -1,7 +1,10 @@
 from dataclasses import dataclass
-from typing import Any, Callable, Generic, Union
+from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, Union
 
 from koda._generics import A, B, FailT
+
+if TYPE_CHECKING:  # pragma: no cover
+    from koda.maybe import Maybe
 
 
 @dataclass(frozen=True)
@@ -32,6 +35,16 @@ class Ok(Generic[A]):
     def swap(self) -> "Result[FailT, A]":
         return Err(self.val)
 
+    @property
+    def to_optional(self) -> Optional[A]:
+        return self.val
+
+    @property
+    def to_maybe(self) -> "Maybe[A]":
+        from koda.maybe import Just
+
+        return Just(self.val)
+
 
 @dataclass(frozen=True)
 class Err(Generic[FailT]):
@@ -57,6 +70,16 @@ class Err(Generic[FailT]):
 
     def swap(self) -> "Result[FailT, A]":
         return Ok(self.val)
+
+    @property
+    def to_optional(self):
+        return None
+
+    @property
+    def to_maybe(self) -> "Maybe[Any]":
+        from koda.maybe import nothing
+
+        return nothing
 
 
 Result = Union[Ok[A], Err[FailT]]

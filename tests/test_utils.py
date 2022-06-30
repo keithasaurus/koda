@@ -4,16 +4,7 @@ from typing import Dict, List, Optional, Tuple, Union
 from koda._generics import A, B
 from koda.maybe import Just, nothing
 from koda.result import Err, Ok, Result
-from koda.utils import (
-    always,
-    compose,
-    load_once,
-    mapping_get,
-    maybe_to_result,
-    result_to_maybe,
-    safe_try,
-    to_maybe,
-)
+from koda.utils import always, compose, load_once, mapping_get, safe_try, to_maybe
 from tests.utils import assert_same_error_type_with_same_message
 
 
@@ -105,24 +96,6 @@ def test_compose8() -> None:
         _reverse_tuple,
     )
     assert composed_func(7.3) == ("5", "a")
-
-
-def test_maybe_to_result() -> None:
-    @dataclass
-    class SomeError:
-        msg: str
-        params: List[str]
-
-    fail_message = SomeError("it failed", ["a", "b"])
-
-    assert maybe_to_result(fail_message, Just(5)) == Ok(5)
-
-    assert maybe_to_result(fail_message, nothing) == Err(fail_message)
-
-
-def test_result_to_maybe() -> None:
-    assert result_to_maybe(Ok(3)) == Just(3)
-    assert result_to_maybe(Err("something")) == nothing
 
 
 def test_load_once() -> None:

@@ -21,22 +21,11 @@ def mapping_get(data: Mapping[A, B], key: A) -> Maybe[B]:
         return nothing
 
 
-def maybe_to_result(fail_message: FailT, orig: Maybe[A]) -> Result[A, FailT]:
-    if isinstance(orig, Just):
-        return Ok(orig.val)
-    else:
-        return Err(fail_message)
-
-
 def to_maybe(val: Optional[A]) -> Maybe[A]:
     if val is None:
         return nothing
     else:
         return Just(val)
-
-
-def result_to_maybe(orig: Result[A, Any]) -> Maybe[A]:
-    return Just(orig.val) if isinstance(orig, Ok) else nothing
 
 
 def load_once(fn: Callable[[], A]) -> Callable[[], A]:
