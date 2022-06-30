@@ -7,8 +7,15 @@ if TYPE_CHECKING:  # pragma: no cover
     from koda.result import Result
 
 
-@dataclass(frozen=True)
 class Nothing:
+    def __new__(cls) -> "Nothing":
+        """
+        Make `Nothing` a singleton, so we can do `is` checks if we want.
+        """
+        if not hasattr(cls, "_instance"):
+            cls._instance = super(Nothing, cls).__new__(cls)
+        return cls._instance
+
     def get_or_else(self, fallback: A) -> A:
         return fallback
 

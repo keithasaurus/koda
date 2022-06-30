@@ -23,18 +23,18 @@ from koda import Just, Maybe
 
 maybe_str: Maybe[str] = function_returning_maybe_str()
 
-# unwrap by checking instance type
-if isinstance(maybe_str, Just):
-    print(maybe_str.val)
-else:
-    print("No value!")
-
-# unwrap with structural pattern matching (python 3.10 +)
+# python 3.10 +
 match maybe_str:
     case Just(val):
         print(val)
     case Nothing:
         print("No value!")
+
+# python 3.9 and earlier
+if isinstance(maybe_str, Just):
+    print(maybe_str.val)
+else:
+    print("No value!")
 ```
 
 `Maybe` has methods for conveniently stringing logic together.
@@ -44,13 +44,13 @@ match maybe_str:
 ```python3
 from koda import Just, nothing
 
-def int_add_10(x: int) -> int:
+def add_10(x: int) -> int:
     return x + 10
 
 
-Just(5).map(int_add_10)  # Just(15)
-nothing.map(int_add_10)  # Nothing
-Just(5).map(int_add_10).map(lambda x: f"abc{x}")  # Just("abc15")
+Just(5).map(add_10)  # Just(15)
+nothing.map(add_10)  # nothing 
+Just(5).map(add_10).map(lambda x: f"abc{x}")  # Just("abc15")
 ```
 
 #### Maybe.flat_map
@@ -66,8 +66,8 @@ def safe_divide(dividend: int, divisor: int) -> Maybe[float]:
         return nothing
 
 Just(5).flat_map(lambda x: safe_divide(10, x))  # Just(2)
-Just(0).flat_map(lambda x: safe_divide(10, x))  # Nothing
-nothing.flat_map(lambda x: safe_divide(10, x))  # Nothing
+Just(0).flat_map(lambda x: safe_divide(10, x))  # nothing
+nothing.flat_map(lambda x: safe_divide(10, x))  # nothing
 ```
 
 ## Result

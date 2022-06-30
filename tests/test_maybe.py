@@ -1,7 +1,7 @@
 from typing import Any
 
 from koda import Err, Ok
-from koda.maybe import Just, nothing
+from koda.maybe import Just, Nothing, nothing
 from tests.utils import (
     enforce_applicative_apply,
     enforce_functor_one_val,
@@ -38,3 +38,7 @@ def test_to_optional() -> None:
 def test_to_result() -> None:
     assert Just(2).to_result("error!") == Ok(2)
     assert nothing.to_result("error!") == Err("error!")
+
+
+def test_nothing_singleton() -> None:
+    assert nothing is Nothing()
