@@ -164,7 +164,7 @@ assert Just(5).to_optional == 5
 assert nothing.to_optional is None
 
 # note that `Maybe[None]` will always return None, 
-# so Maybe.get_or_else would be preferable in this case
+# so `Maybe.get_or_else` would be preferable in this case
 assert Just(None) is None
 ```
 
@@ -190,9 +190,9 @@ from koda import Ok, Err
 assert Ok(5).to_optional == 5
 assert Err("some error").to_optional is None
 
-# note that `Maybe[None]` will always return None, 
-# so Maybe.get_or_else would be preferable in this case
-assert Just(None) is None
+# note that `Result[None, Any]` will always return None, 
+# so `Result.get_or_else` would be preferable in this case
+assert Ok(None) is None
 ```
 
 ## More
