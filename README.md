@@ -23,18 +23,18 @@ from koda import Just, Maybe
 
 maybe_str: Maybe[str] = function_returning_maybe_str()
 
-# unwrap by checking instance type
-if isinstance(maybe_str, Just):
-    print(maybe_str.val)
-else:
-    print("No value!")
-
-# unwrap with structural pattern matching (python 3.10 +)
+# python 3.10 +
 match maybe_str:
     case Just(val):
         print(val)
     case Nothing:
         print("No value!")
+
+# python 3.9 and earlier
+if isinstance(maybe_str, Just):
+    print(maybe_str.val)
+else:
+    print("No value!")
 ```
 
 `Maybe` has methods for conveniently stringing logic together.
@@ -44,13 +44,13 @@ match maybe_str:
 ```python3
 from koda import Just, nothing
 
-def int_add_10(x: int) -> int:
+def add_10(x: int) -> int:
     return x + 10
 
 
-Just(5).map(int_add_10)  # Just(15)
-nothing.map(int_add_10)  # Nothing
-Just(5).map(int_add_10).map(lambda x: f"abc{x}")  # Just("abc15")
+Just(5).map(add_10)  # Just(15)
+nothing.map(add_10)  # nothing 
+Just(5).map(add_10).map(lambda x: f"abc{x}")  # Just("abc15")
 ```
 
 #### Maybe.flat_map
@@ -66,8 +66,8 @@ def safe_divide(dividend: int, divisor: int) -> Maybe[float]:
         return nothing
 
 Just(5).flat_map(lambda x: safe_divide(10, x))  # Just(2)
-Just(0).flat_map(lambda x: safe_divide(10, x))  # Nothing
-nothing.flat_map(lambda x: safe_divide(10, x))  # Nothing
+Just(0).flat_map(lambda x: safe_divide(10, x))  # nothing
+nothing.flat_map(lambda x: safe_divide(10, x))  # nothing
 ```
 
 ## Result
@@ -118,6 +118,81 @@ def divide(dividend: int, divisor: int) -> float:
 # safe if used with `safe_try`
 divided_ok: Result[float, Exception] = safe_try(divide, 10, 2)  # Ok(5)
 divided_err: Result[float, Exception] = safe_try(divide, 10, 0)  # Err(ZeroDivisionError("division by zero"))
+```
+
+### Conversion between `Result`s, `Maybe`s, and `Optional`s
+
+### Result and Maybe
+
+Convert a `Result` to a `Maybe` type.
+
+```python3
+from koda import Just, nothing, Ok, Err
+
+assert Ok(5).to_maybe == Just(5)
+assert Err("any error").to_maybe == nothing 
+```
+
+Convert a `Maybe` to a `Result` type.
+
+```python3
+from koda import Just, nothing, Ok, Err
+
+assert nothing.to_result("value if nothing") == Err("value if nothing")
+assert Just(5).to_result("value if nothing") == Ok(5)
+```
+
+### `Maybe` and `Optional`
+
+Convert an `Optional` value to a `Maybe`.
+
+```python3
+from koda import to_maybe, Just, nothing
+
+assert to_maybe(5) == Just(5)
+assert to_maybe("abc") == Just("abc")
+assert to_maybe(False) == Just(False)
+
+assert to_maybe(None) == nothing
+```
+
+Convert a `Maybe` to an `Optional`.
+```python3
+from koda import Just, nothing
+
+assert Just(5).to_optional == 5
+assert nothing.to_optional is None
+
+# note that `Maybe[None]` will always return None, 
+# so `Maybe.get_or_else` would be preferable in this case
+assert Just(None) is None
+```
+
+### `Result` and `Optional`
+
+Convert an `Optional` value to a `Result`.
+
+```python3
+from koda import to_result, Ok, Err 
+
+assert to_result(5, "fallback") == Ok(5)
+assert to_result("abc", "fallback") == Ok("abc")
+assert to_result(False, "fallback") == Ok(False)
+
+assert to_result(None, "fallback") == Err("fallback")
+
+```
+
+Convert a `Result` to an `Optional`.
+```python3
+from koda import Ok, Err
+
+assert Ok(5).to_optional == 5
+assert Err("some error").to_optional is None
+
+# note that `Result[None, Any]` will always return None, 
+# so `Result.get_or_else` would be preferable in this case
+assert Ok(None) is None
 ```
 
 ## More
@@ -178,42 +253,6 @@ call_random_once = load_once(random)  # has not called random yet
 
 retrieved_val: float = call_random_once()
 assert retrieved_val == call_random_once()
-```
-
-### maybe_to_result
-
-Convert a `Maybe` to a `Result` type.
-
-```python3
-from koda import maybe_to_result, Just, nothing, Ok, Err
-
-assert maybe_to_result("value if nothing", nothing) == Err("value if nothing")
-assert maybe_to_result("value if nothing", Just(5)) == Ok(5)
-```
-
-### result_to_maybe
-
-Convert a `Result` to a `Maybe` type.
-
-```python3
-from koda import result_to_maybe, Just, nothing, Ok, Err
-
-assert result_to_maybe(Ok(5)) == Just(5)
-assert result_to_maybe(Err("any error")) == nothing 
-```
-
-### to_maybe
-
-Convert an `Optional` value to a `Maybe`.
-
-```python3
-from koda import to_maybe, Just, nothing
-
-assert to_maybe(5) == Just(5)
-assert to_maybe("abc") == Just("abc")
-assert to_maybe(False) == Just(False)
-
-assert to_maybe(None) == nothing
 ```
 
 ## Intent

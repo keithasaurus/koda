@@ -17,10 +17,9 @@ from koda.utils import (
     identity,
     load_once,
     mapping_get,
-    maybe_to_result,
-    result_to_maybe,
     safe_try,
     to_maybe,
+    to_result,
 )
 
 __all__ = (
@@ -44,9 +43,8 @@ __all__ = (
     "compose",
     "identity",
     "mapping_get",
-    "maybe_to_result",
-    "result_to_maybe",
     "load_once",
     "safe_try",
     "to_maybe",
+    "to_result",
 )
