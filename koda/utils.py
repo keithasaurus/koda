@@ -1,8 +1,9 @@
 from typing import Any, Callable, List, Mapping, Optional, Protocol, TypeVar
 
 from koda._cruft import _compose, _safe_try
-from koda._generics import A, B
+from koda._generics import A, B, FailT
 from koda.maybe import Just, Maybe, nothing
+from koda.result import Err, Ok, Result
 
 compose = _compose
 
@@ -25,6 +26,13 @@ def to_maybe(val: Optional[A]) -> Maybe[A]:
         return nothing
     else:
         return Just(val)
+
+
+def to_result(val: Optional[A], if_none: FailT) -> Result[A, FailT]:
+    if val is None:
+        return Err(if_none)
+    else:
+        return Ok(val)
 
 
 def load_once(fn: Callable[[], A]) -> Callable[[], A]:

@@ -3,7 +3,15 @@ from typing import Dict, List, Optional, Tuple, Union
 from koda._generics import A, B
 from koda.maybe import Just, nothing
 from koda.result import Err, Ok, Result
-from koda.utils import always, compose, load_once, mapping_get, safe_try, to_maybe
+from koda.utils import (
+    always,
+    compose,
+    load_once,
+    mapping_get,
+    safe_try,
+    to_maybe,
+    to_result,
+)
 from tests.utils import assert_same_error_type_with_same_message
 
 
@@ -190,6 +198,14 @@ def test_to_maybe() -> None:
     assert to_maybe(False) == Just(False)
 
     assert to_maybe(None) == nothing
+
+
+def test_to_result() -> None:
+    assert to_result(5, "fallback") == Ok(5)
+    assert to_result("abc", "fallback") == Ok("abc")
+    assert to_result(False, "fallback") == Ok(False)
+
+    assert to_result(None, "fallback") == Err("fallback")
 
 
 def test_always() -> None:

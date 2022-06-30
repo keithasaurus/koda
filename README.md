@@ -120,6 +120,81 @@ divided_ok: Result[float, Exception] = safe_try(divide, 10, 2)  # Ok(5)
 divided_err: Result[float, Exception] = safe_try(divide, 10, 0)  # Err(ZeroDivisionError("division by zero"))
 ```
 
+### Conversion between `Result`s, `Maybe`s, and `Optional`s
+
+### Result and Maybe
+
+Convert a `Result` to a `Maybe` type.
+
+```python3
+from koda import Just, nothing, Ok, Err
+
+assert Ok(5).to_maybe == Just(5)
+assert Err("any error").to_maybe == nothing 
+```
+
+Convert a `Maybe` to a `Result` type.
+
+```python3
+from koda import Just, nothing, Ok, Err
+
+assert nothing.to_result("value if nothing") == Err("value if nothing")
+assert Just(5).to_result("value if nothing") == Ok(5)
+```
+
+### `Maybe` and `Optional`
+
+Convert an `Optional` value to a `Maybe`.
+
+```python3
+from koda import to_maybe, Just, nothing
+
+assert to_maybe(5) == Just(5)
+assert to_maybe("abc") == Just("abc")
+assert to_maybe(False) == Just(False)
+
+assert to_maybe(None) == nothing
+```
+
+Convert a `Maybe` to an `Optional`.
+```python3
+from koda import Just, nothing
+
+assert Just(5).to_optional == 5
+assert nothing.to_optional is None
+
+# note that `Maybe[None]` will always return None, 
+# so Maybe.get_or_else would be preferable in this case
+assert Just(None) is None
+```
+
+### `Result` and `Optional`
+
+Convert an `Optional` value to a `Result`.
+
+```python3
+from koda import to_result, Ok, Err 
+
+assert to_result(5, "fallback") == Ok(5)
+assert to_result("abc", "fallback") == Ok("abc")
+assert to_result(False, "fallback") == Ok(False)
+
+assert to_result(None, "fallback") == Err("fallback")
+
+```
+
+Convert a `Result` to an `Optional`.
+```python3
+from koda import Ok, Err
+
+assert Ok(5).to_optional == 5
+assert Err("some error").to_optional is None
+
+# note that `Maybe[None]` will always return None, 
+# so Maybe.get_or_else would be preferable in this case
+assert Just(None) is None
+```
+
 ## More
 
 There are many other functions and datatypes included. Some examples:
@@ -178,42 +253,6 @@ call_random_once = load_once(random)  # has not called random yet
 
 retrieved_val: float = call_random_once()
 assert retrieved_val == call_random_once()
-```
-
-### maybe_to_result
-
-Convert a `Maybe` to a `Result` type.
-
-```python3
-from koda import maybe_to_result, Just, nothing, Ok, Err
-
-assert maybe_to_result("value if nothing", nothing) == Err("value if nothing")
-assert maybe_to_result("value if nothing", Just(5)) == Ok(5)
-```
-
-### result_to_maybe
-
-Convert a `Result` to a `Maybe` type.
-
-```python3
-from koda import result_to_maybe, Just, nothing, Ok, Err
-
-assert result_to_maybe(Ok(5)) == Just(5)
-assert result_to_maybe(Err("any error")) == nothing 
-```
-
-### to_maybe
-
-Convert an `Optional` value to a `Maybe`.
-
-```python3
-from koda import to_maybe, Just, nothing
-
-assert to_maybe(5) == Just(5)
-assert to_maybe("abc") == Just("abc")
-assert to_maybe(False) == Just(False)
-
-assert to_maybe(None) == nothing
 ```
 
 ## Intent

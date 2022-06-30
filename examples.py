@@ -156,3 +156,11 @@ assert to_maybe("abc") == Just("abc")
 assert to_maybe(False) == Just(False)
 
 assert to_maybe(None) == nothing
+
+
+def add_5(x: int) -> int:
+    return x + 5
+
+
+x1: Optional[int] = Just(5).map(add_5).to_result("failed!").to_optional
+x2: Optional[int] = nothing.map(add_5).to_result("failed!").to_optional

@@ -19,6 +19,7 @@ from koda.utils import (
     mapping_get,
     safe_try,
     to_maybe,
+    to_result,
 )
 
 __all__ = (
@@ -45,4 +46,5 @@ __all__ = (
     "load_once",
     "safe_try",
     "to_maybe",
+    "to_result",
 )
