@@ -1,7 +1,17 @@
-from typing import Any, Callable, List, Mapping, Optional, Protocol, TypeVar
+from typing import (
+    Any,
+    Callable,
+    List,
+    Mapping,
+    NoReturn,
+    Optional,
+    Protocol,
+    TypeVar,
+    Union,
+)
 
 from koda._cruft import _compose, _safe_try
-from koda._generics import A, B, FailT
+from koda._generics import A, B, C, D, E, F, FailT, G, H, I
 from koda.maybe import Just, Maybe, nothing
 from koda.result import Err, Ok, Result
 
@@ -35,7 +45,17 @@ def to_result(val: Optional[A], if_none: FailT) -> Result[A, FailT]:
         return Ok(val)
 
 
-def load_once(fn: Callable[[], A]) -> Callable[[], A]:
+Thunk = Callable[[], A]
+
+
+def thunkify(obj: A) -> Thunk[A]:
+    def inner() -> A:
+        return obj
+
+    return inner
+
+
+def load_once(fn: Thunk[A]) -> Thunk[A]:
     """
     Lazily get some value
     """
