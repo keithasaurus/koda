@@ -9,6 +9,7 @@ from koda.utils import (
     load_once,
     mapping_get,
     safe_try,
+    thunkify,
     to_maybe,
     to_result,
 )
@@ -212,3 +213,8 @@ def test_always() -> None:
     fn = always(5)
     assert fn() == 5
     assert fn(1, 2, 3, arg=12) == 5
+
+
+def test_thunkify() -> None:
+    for val in ["a", "b", "whatever"]:
+        assert thunkify(val)() == val

@@ -12,12 +12,14 @@ from koda.either import (
 from koda.maybe import Just, Maybe, Nothing, nothing
 from koda.result import Err, Ok, Result
 from koda.utils import (
+    Thunk,
     always,
     compose,
     identity,
     load_once,
     mapping_get,
     safe_try,
+    thunkify,
     to_maybe,
     to_result,
 )
@@ -47,4 +49,6 @@ __all__ = (
     "safe_try",
     "to_maybe",
     "to_result",
+    "Thunk",
+    "thunkify",
 )
