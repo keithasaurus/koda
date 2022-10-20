@@ -35,7 +35,17 @@ def to_result(val: Optional[A], if_none: FailT) -> Result[A, FailT]:
         return Ok(val)
 
 
-def load_once(fn: Callable[[], A]) -> Callable[[], A]:
+Thunk = Callable[[], A]
+
+
+def thunkify(obj: A) -> Thunk[A]:
+    def inner() -> A:
+        return obj
+
+    return inner
+
+
+def load_once(fn: Thunk[A]) -> Thunk[A]:
     """
     Lazily get some value
     """
