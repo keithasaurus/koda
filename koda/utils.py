@@ -1,5 +1,7 @@
 from typing import Any, Callable, List, Mapping, Optional, Protocol, TypeVar
 
+from typing_extensions import TypeVarTuple, Unpack
+
 from koda._cruft import _compose, _safe_try
 from koda._generics import A, B, FailT
 from koda.maybe import Just, Maybe, nothing
@@ -35,7 +37,10 @@ def to_result(val: Optional[A], if_none: FailT) -> Result[A, FailT]:
         return Ok(val)
 
 
-def load_once(fn: Callable[[], A]) -> Callable[[], A]:
+Thunk = Callable[[], A]
+
+
+def load_once(fn: Thunk[A]) -> Thunk[A]:
     """
     Lazily get some value
     """
@@ -54,7 +59,6 @@ def load_once(fn: Callable[[], A]) -> Callable[[], A]:
 
 safe_try = _safe_try
 
-
 A_co = TypeVar("A_co", covariant=True)
 
 
@@ -68,3 +72,6 @@ def always(x: A) -> _AnyArgs[A]:
         return x
 
     return inner
+
+
+TV = TypeVarTuple("TV")
