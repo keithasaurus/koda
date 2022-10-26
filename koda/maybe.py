@@ -1,5 +1,14 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Callable, Final, Generic, Optional, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    ClassVar,
+    Final,
+    Generic,
+    Optional,
+    Union,
+)
 
 from koda._generics import A, B, FailT
 
@@ -8,11 +17,13 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class Nothing:
+    _instance: ClassVar[Optional["Nothing"]] = None
+
     def __new__(cls) -> "Nothing":
         """
         Make `Nothing` a singleton, so we can do `is` checks if we want.
         """
-        if not hasattr(cls, "_instance"):
+        if cls._instance is None:
             cls._instance = super(Nothing, cls).__new__(cls)
         return cls._instance
 
@@ -45,7 +56,7 @@ class Nothing:
 nothing: Final[Nothing] = Nothing()
 
 
-@dataclass(frozen=True)
+@dataclass
 class Just(Generic[A]):
     val: A
 
