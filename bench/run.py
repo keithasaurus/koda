@@ -1,6 +1,6 @@
 from argparse import ArgumentParser
 from time import perf_counter
-from typing import Callable
+from typing import Callable, Dict
 
 from koda import Err, Just, Nothing, Ok
 
@@ -21,11 +21,11 @@ def create_just(iterations: int) -> None:
 
 
 def create_nothing(iterations: int) -> None:
-    for i in range(iterations):
+    for _ in range(iterations):
         Nothing()
 
 
-benches: dict[str, Callable[[int], None]] = {
+benches: Dict[str, Callable[[int], None]] = {
     "create_ok": create_ok,
     "create_err": create_err,
     "create_just": create_just,
