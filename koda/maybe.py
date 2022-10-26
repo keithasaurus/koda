@@ -56,9 +56,11 @@ class Nothing:
 nothing: Final[Nothing] = Nothing()
 
 
-@dataclass
 class Just(Generic[A]):
-    val: A
+    __match_args__ = ("val",)
+
+    def __init__(self, val: A) -> None:
+        self.val: A = val
 
     def get_or_else(self, _: Any) -> A:
         return self.val
