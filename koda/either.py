@@ -4,7 +4,7 @@ from typing import Any, Callable, Generic, Union
 from koda._generics import A, B, C, D, E
 
 
-@dataclass(frozen=True)
+@dataclass
 class First(Generic[A]):
     val: A
 
@@ -24,7 +24,7 @@ class First(Generic[A]):
         return self
 
 
-@dataclass(frozen=True)
+@dataclass
 class Second(Generic[A]):
     val: A
 
@@ -44,7 +44,7 @@ class Second(Generic[A]):
         return self
 
 
-@dataclass(frozen=True)
+@dataclass
 class Third(Generic[A]):
     val: A
 
@@ -64,7 +64,7 @@ class Third(Generic[A]):
         return self
 
 
-@dataclass(frozen=True)
+@dataclass
 class Fourth(Generic[A]):
     val: A
 
@@ -84,7 +84,7 @@ class Fourth(Generic[A]):
         return self
 
 
-@dataclass(frozen=True)
+@dataclass
 class Fifth(Generic[A]):
     val: A
 

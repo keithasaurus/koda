@@ -7,7 +7,7 @@ if TYPE_CHECKING:  # pragma: no cover
     from koda.maybe import Maybe
 
 
-@dataclass(frozen=True)
+@dataclass
 class Ok(Generic[A]):
     val: A
 
@@ -49,7 +49,7 @@ class Ok(Generic[A]):
         return Just(self.val)
 
 
-@dataclass(frozen=True)
+@dataclass
 class Err(Generic[FailT]):
     val: FailT
 

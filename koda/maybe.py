@@ -45,7 +45,7 @@ class Nothing:
 nothing: Final[Nothing] = Nothing()
 
 
-@dataclass(frozen=True)
+@dataclass
 class Just(Generic[A]):
     val: A
 
