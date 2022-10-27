@@ -69,6 +69,10 @@ A_co = TypeVar("A_co", covariant=True)
 
 
 class _AnyArgs(Protocol[A_co]):  # pragma: no cover
+    """
+    todo: consider removing, and just using Callable[..., A] below in `always`
+    """
+
     def __call__(self, *args: Any, **kwargs: Any) -> A_co:
         ...
 

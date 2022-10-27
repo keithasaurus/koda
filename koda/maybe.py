@@ -1,4 +1,3 @@
-from dataclasses import dataclass
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -17,6 +16,7 @@ if TYPE_CHECKING:  # pragma: no cover
 
 
 class Nothing:
+    # singleton
     _instance: ClassVar[Optional["Nothing"]] = None
 
     def __new__(cls) -> "Nothing":
@@ -26,6 +26,9 @@ class Nothing:
         if cls._instance is None:
             cls._instance = super(Nothing, cls).__new__(cls)
         return cls._instance
+
+    def __eq__(self, other: Any) -> bool:
+        return other is self._instance
 
     def get_or_else(self, fallback: A) -> A:
         return fallback
@@ -56,9 +59,15 @@ class Nothing:
 nothing: Final[Nothing] = Nothing()
 
 
-@dataclass
 class Just(Generic[A]):
-    val: A
+    __match_args__ = ("val",)
+    __slots__ = ("val",)
+
+    def __init__(self, val: A) -> None:
+        self.val: A = val
+
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, Just) and other.val == self.val
 
     def get_or_else(self, _: Any) -> A:
         return self.val
