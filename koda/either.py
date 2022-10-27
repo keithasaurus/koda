@@ -1,12 +1,17 @@
-from dataclasses import dataclass
 from typing import Any, Callable, Generic, Union
 
 from koda._generics import A, B, C, D, E
 
 
-@dataclass
 class First(Generic[A]):
-    val: A
+    __slots__ = ("val",)
+    __match_args__ = ("val",)
+
+    def __init__(self, val: A) -> None:
+        self.val: A = val
+
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, First) and other.val == self.val
 
     def map_first(self, fn: Callable[[A], B]) -> "First[B]":
         return First(fn(self.val))
@@ -24,9 +29,15 @@ class First(Generic[A]):
         return self
 
 
-@dataclass
 class Second(Generic[A]):
-    val: A
+    __slots__ = ("val",)
+    __match_args__ = ("val",)
+
+    def __init__(self, val: A) -> None:
+        self.val: A = val
+
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, Second) and other.val == self.val
 
     def map_first(self, fn: Callable[[Any], Any]) -> "Second[A]":
         return self
@@ -44,9 +55,15 @@ class Second(Generic[A]):
         return self
 
 
-@dataclass
 class Third(Generic[A]):
-    val: A
+    __slots__ = ("val",)
+    __match_args__ = ("val",)
+
+    def __init__(self, val: A) -> None:
+        self.val: A = val
+
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, Third) and other.val == self.val
 
     def map_first(self, fn: Callable[[Any], Any]) -> "Third[A]":
         return self
@@ -64,9 +81,15 @@ class Third(Generic[A]):
         return self
 
 
-@dataclass
 class Fourth(Generic[A]):
-    val: A
+    __slots__ = ("val",)
+    __match_args__ = ("val",)
+
+    def __init__(self, val: A) -> None:
+        self.val: A = val
+
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, Fourth) and other.val == self.val
 
     def map_first(self, fn: Callable[[Any], Any]) -> "Fourth[A]":
         return self
@@ -84,9 +107,15 @@ class Fourth(Generic[A]):
         return self
 
 
-@dataclass
 class Fifth(Generic[A]):
-    val: A
+    __slots__ = ("val",)
+    __match_args__ = ("val",)
+
+    def __init__(self, val: A) -> None:
+        self.val: A = val
+
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, Fifth) and other.val == self.val
 
     def map_first(self, fn: Callable[[Any], Any]) -> "Fifth[A]":
         return self

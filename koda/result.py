@@ -8,9 +8,13 @@ if TYPE_CHECKING:  # pragma: no cover
 
 class Ok(Generic[A]):
     __match_args__ = ("val",)
+    __slots__ = ("val",)
 
     def __init__(self, val: A) -> None:
         self.val: A = val
+
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, Ok) and other.val == self.val
 
     def apply(self, container: "Result[Callable[[A], B], FailT]") -> "Result[B, FailT]":
         if isinstance(container, Ok):
@@ -52,9 +56,13 @@ class Ok(Generic[A]):
 
 class Err(Generic[FailT]):
     __match_args__ = ("val",)
+    __slots__ = ("val",)
 
     def __init__(self, val: FailT) -> None:
         self.val: FailT = val
+
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, Err) and other.val == self.val
 
     def apply(self, _: "Result[Callable[[Any], B], FailT]") -> "Result[B, FailT]":
         return self
