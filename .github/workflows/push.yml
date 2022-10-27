@@ -23,7 +23,11 @@ jobs:
         run: poetry install
       - name: mypy
         run: poetry run mypy . --exclude tests
-      - name: run tests
-        run: poetry run pytest
+      - name: run 3.9- tests
+        if: ${{ matrix.python-version }} != 3.10
+        run: poetry run pytest --ignore tests/test_together.py
+      - name: run 3.10+ tests
+        if: ${{ matrix.python-version }} == 3.10
+        run: poetry run pytest --ignore tests/test_together.py
       - name: linting
         run: poetry run flake8
