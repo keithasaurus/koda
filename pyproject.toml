@@ -27,10 +27,13 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
-exclude = ["build"]
+exclude = ["build", "tests/test_not_typesafe.py"]
 allow_redefinition = false
+allow_untyped_globals = false
 check_untyped_defs = true
+disallow_any_expr = false # currently need this for generics
 disallow_any_generics = true
+disallow_any_unimported = true
 disallow_incomplete_defs = true
 disallow_subclassing_any = true
 disallow_untyped_calls = true

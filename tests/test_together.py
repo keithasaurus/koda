@@ -1,4 +1,4 @@
-from koda import Err, Fifth, First, Fourth, Just, Ok, Second, Third
+from koda import Err, Fifth, First, Fourth, Just, Ok, Second, Third, nothing
 
 
 def test_equivalence() -> None:
@@ -57,3 +57,18 @@ def test_equivalence() -> None:
     assert Fifth(5.0) == Fifth(5)
     assert Fifth(5) != Ok(5)
     assert Fifth(5) != 5
+
+
+def test_repr() -> None:
+    for obj, expected in [
+        (Ok(5), "Ok(5)"),
+        (Err(5), "Err(5)"),
+        (Just("123"), "Just(123)"),
+        (nothing, "Nothing()"),
+        (First(1), "First(1)"),
+        (Second(1), "Second(1)"),
+        (Third(1), "Third(1)"),
+        (Fourth(1), "Fourth(1)"),
+        (Fifth(1), "Fifth(1)"),
+    ]:
+        assert repr(obj) == expected
