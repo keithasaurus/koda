@@ -30,6 +30,9 @@ class Nothing:
     def __eq__(self, other: Any) -> bool:
         return other is self._instance
 
+    def __repr__(self) -> str:
+        return "Nothing()"
+
     def get_or_else(self, fallback: A) -> A:
         return fallback
 
@@ -68,6 +71,9 @@ class Just(Generic[A]):
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Just) and other.val == self.val
+
+    def __repr__(self) -> str:
+        return f"Just({self.val})"
 
     def get_or_else(self, _: Any) -> A:
         return self.val

@@ -16,6 +16,9 @@ class Ok(Generic[A]):
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Ok) and other.val == self.val
 
+    def __repr__(self) -> str:
+        return f"Ok({self.val})"
+
     def apply(self, container: "Result[Callable[[A], B], FailT]") -> "Result[B, FailT]":
         if isinstance(container, Ok):
             return Ok(container.val(self.val))
@@ -63,6 +66,9 @@ class Err(Generic[FailT]):
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Err) and other.val == self.val
+
+    def __repr__(self) -> str:
+        return f"Err({self.val})"
 
     def apply(self, _: "Result[Callable[[Any], B], FailT]") -> "Result[B, FailT]":
         return self

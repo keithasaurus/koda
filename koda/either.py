@@ -13,6 +13,9 @@ class First(Generic[A]):
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, First) and other.val == self.val
 
+    def __repr__(self) -> str:
+        return f"First({self.val})"
+
     def map_first(self, fn: Callable[[A], B]) -> "First[B]":
         return First(fn(self.val))
 
@@ -38,6 +41,9 @@ class Second(Generic[A]):
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Second) and other.val == self.val
+
+    def __repr__(self) -> str:
+        return f"Second({self.val})"
 
     def map_first(self, fn: Callable[[Any], Any]) -> "Second[A]":
         return self
@@ -65,6 +71,9 @@ class Third(Generic[A]):
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Third) and other.val == self.val
 
+    def __repr__(self) -> str:
+        return f"Third({self.val})"
+
     def map_first(self, fn: Callable[[Any], Any]) -> "Third[A]":
         return self
 
@@ -91,6 +100,9 @@ class Fourth(Generic[A]):
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Fourth) and other.val == self.val
 
+    def __repr__(self) -> str:
+        return f"Fourth({self.val})"
+
     def map_first(self, fn: Callable[[Any], Any]) -> "Fourth[A]":
         return self
 
@@ -116,6 +128,9 @@ class Fifth(Generic[A]):
 
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, Fifth) and other.val == self.val
+
+    def __repr__(self) -> str:
+        return f"Fifth({self.val})"
 
     def map_first(self, fn: Callable[[Any], Any]) -> "Fifth[A]":
         return self
