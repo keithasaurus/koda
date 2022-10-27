@@ -30,4 +30,4 @@ jobs:
         if: ${{ matrix.python-version }} == 3.10
         run: poetry run pytest --ignore tests/test_together.py
       - name: linting
-        run: poetry run flake8
+        run: poetry run flake8 --exclude tests/test_together.py
