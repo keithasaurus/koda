@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 from time import perf_counter
 from typing import Callable, Dict
 
-from koda import Err, Just, Nothing, Ok
+from koda import Err, Just, Nothing, Ok, mapping_get
 
 
 def create_ok(iterations: int) -> None:
@@ -25,11 +25,22 @@ def create_nothing(iterations: int) -> None:
         Nothing()
 
 
+def run_mapping_get(iterations: int) -> None:
+    obj = {"a": 1, "b": 2, "c": 3}
+    for i in range(iterations // 2):
+        # misses
+        mapping_get(obj, "3")
+    for i in range(iterations // 2):
+        # hits
+        mapping_get(obj, "a")
+
+
 benches: Dict[str, Callable[[int], None]] = {
     "create_ok": create_ok,
     "create_err": create_err,
     "create_just": create_just,
     "create_nothing": create_nothing,
+    "mapping_get": run_mapping_get,
 }
 
 
