@@ -31,3 +31,5 @@ jobs:
         run: poetry run pytest
       - name: linting
         run: poetry run flake8 --exclude tests/test_310.py
+      - name: benchmarks
+        run: poetry run python -m bench.run
