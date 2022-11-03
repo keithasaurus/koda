@@ -1,4 +1,13 @@
-from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    ClassVar,
+    Generic,
+    Literal,
+    Optional,
+    Union,
+)
 
 from koda._generics import A, B, FailT
 
@@ -10,6 +19,8 @@ class Ok(Generic[A]):
     __match_args__ = ("val",)
     __slots__ = ("val",)
 
+    is_ok: ClassVar[Literal[True]] = True
+
     def __init__(self, val: A) -> None:
         self.val: A = val
 
@@ -17,7 +28,7 @@ class Ok(Generic[A]):
         return isinstance(other, Ok) and other.val == self.val
 
     def __repr__(self) -> str:
-        return f"Ok({self.val})"
+        return f"Ok({repr(self.val)})"
 
     def apply(self, container: "Result[Callable[[A], B], FailT]") -> "Result[B, FailT]":
         if isinstance(container, Ok):
@@ -61,6 +72,8 @@ class Err(Generic[FailT]):
     __match_args__ = ("val",)
     __slots__ = ("val",)
 
+    is_ok: ClassVar[Literal[False]] = False
+
     def __init__(self, val: FailT) -> None:
         self.val: FailT = val
 
@@ -68,7 +81,7 @@ class Err(Generic[FailT]):
         return isinstance(other, Err) and other.val == self.val
 
     def __repr__(self) -> str:
-        return f"Err({self.val})"
+        return f"Err({repr(self.val)})"
 
     def apply(self, _: "Result[Callable[[Any], B], FailT]") -> "Result[B, FailT]":
         return self

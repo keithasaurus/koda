@@ -14,7 +14,7 @@ class First(Generic[A]):
         return isinstance(other, First) and other.val == self.val
 
     def __repr__(self) -> str:
-        return f"First({self.val})"
+        return f"First({repr(self.val)})"
 
     def map_first(self, fn: Callable[[A], B]) -> "First[B]":
         return First(fn(self.val))
@@ -43,7 +43,7 @@ class Second(Generic[A]):
         return isinstance(other, Second) and other.val == self.val
 
     def __repr__(self) -> str:
-        return f"Second({self.val})"
+        return f"Second({repr(self.val)})"
 
     def map_first(self, fn: Callable[[Any], Any]) -> "Second[A]":
         return self
@@ -72,7 +72,7 @@ class Third(Generic[A]):
         return isinstance(other, Third) and other.val == self.val
 
     def __repr__(self) -> str:
-        return f"Third({self.val})"
+        return f"Third({repr(self.val)})"
 
     def map_first(self, fn: Callable[[Any], Any]) -> "Third[A]":
         return self
@@ -101,7 +101,7 @@ class Fourth(Generic[A]):
         return isinstance(other, Fourth) and other.val == self.val
 
     def __repr__(self) -> str:
-        return f"Fourth({self.val})"
+        return f"Fourth({repr(self.val)})"
 
     def map_first(self, fn: Callable[[Any], Any]) -> "Fourth[A]":
         return self
@@ -130,7 +130,7 @@ class Fifth(Generic[A]):
         return isinstance(other, Fifth) and other.val == self.val
 
     def __repr__(self) -> str:
-        return f"Fifth({self.val})"
+        return f"Fifth({repr(self.val)})"
 
     def map_first(self, fn: Callable[[Any], Any]) -> "Fifth[A]":
         return self
