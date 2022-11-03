@@ -78,3 +78,8 @@ def test_to_optional() -> None:
     assert Ok(123).to_optional == 123
     assert Ok(None).to_optional is None
     assert Err("some error").to_optional is None
+
+
+def test_is_ok() -> None:
+    assert Ok(1).is_ok is True
+    assert Err(1).is_ok is False

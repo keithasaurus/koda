@@ -1,4 +1,13 @@
-from typing import TYPE_CHECKING, Any, Callable, Generic, Optional, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    ClassVar,
+    Generic,
+    Literal,
+    Optional,
+    Union,
+)
 
 from koda._generics import A, B, FailT
 
@@ -9,6 +18,8 @@ if TYPE_CHECKING:  # pragma: no cover
 class Ok(Generic[A]):
     __match_args__ = ("val",)
     __slots__ = ("val",)
+
+    is_ok: ClassVar[Literal[True]] = True
 
     def __init__(self, val: A) -> None:
         self.val: A = val
@@ -60,6 +71,8 @@ class Ok(Generic[A]):
 class Err(Generic[FailT]):
     __match_args__ = ("val",)
     __slots__ = ("val",)
+
+    is_ok: ClassVar[Literal[False]] = False
 
     def __init__(self, val: FailT) -> None:
         self.val: FailT = val

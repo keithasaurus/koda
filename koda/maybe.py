@@ -5,6 +5,7 @@ from typing import (
     ClassVar,
     Final,
     Generic,
+    Literal,
     Optional,
     Union,
 )
@@ -18,6 +19,8 @@ if TYPE_CHECKING:  # pragma: no cover
 class Nothing:
     # singleton
     _instance: ClassVar[Optional["Nothing"]] = None
+
+    is_just: ClassVar[Literal[False]] = False
 
     def __new__(cls) -> "Nothing":
         """
@@ -65,6 +68,8 @@ nothing: Final[Nothing] = Nothing()
 class Just(Generic[A]):
     __match_args__ = ("val",)
     __slots__ = ("val",)
+
+    is_just: ClassVar[Literal[True]] = True
 
     def __init__(self, val: A) -> None:
         self.val: A = val

@@ -42,3 +42,8 @@ def test_to_result() -> None:
 
 def test_nothing_singleton() -> None:
     assert nothing is Nothing()
+
+
+def test_is_just() -> None:
+    assert Just(1).is_just is True
+    assert nothing.is_just is False
