@@ -78,7 +78,7 @@ class Just(Generic[A]):
         return isinstance(other, Just) and other.val == self.val
 
     def __repr__(self) -> str:
-        return f"Just({self.val})"
+        return f"Just({repr(self.val)})"
 
     def get_or_else(self, _: Any) -> A:
         return self.val

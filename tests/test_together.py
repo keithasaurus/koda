@@ -63,7 +63,7 @@ def test_repr() -> None:
     for obj, expected in [
         (Ok(5), "Ok(5)"),
         (Err(5), "Err(5)"),
-        (Just("123"), "Just(123)"),
+        (Just("123"), "Just('123')"),
         (nothing, "Nothing()"),
         (First(1), "First(1)"),
         (Second(1), "Second(1)"),

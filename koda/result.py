@@ -28,7 +28,7 @@ class Ok(Generic[A]):
         return isinstance(other, Ok) and other.val == self.val
 
     def __repr__(self) -> str:
-        return f"Ok({self.val})"
+        return f"Ok({repr(self.val)})"
 
     def apply(self, container: "Result[Callable[[A], B], FailT]") -> "Result[B, FailT]":
         if isinstance(container, Ok):
@@ -81,7 +81,7 @@ class Err(Generic[FailT]):
         return isinstance(other, Err) and other.val == self.val
 
     def __repr__(self) -> str:
-        return f"Err({self.val})"
+        return f"Err({repr(self.val)})"
 
     def apply(self, _: "Result[Callable[[Any], B], FailT]") -> "Result[B, FailT]":
         return self
